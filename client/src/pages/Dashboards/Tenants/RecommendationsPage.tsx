@@ -1,0 +1,267 @@
+import { useEffect, useState } from "react";
+import { useTenantOperations } from "../../../apis/tenantApi";
+import PropertyCard from "../../../components/shared/Dashboard/PropertyCard";
+import { useLoading } from "../../../hooks/useLoading";
+import { ErrorState } from "../../../components/ErrorState";
+import { LoadingSpinner } from "../../../components/LoadingSpinner";
+import EmptyState from "../../../components/EmptyState";
+import { Button } from "../../../components/Button";
+import {
+  IconBrain,
+  IconAdjustments,
+  IconStar,
+  IconMapPin,
+  IconCurrencyNaira,
+  IconBed,
+  IconRefresh
+} from "@tabler/icons-react";
+
+interface RecommendedProperty extends Property {
+  recommendation_score: number;
+  match_reason: string[];
+}
+
+interface RecommendationResponse {
+  properties: RecommendedProperty[];
+  pagination: {
+    page: number;
+    per_page: number;
+    total: number;
+    pages: number;
+  };
+  preferences_used: {
+    budget_range: string;
+    locations: string[];
+    bedrooms: number;
+    bathrooms: number;
+    furnished: string;
+  };
+}
+
+export default function RecommendationsPage() {
+  const [recommendations, setRecommendations] = useState<RecommendationResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const { loading, stopLoading, startLoading } = useLoading();
+  const { getRecommendedProperties } = useTenantOperations();
+
+  const fetchRecommendations = async (page = 1) => {
+    try {
+      setError(null);
+      startLoading();
+      const response = await getRecommendedProperties({ page, per_page: 12 });
+      setRecommendations(response.data);
+      setCurrentPage(page);
+    } catch (err: any) {
+      if (err?.response?.status === 404) {
+        setError("Complete your onboarding first to get personalized recommendations");
+      } else {
+        setError("Failed to load property recommendations");
+      }
+    } finally {
+      stopLoading();
+    }
+  };
+
+  useEffect(() => {
+    fetchRecommendations();
+  }, []);
+
+  const handleLoadMore = () => {
+    if (recommendations && currentPage < recommendations.pagination.pages) {
+      fetchRecommendations(currentPage + 1);
+    }
+  };
+
+  const handleRefresh = () => {
+    fetchRecommendations(1);
+  };
+
+  if (loading && !recommendations) return <LoadingSpinner />;
+
+  if (error) {
+    return (
+      <div className="px-6 py-8">
+        <ErrorState
+          message={error}
+          onRetry={() => fetchRecommendations()}
+          loading={loading}
+        />
+      </div>
+    );
+  }
+
+  if (!recommendations || recommendations.properties.length === 0) {
+    return (
+      <div className="px-6 py-8">
+        <EmptyState>
+          <div className="space-y-6 flex flex-col justify-center items-center max-w-md mx-auto">
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+              <IconBrain size={32} className="text-blue-600" />
+            </div>
+            <div className="text-center space-y-2">
+              <h2 className="text-2xl font-bold text-gray-900">
+                No Recommendations Yet
+              </h2>
+              <p className="text-gray-600">
+                Complete your onboarding to get personalized property recommendations based on your preferences.
+              </p>
+            </div>
+            <Button
+              label="Complete Onboarding"
+              to="/onboarding"
+              variant="filled"
+              className="bg-blue-600 hover:bg-blue-700"
+            />
+          </div>
+        </EmptyState>
+      </div>
+    );
+  }
+
+  return (
+    <div className="px-6 py-8 space-y-8">
+      {/* Header Section */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+        <div>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+              <IconBrain size={20} className="text-blue-600" />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Property Recommendations
+            </h1>
+          </div>
+          <p className="text-gray-600">
+            Properties matched to your preferences • {recommendations.pagination.total} found
+          </p>
+        </div>
+
+        <div className="flex gap-3">
+          <Button
+            label="Refresh"
+            onClick={handleRefresh}
+            variant="outlined"
+            icon={<IconRefresh size={18} />}
+            disabled={loading}
+          />
+          <Button
+            label="Update Preferences"
+            to="/onboarding"
+            variant="filled"
+            icon={<IconAdjustments size={18} />}
+            className="bg-blue-600 hover:bg-blue-700"
+          />
+        </div>
+      </div>
+
+      {/* Preferences Summary */}
+      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <IconStar size={20} className="text-yellow-500" />
+          Your Preferences
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-gray-50 rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <IconCurrencyNaira size={16} className="text-green-600" />
+              <span className="text-sm font-medium text-gray-700">Budget</span>
+            </div>
+            <p className="text-sm text-gray-900 font-semibold">
+              {recommendations.preferences_used.budget_range}
+            </p>
+          </div>
+
+          {recommendations.preferences_used.locations && recommendations.preferences_used.locations.length > 0 && (
+            <div className="bg-gray-50 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <IconMapPin size={16} className="text-blue-600" />
+                <span className="text-sm font-medium text-gray-700">Locations</span>
+              </div>
+              <p className="text-sm text-gray-900">
+                {recommendations.preferences_used.locations.slice(0, 2).join(", ")}
+                {recommendations.preferences_used.locations.length > 2 && ` +${recommendations.preferences_used.locations.length - 2} more`}
+              </p>
+            </div>
+          )}
+
+          {recommendations.preferences_used.bedrooms && (
+            <div className="bg-gray-50 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <IconBed size={16} className="text-purple-600" />
+                <span className="text-sm font-medium text-gray-700">Bedrooms</span>
+              </div>
+              <p className="text-sm text-gray-900 font-semibold">
+                {recommendations.preferences_used.bedrooms}
+              </p>
+            </div>
+          )}
+
+          {recommendations.preferences_used.furnished && (
+            <div className="bg-gray-50 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <IconAdjustments size={16} className="text-orange-600" />
+                <span className="text-sm font-medium text-gray-700">Furnished</span>
+              </div>
+              <p className="text-sm text-gray-900">
+                {recommendations.preferences_used.furnished}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Properties Grid */}
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          {recommendations.properties.map((property) => (
+            <div key={property.id} className="relative">
+              {/* Recommendation Score Badge */}
+              <div className="absolute top-4 right-4 z-10 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                {Math.round(property.recommendation_score)}% match
+              </div>
+
+              <PropertyCard propertyData={property} />
+
+              {/* Match Reasons */}
+              {property.match_reason && property.match_reason.length > 0 && (
+                <div className="mt-3 bg-blue-50 rounded-lg p-3 border border-blue-200">
+                  <div className="text-xs font-medium text-blue-700 mb-1">Why this matches:</div>
+                  <div className="flex flex-wrap gap-1">
+                    {property.match_reason.slice(0, 3).map((reason, index) => (
+                      <span
+                        key={index}
+                        className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-md"
+                      >
+                        {reason}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Load More Button */}
+        {currentPage < recommendations.pagination.pages && (
+          <div className="text-center pt-8">
+            <Button
+              label={loading ? "Loading..." : "Load More Properties"}
+              onClick={handleLoadMore}
+              variant="outlined"
+              disabled={loading}
+              className="min-w-[200px]"
+            />
+          </div>
+        )}
+
+        {/* Pagination Info */}
+        <div className="text-center text-sm text-gray-500 pt-4">
+          Showing {recommendations.properties.length} of {recommendations.pagination.total} recommended properties
+        </div>
+      </div>
+    </div>
+  );
+}

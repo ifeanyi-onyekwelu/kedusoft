@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Flagged for Review</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: #f9f9f9;
+      padding: 30px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+    }
+
+    .header {
+      text-align: center;
+      color: #ff5722;
+      margin-bottom: 30px;
+    }
+
+    .alert-box {
+      background-color: #ffebee;
+      border-left: 4px solid #ff5722;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+
+    .property-info {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border: 1px solid #ddd;
+    }
+
+    .reason-section {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border: 1px solid #ddd;
+      border-left: 4px solid #ff5722;
+    }
+
+    .action-needed {
+      background-color: #fff3e0;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 15px 0;
+    }
+
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #ddd;
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🚩 Property Flagged for Review</h1>
+    </div>
+
+    <div class="alert-box">
+      <strong>Notice:</strong> Your property listing has been flagged and is under administrative review.
+    </div>
+
+    <p>Dear Property Owner,</p>
+
+    <p>We are writing to inform you that your property listing has been flagged for review by our moderation team. While
+      your listing remains visible, it is currently under administrative review.</p>
+
+    <div class="property-info">
+      <h3>Property Details:</h3>
+      <p><strong>Title:</strong> {{ property_title }}</p>
+      <p><strong>Flag Date:</strong> {{ flag_date }}</p>
+      <p><strong>Current Status:</strong> Under Review</p>
+    </div>
+
+    <div class="reason-section">
+      <h3>📋 Reason for Review:</h3>
+      <p>{{ reason }}</p>
+    </div>
+
+    <div class="action-needed">
+      <h3>⚠️ What This Means:</h3>
+      <ul>
+        <li>Your listing is being reviewed by our team</li>
+        <li>The listing may have temporary visibility restrictions</li>
+        <li>You may need to provide additional information</li>
+        <li>Updates to your listing may be required</li>
+      </ul>
+    </div>
+
+    <p><strong>Possible Reasons for Flagging:</strong></p>
+    <ul>
+      <li>User reports or complaints</li>
+      <li>Quality concerns with photos or description</li>
+      <li>Pricing inconsistencies</li>
+      <li>Policy compliance review</li>
+      <li>Verification of property details</li>
+      <li>Routine quality assurance check</li>
+    </ul>
+
+    <p><strong>What Happens Next:</strong></p>
+    <ol>
+      <li>Our team will conduct a thorough review</li>
+      <li>You may be contacted for additional information</li>
+      <li>We'll provide specific feedback if changes are needed</li>
+      <li>Your listing will be restored to full visibility once cleared</li>
+    </ol>
+
+    <p>This review process typically takes 1-3 business days. We appreciate your patience and cooperation as we work to
+      maintain the quality and safety of our platform.</p>
+
+    <p>If you have any questions about this review or would like to provide additional information, please contact our
+      support team immediately.</p>
+
+    <p>Best regards,<br>
+      The Kedusoft Moderation Team</p>
+
+    <div class="footer">
+      <p>For urgent matters regarding this review, please contact our support team.</p>
+      <p>This is an automated notification from the Kedusoft platform.</p>
+    </div>
+  </div>
+</body>
+
+</html>

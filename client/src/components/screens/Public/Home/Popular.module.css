@@ -1,0 +1,81 @@
+/* Outer carousel */
+.rootCarousel {
+  padding: 0 10px;
+}
+
+/* Card styling */
+.card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.card:hover {
+  transform: scale(1.01);
+  box-shadow: var(--mantine-shadow-md);
+}
+
+/* Image section */
+.imageSection {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--mantine-radius-md);
+}
+
+/* Category badge */
+.categoryBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+/* Like button */
+.likeButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  padding: 0;
+  width: 36px;
+  height: 36px;
+}
+
+/* Carousel indicators */
+.carousel {
+  &:hover {
+    .carouselControls {
+      opacity: 1;
+    }
+  }
+}
+
+.carouselControls {
+  transition: opacity 150ms ease;
+  opacity: 0;
+}
+
+.carouselIndicator {
+  width: 8px;
+  height: 8px;
+  background-color: var(--mantine-color-white);
+  transition: width 250ms ease;
+
+  &[data-active] {
+    width: 16px;
+    background-color: var(--mantine-color-blue-6);
+  }
+}
+
+/* Price styling */
+.price {
+  color: var(--mantine-color-blue-7);
+}
+
+/* Location icon */
+.locationIcon {
+  color: var(--mantine-color-dimmed);
+}
