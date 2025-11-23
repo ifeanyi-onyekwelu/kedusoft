@@ -1,4 +1,4 @@
-import { Button } from "../../../../components/Button";
+import { Button } from "@mantine/core";
 import { IconDownload } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 

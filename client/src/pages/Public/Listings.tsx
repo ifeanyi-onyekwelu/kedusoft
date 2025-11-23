@@ -35,34 +35,16 @@ export const PropertyMapPage: React.FC<PropertyMapPageProps> = () => {
   // Navigation hook for routing to property details
   const navigate = useNavigate();
 
-  // URL search parameters (for filter state persistence)
   const [searchParams] = useSearchParams();
 
-  // Loading state management
   const { loading, withLoading } = useLoading();
 
-  // API operations for fetching properties
   const { getAllProperties } = usePublicOperations();
 
-  // Initial properties loaded from API (passed to PropertyMapView)
   const [initialProperties, setInitialProperties] = useState<Property[]>([]);
 
-  // Error state for API failures
   const [error, setError] = useState<string | null>(null);
 
-  // ============================================================================
-  // FILTER EXTRACTION
-  // ============================================================================
-
-  /**
-   * Extracts filter parameters from URL search params
-   * Allows users to share filtered map views via URL
-   *
-   * Example URL:
-   * /map?city=Lagos&min_price=50000&max_price=200000&bedrooms=3&listing_type=rent
-   *
-   * @returns Filter object with all URL parameters
-   */
   const getInitialFilters = useCallback(() => {
     const propertyType = searchParams.get("property_type") || "";
     const lat = searchParams.get("lat") || "";

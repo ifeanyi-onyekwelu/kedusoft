@@ -1,5 +1,4 @@
-import React from "react";
-import { Text, Group } from "@mantine/core";
+import { Text } from "@mantine/core";
 
 const Header = ({ name }: { name: string }) => {
   const getGreeting = () => {

@@ -38,7 +38,7 @@ import {
   IconX,
   IconDeviceFloppy,
 } from "@tabler/icons-react";
-import { Button } from "../../../../components/Button";
+import { Button } from "@mantine/core";
 import { ImageUploadStep } from "./ImageUploadStep";
 import { LocationPicker } from "../../../../components/maps/LocationPicker";
 import { useLandlordOperations } from "../../../../apis/landlordApi";
@@ -1441,7 +1441,7 @@ const EnhancedAddProperty: React.FC = () => {
 
             <Group>
               {active < 4 ? (
-                <Button label="Next Step" onClick={nextStep} />
+                <Button onClick={nextStep}>Next Step</Button>
               ) : (
                 <Button
                   type="submit"

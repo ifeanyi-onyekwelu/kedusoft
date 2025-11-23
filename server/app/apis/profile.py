@@ -7,6 +7,7 @@ import bcrypt
 import os
 from ..models.db_utils import update_item, get_item_by_id
 from ..utils.uploader import upload_file
+from ..utils.mailer import send_email
 from ..models import User
 import logging
 
@@ -189,7 +190,7 @@ def upload_profile_picture():
 @jwt_required()
 def upload_identity_docs():
     """Upload identity verification documents"""
-    user_id, _, _ = get_logged_in_user()
+    user_id, user, _ = get_logged_in_user()
     identity_card = request.files.get("identity_card")
     national_id_card = request.files.get("national_id_card")
 
@@ -214,7 +215,24 @@ def upload_identity_docs():
         "updated_at": datetime.utcnow(),
         "is_verified": True,
     }
-    updated_user = update_item(g.session, User, user_id, data)
+
+    try:
+        updated_user = update_item(g.session, User, user_id, data)
+
+        template_vars = {
+            "email": user.email,
+            "name": f"{user.firstName} {user.lastName}",
+        }
+
+        send_email(
+            "Documents submitted successfully",
+            [user.email],
+            "documents_submitted_successfully",
+            template_vars,
+        )
+
+    except Exception as e:
+        raise CustomRequestError("An error occurred while processing your request", 500)
 
     return response(
         "Documents uploaded successfully",

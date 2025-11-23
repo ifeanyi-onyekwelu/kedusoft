@@ -1,144 +1,101 @@
-import {
-  ActionIcon,
-  Group,
-  Tooltip,
-  Modal,
-  TextInput,
-  Button,
-  Divider,
-  PasswordInput,
-} from "@mantine/core";
+import { ActionIcon, Tooltip, Button, Stack, Group, Text } from "@mantine/core";
 import { Link, useNavigate } from "react-router-dom";
-import formatAmount, { showNotification } from "../../../utils/helpers";
+import formatAmount from "../../../utils/helpers";
 import { motion } from "framer-motion";
 import { IconHeart, IconShare } from "@tabler/icons-react";
-import useAuth from "../../../hooks/useAuth";
 import { useState } from "react";
-import { useDisclosure } from "@mantine/hooks";
-import { SocialAuthButtons } from "../../SocailAuthButtons";
-import { useLoading } from "../../../hooks/useLoading";
-import { LoadingSpinner } from "../../LoadingSpinner";
-import { loginApi, verifyEmailApi } from "../../../apis/authApi";
-import { jwtDecode } from "jwt-decode";
-import { useUser } from "../../../context/UserContext";
+import { toast } from "react-hot-toast";
+import useAuth from "@/hooks/useAuth";
+import { modals } from "@mantine/modals";
+import { useLoading } from "@/hooks/useLoading";
+import { useTenantOperations } from "@/apis/tenantApi";
 
 const PropertyCard = ({ propertyData }: { propertyData: Property }) => {
-  const { isAuthenticated, isTenant } = useAuth();
-  const [opened, { open, close }] = useDisclosure(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isFavorite, setIsFavorite] = useState(false);
-  const { loading, startLoading, stopLoading } = useLoading();
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const { login } = useUser();
-  const [
-    verificationModalOpen,
-    { open: openVerificationModal, close: closeVerificationModal },
-  ] = useDisclosure(false);
-  const [verificationCode, setVerificationCode] = useState("");
+  const [isFavorite] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const [isLiked, setIsLiked] = useState(false);
+  const { loading, withLoading } = useLoading();
   const navigate = useNavigate();
 
-  const handleFavoriteClick = (event: React.MouseEvent) => {
-    event.preventDefault();
+  const handleShare = async () => {
+    const shareData = {
+      title: propertyData.name,
+      text: `Check out this property: ${propertyData.name}`,
+      url: `${window.location.origin}/listings/${propertyData.id}`,
+    };
 
+    // Try native share first (mobile-friendly)
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        toast.success("Property link copied to clipboard");
+      } catch (err) {
+        // User cancelled, do nothing
+      }
+    } else {
+      // Fallback: Copy link to clipboard
+      await navigator.clipboard.writeText(shareData.url);
+    }
+  };
+
+  const handleLike = async () => {
+    // If not logged in, show login prompt
     if (!isAuthenticated) {
-      open();
-      return;
-    }
-
-    if (!isTenant) {
-      // Show error that only tenants can favorite
-      return;
-    }
-
-    // Toggle favorite state and make API request
-    setIsFavorite(!isFavorite);
-    toggleFavorite(propertyData.id);
-  };
-
-  const toggleFavorite = async (propertyId: string) => {
-    try {
-      const response = await fetch("/api/favorites", {
-        method: isFavorite ? "DELETE" : "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ propertyId }),
+      modals.open({
+        title: "Save this property",
+        children: (
+          <Stack>
+            <Text size="sm">
+              Sign in to save properties and get personalized recommendations!
+            </Text>
+            <Group grow>
+              <Button
+                onClick={() => {
+                  modals.closeAll();
+                  navigate("/auth/login", {
+                    state: { from: window.location.pathname },
+                  });
+                }}
+                color="#1e3a8a"
+              >
+                Sign In
+              </Button>
+              <Button
+                variant="light"
+                onClick={() => {
+                  modals.closeAll();
+                  navigate("/auth/register");
+                }}
+                color="#fb7185"
+              >
+                Create Account
+              </Button>
+            </Group>
+          </Stack>
+        ),
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to update favorite");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setIsFavorite(!isFavorite); // Revert on error
+      return;
     }
-  };
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    startLoading();
-    setErrorMsg("");
-
-    e.preventDefault();
+    // Optimistic update
+    setIsLiked(!isLiked);
 
     try {
-      const response = await loginApi({ email, password });
-      const { accessToken, is_email_verified, is_onboarded } = response;
-
-      const decoded: any = jwtDecode(accessToken);
-      const { role } = decoded;
-
-      login(accessToken, role);
-
-      if (!is_email_verified) {
-        navigate("/auth/email/verify");
-        return;
+      if (isLiked) {
+        // Unlike/Remove from favorites
+        await withLoading(
+          useTenantOperations().unlikeProperty(propertyData.id)
+        );
+        toast.success("Property removed from your saved list");
+      } else {
+        // Like/Add to favorites
+        await withLoading(useTenantOperations().likeProperty(propertyData.id));
+        toast.success("Property saved to your favorites");
       }
-
-      if (!is_onboarded) {
-        navigate("/onboarding/welcome");
-        return;
-      }
-
-      // If verified, proceed with favoriting
-      setIsFavorite(true);
-      await toggleFavorite(propertyData.id);
-      close();
-    } catch (error: any) {
-      setErrorMsg(error?.response?.data?.message);
-    } finally {
-      stopLoading();
-    }
-  };
-
-  const handleVerifyCode = async () => {
-    startLoading();
-    try {
-      // Call your verification API
-      await verifyEmailApi(email, verificationCode);
-
-      // If successful:
-      closeVerificationModal();
-      setIsFavorite(true);
-      await toggleFavorite(propertyData.id);
     } catch (error) {
-      setErrorMsg("Invalid verification code");
-    } finally {
-      stopLoading();
-    }
-  };
-
-  const resendVerificationCode = async (email: string) => {
-    try {
-      // await ({ email });
-      showNotification(
-        "success",
-        "Code resent!",
-        "Check your email for the new code"
-      );
-    } catch (error) {
-      showNotification("error", "Code resent failed!", "Failed to resend code");
+      // Revert on error
+      setIsLiked(!isLiked);
+      toast.error("Could not save property. Please try again.");
     }
   };
 
@@ -151,7 +108,7 @@ const PropertyCard = ({ propertyData }: { propertyData: Property }) => {
     >
       {/* Image Section */}
       <Link
-        to={`/property/${propertyData.id}`}
+        to={`/listings/${propertyData.id}`}
         className="relative block overflow-hidden"
       >
         <div className="relative h-64 overflow-hidden">
@@ -186,11 +143,12 @@ const PropertyCard = ({ propertyData }: { propertyData: Property }) => {
                 onClick={(event) => {
                   event.preventDefault();
                   event.stopPropagation();
+                  handleShare();
                 }}
                 className="bg-white/90 backdrop-blur-sm hover:bg-white shadow-lg"
                 radius="xl"
               >
-                <IconShare size={18} className="text-gray-700" />
+                <IconShare size={18} className="text-gray-200" />
               </ActionIcon>
             </Tooltip>
 
@@ -202,8 +160,9 @@ const PropertyCard = ({ propertyData }: { propertyData: Property }) => {
                 onClick={(event) => {
                   event.preventDefault();
                   event.stopPropagation();
-                  handleFavoriteClick(event);
+                  handleLike();
                 }}
+                loading={loading}
                 className={`${
                   isFavorite
                     ? "bg-red-500 hover:bg-red-600"
@@ -213,7 +172,7 @@ const PropertyCard = ({ propertyData }: { propertyData: Property }) => {
               >
                 <IconHeart
                   size={18}
-                  className={isFavorite ? "text-white" : "text-gray-700"}
+                  className={isFavorite ? "text-white" : "text-gray-200"}
                   fill={isFavorite ? "currentColor" : "none"}
                 />
               </ActionIcon>
@@ -312,7 +271,7 @@ const PropertyCard = ({ propertyData }: { propertyData: Property }) => {
               Furnished
             </span>
           )}
-          {propertyData.p && propertyData.pets === "allowed" && (
+          {propertyData.pets && propertyData.pets === "allowed" && (
             <span className="px-3 py-1 bg-green-50 text-green-600 rounded-full text-xs font-medium">
               Pets Allowed
             </span>
@@ -324,81 +283,6 @@ const PropertyCard = ({ propertyData }: { propertyData: Property }) => {
           )}
         </div>
       </div>
-
-      {/* Login Modal */}
-      <Modal
-        opened={opened}
-        onClose={close}
-        title="Favorite this listing"
-        centered
-        padding={25}
-      >
-        <form className="space-y-4" onSubmit={handleLogin}>
-          <SocialAuthButtons authType="login" />
-          <TextInput
-            label="Email"
-            placeholder="email@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.currentTarget.value)}
-            required
-          />
-          <PasswordInput
-            label="Password"
-            type="password"
-            placeholder="Your password"
-            value={password}
-            onChange={(e) => setPassword(e.currentTarget.value)}
-            required
-          />
-          <Button fullWidth type="submit" color="#290665" loading={loading}>
-            Login
-          </Button>
-          <div className="text-center text-sm">
-            Don't have an account?{" "}
-            <Link to="/register" className="text-primary hover:underline">
-              Sign up
-            </Link>
-          </div>
-        </form>
-      </Modal>
-
-      <Modal
-        opened={verificationModalOpen}
-        onClose={closeVerificationModal}
-        title={<h1 className="text-2xl font-bold">Verify Your Email</h1>}
-        centered
-        padding={25}
-      >
-        <div className="space-y-4">
-          <TextInput
-            label="Verification Code"
-            placeholder="Enter 6-digit code"
-            value={verificationCode}
-            onChange={(e) => setVerificationCode(e.currentTarget.value)}
-            required
-          />
-          <Button
-            fullWidth
-            onClick={handleVerifyCode}
-            color="#290665"
-            loading={loading}
-          >
-            Verify Code
-          </Button>
-          <div className="text-center text-sm">
-            Didn't receive code?{" "}
-            <button
-              className="text-primary hover:underline"
-              onClick={async () => {
-                await resendVerificationCode(email);
-                // Show toast message
-              }}
-            >
-              Resend code
-            </button>
-          </div>
-        </div>
-      </Modal>
     </motion.div>
   );
 };

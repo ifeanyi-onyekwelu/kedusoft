@@ -1,9 +1,9 @@
-import { Group, TextInput, Combobox, useCombobox } from "@mantine/core";
+import { Group, TextInput, Combobox, useCombobox, Button } from "@mantine/core";
 import { IconSearch, IconMapPin } from "@tabler/icons-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/Button";
+import { toast } from "react-hot-toast";
 
 import type { Variants } from "framer-motion";
 
@@ -24,9 +24,6 @@ interface GeocodingResponse {
 
 function Hero() {
   const [location, setLocation] = useState("");
-  const [propertyType, setPropertyType] = useState("");
-  const [priceRange, setPriceRange] = useState("");
-  const [bedrooms, setBedrooms] = useState("");
 
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
@@ -60,7 +57,7 @@ function Hero() {
     combobox.closeDropdown();
 
     if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser");
+      toast.error("Geolocation is not supported by your browser");
       return;
     }
 
@@ -109,15 +106,9 @@ function Hero() {
       params.append("location", locationString);
       params.append("lat", latitude.toString());
       params.append("lng", longitude.toString());
-
-      if (propertyType) params.append("type", propertyType);
-      if (priceRange) params.append("price", priceRange);
-      if (bedrooms) params.append("bedrooms", bedrooms);
-
-      navigate(`/listings?${params.toString()}`);
     } catch (error) {
       console.error("Error getting location:", error);
-      alert(
+      toast.error(
         "Unable to get your location. Please check your browser settings and try again."
       );
     }
@@ -126,9 +117,6 @@ function Hero() {
   const searchListings = () => {
     const params = new URLSearchParams();
     if (location) params.append("location", location);
-    if (propertyType) params.append("type", propertyType);
-    if (priceRange) params.append("price", priceRange);
-    if (bedrooms) params.append("bedrooms", bedrooms);
 
     navigate(`/listings?${params.toString()}`);
   };
@@ -151,7 +139,7 @@ function Hero() {
         <div className="absolute inset-0 bg-black/20" />
 
         <motion.div
-          className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 w-full"
+          className="relative z-10 w-max-window mx-auto"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
@@ -216,10 +204,9 @@ function Hero() {
                   </div>
 
                   <Button
-                    label=""
-                    icon={<IconSearch color="black" />}
+                    leftSection={<IconSearch color="black" />}
                     onClick={searchListings}
-                    className="bg-transparent hover:bg-gray-100 border-0 rounded-l-none px-8 font-semibold"
+                    className="bg-transparent hover:bg-gray-100 border-0 rounded-l-none px-8 font-semibold h-full"
                   />
                 </div>
               </div>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documents Submitted - Kedusoft</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0;
+      background-color: #f8f9fa;
+    }
+
+    .email-container {
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      margin: 20px;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #290665, #4a0e8a);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .logo {
+      width: 80px;
+      height: auto;
+      margin: 0 auto 15px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .header p {
+      margin: 8px 0 0;
+      opacity: 0.9;
+      font-size: 16px;
+    }
+
+    .content {
+      padding: 30px;
+    }
+
+    .greeting {
+      font-size: 18px;
+      color: #290665;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .message {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 25px;
+      margin: 25px 0;
+      border: 1px solid #e9ecef;
+    }
+
+    .message p {
+      margin: 0;
+      font-size: 16px;
+      color: #333;
+    }
+
+    .action-buttons {
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 30px;
+      margin: 0 10px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background-color: #290665;
+      color: white;
+    }
+
+    .btn-secondary {
+      background-color: #CF8205;
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .footer {
+      background-color: #f8f9fa;
+      padding: 25px;
+      text-align: center;
+      border-top: 1px solid #e9ecef;
+      color: #666;
+      font-size: 12px;
+    }
+
+    .footer p {
+      margin: 5px 0;
+    }
+
+    .footer a {
+      color: #290665;
+      text-decoration: none;
+    }
+
+    @media (max-width: 600px) {
+      .email-container {
+        margin: 10px;
+        border-radius: 8px;
+      }
+
+      .content {
+        padding: 20px;
+      }
+
+      .btn {
+        display: block;
+        margin: 10px 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="email-container">
+    <!-- Header -->
+    <div class="header">
+      <img src="{{ logo_url }}" alt="Kedusoft Logo" class="logo">
+      <h1>Documents Submitted</h1>
+      <p>Your documents have been successfully received</p>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <div class="greeting">
+        Hello {{ name }},
+      </div>
+
+      <div class="message">
+        <p>We have successfully received your submitted documents. Our team will review them and notify you once the
+          verification process is complete.</p>
+      </div>
+
+      <div class="action-buttons">
+        <a href="#" class="btn btn-primary">View My Account</a>
+        <a href="#" class="btn btn-secondary">Contact Support</a>
+      </div>
+
+      <p style="color: #666; font-size: 14px; margin-top: 30px;">
+        If you have any questions or need further assistance, please don't hesitate to <a href="#"
+          style="color: #290665;">contact our support team</a>.
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p><strong>Kedusoft</strong> - Your trusted apartment rental platform</p>
+      <p>
+        <a href="#">Privacy Policy</a> |
+        <a href="#">Terms of Service</a> |
+        <a href="#">Contact Support</a>
+      </p>
+      <p>This is an automated notification. Please do not reply to this email.</p>
+      <p style="margin-top: 15px; color: #999;">
+        © 2025 Kedusoft. All rights reserved.
+      </p>
+    </div>
+  </div>
+</body>
+
+</html>

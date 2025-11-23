@@ -6,7 +6,7 @@ import { useLoading } from "../../../hooks/useLoading";
 import { ErrorState } from "../../../components/ErrorState";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
 import EmptyState from "../../../components/EmptyState";
-import { Button } from "../../../components/Button";
+import { Button } from "@mantine/core";
 
 export default function LikedPropertiesPage() {
   const [likedProperties, setLikedProperties] = useState<Property[]>([]);

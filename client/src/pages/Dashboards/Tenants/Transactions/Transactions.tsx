@@ -4,7 +4,7 @@ import Table from "./Table";
 import { getAllTransactions } from "../../../../apis/tenantApi";
 import { useEffect, useState } from "react";
 import EmptyState from "../../../../components/EmptyState";
-import { Button } from "../../../../components/Button";
+import { Button } from "@mantine/core";
 
 type Transaction = {
   propertyName: string;

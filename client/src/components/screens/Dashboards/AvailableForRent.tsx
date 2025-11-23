@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import PropertyCard from "../../shared/Dashboard/PropertyCard";
-import { Card, Text, Group, Badge } from "@mantine/core";
+import { Card, Text, Group, Badge, Button } from "@mantine/core";
 import { IconArrowRight, IconHeart, IconMapPin } from "@tabler/icons-react";
 import { useLoading } from "../../../hooks/useLoading";
-import { Button } from "../../Button";
 
 function AvailableForRent() {
   const [propertiesAvailable, setPropertiesAvailable] = useState<Property[]>(
@@ -114,7 +113,7 @@ function AvailableForRent() {
           <Text size="sm" c="dimmed" mb="lg">
             We couldn't find any properties matching your preferences right now.
           </Text>
-          <Button label="Browse More Properties" to="/listings">
+          <Button component="a" href="/listings">
             Browse All Properties
           </Button>
         </div>

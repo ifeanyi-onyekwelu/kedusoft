@@ -1,9 +1,6 @@
 import { useCallback } from "react";
 import axiosInstance from "./axiosInstance";
-import {
-  useApiOperation,
-  useFormSubmission,
-} from "../hooks/useApiOperation";
+import { useApiOperation, useFormSubmission } from "../hooks/useApiOperation";
 
 /**
  * Tenant API Service
@@ -23,6 +20,13 @@ export const tenantApi = {
 
   async getApplication(applicationId: string) {
     const response = await axiosInstance.get(
+      `tenant/applications/${applicationId}`
+    );
+    return response.data;
+  },
+
+  async deleteApplication(applicationId: string) {
+    const response = await axiosInstance.delete(
       `tenant/applications/${applicationId}`
     );
     return response.data;
@@ -123,10 +127,14 @@ export const tenantApi = {
     return response.data;
   },
 
-  async getRecommendedProperties(params?: { page?: number; per_page?: number }) {
+  async getRecommendedProperties(params?: {
+    page?: number;
+    per_page?: number;
+  }) {
     const queryParams = new URLSearchParams();
     if (params?.page) queryParams.append("page", params.page.toString());
-    if (params?.per_page) queryParams.append("per_page", params.per_page.toString());
+    if (params?.per_page)
+      queryParams.append("per_page", params.per_page.toString());
 
     const response = await axiosInstance.get(
       `tenant/recommendations/properties?${queryParams}`
@@ -224,6 +232,21 @@ export const useTenantOperations = () => {
       return executeOperation(() => tenantApi.getApplication(applicationId), {
         customErrorMessage: "Failed to load application details",
       });
+    },
+    [executeOperation]
+  );
+
+  const deleteApplication = useCallback(
+    async (applicationId: string) => {
+      return executeOperation(
+        () => tenantApi.deleteApplication(applicationId),
+        {
+          customErrorMessage: "Failed to delete application",
+          onSuccess: () => {
+            console.log("Application deleted successfully");
+          },
+        }
+      );
     },
     [executeOperation]
   );
@@ -331,9 +354,12 @@ export const useTenantOperations = () => {
 
   const getRecommendedProperties = useCallback(
     async (params?: { page?: number; per_page?: number }) => {
-      return executeOperation(() => tenantApi.getRecommendedProperties(params), {
-        customErrorMessage: "Failed to load recommended properties",
-      });
+      return executeOperation(
+        () => tenantApi.getRecommendedProperties(params),
+        {
+          customErrorMessage: "Failed to load recommended properties",
+        }
+      );
     },
     [executeOperation]
   );
@@ -402,6 +428,7 @@ export const useTenantOperations = () => {
     getAllApplications,
     getApplication,
     applyForProperty,
+    deleteApplication,
 
     // Property operations
     getLikedProperties,
@@ -436,6 +463,7 @@ export const useTenantOperations = () => {
 
 export const getAllApplications = tenantApi.getAllApplications;
 export const getApplication = tenantApi.getApplication;
+export const deleteApplication = tenantApi.deleteApplication;
 
 export const create_history = tenantApi.createHistory;
 export const get_history = tenantApi.getHistory;

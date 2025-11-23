@@ -5,15 +5,8 @@ import ChangePassword from "../pages/Dashboards/General/Settings/ChangePassword"
 import Notifications from "../pages/Dashboards/General/Settings/Notifications";
 import Verification from "../pages/Dashboards/General/Settings/Verification";
 import QrVerification from "../pages/Dashboards/General/Settings/QrVerification";
-import { useUser } from "../context/UserContext";
-import Loader from "../components/Loader";
 
 function SettingsRoute() {
-  const { user } = useUser();
-  if (!user) {
-    return <Loader loading={!user} />;
-  }
-
   return (
     <Routes>
       <Route element={<SettingsLayout />}>

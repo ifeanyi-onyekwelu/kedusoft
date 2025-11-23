@@ -2,15 +2,15 @@
 
 ### Landing Page
 - [x] Add a logo
-- [ ] The property card share and like button should be functional
+- [x] The property card share and like button should be functional
 - [ ] The integrated map should be fixed and not scrollable
 
 ### Tenant Dashboard
-- [ ] Fix the recommendation page error
-- [ ] Fix the bug in the upload identity documents, after the user verify their account it still shows
-- [ ] Fix the notifications bell icon in the header to show the notifications
-- [ ] Fix the profile dropdown to close when the outside is clicked
-- [ ] Fix the application details page and view property details link in the application page
+- [x] Fix the recommendation page error
+- [x] Fix the bug in the upload identity documents, after the user verify their account it still shows
+- [x] Fix the notifications bell icon in the header to show the notifications
+- [x] Fix the profile dropdown to close when the outside is clicked
+- [x] Fix the application details page and view property details link in the application page
 
 ### Landlord Dashboard
 - [ ] The onboarding bug when the landlord creates a new account they are onboarded but when they login again after they still get redirected to the onboarding screen

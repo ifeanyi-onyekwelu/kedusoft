@@ -3,7 +3,7 @@ import { IconDotsVertical, IconDownload, IconEye } from "@tabler/icons-react";
 import React from "react";
 import { Link } from "react-router-dom";
 import formatAmount, { truncateText } from "../../../../utils/helpers";
-import { Button } from "../../../Button";
+import { Button } from "@mantine/core";
 import EmptyState from "../../../EmptyState";
 
 // Reusable <Th> Component

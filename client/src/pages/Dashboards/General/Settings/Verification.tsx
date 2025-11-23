@@ -17,7 +17,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { uploadIdentityDocsApi } from "../../../../apis/profileApi";
 import { useLoading } from "../../../../hooks/useLoading";
-import { showNotification } from "../../../../utils/helpers";
+import { toast } from "react-hot-toast";
 import { useUser } from "../../../../context/UserContext";
 
 // Component for when documents are pending verification
@@ -127,44 +127,37 @@ const FileUploadBox = ({
 const FileUploadSection = () => {
   const [nationalIdFile, setNationalIdFile] = useState<File | null>(null);
   const [identityFile, setIdentityFile] = useState<File | null>(null);
-  const { loading, startLoading, stopLoading } = useLoading();
-  const { user } = useUser();
+  const { loading, withLoading } = useLoading();
+  const { user, updateUser } = useUser();
 
   const handleVerify = async () => {
     if (!nationalIdFile || !identityFile) {
-      showNotification("error", "Error", "Please upload both documents");
+      toast.error("Please upload both documents", { icon: <IconX /> });
       return;
     }
 
-    startLoading();
     try {
       // Convert files to base64 or FormData as needed by your API
       const formData = new FormData();
       formData.append("national_id_card", nationalIdFile);
       formData.append("identity_card", identityFile);
 
-      const response = await uploadIdentityDocsApi({
-        identity_card: identityFile, // Adjust based on your API requirements
-        national_id_card: nationalIdFile, // You might need to convert to base64
-      });
-
-      console.log("Verification successful:", response);
-      showNotification(
-        "success",
-        "Success",
-        "Documents submitted successfully!"
+      const response = await withLoading(
+        uploadIdentityDocsApi({
+          identity_card: identityFile, // Adjust based on your API requirements
+          national_id_card: nationalIdFile, // You might need to convert to base64
+        })
       );
+
+      updateUser(response.updated_user);
+      toast.success("Documents submitted successfully!");
     } catch (error) {
       console.error("Verification failed:", error);
-      showNotification(
-        "error",
-        "Error",
-        "Verification failed. Please try again."
-      );
-    } finally {
-      stopLoading();
+      toast.error("Verification failed. Please try again.");
     }
   };
+
+  console.log("User in Verification Component:", user);
 
   // If user is already verified, show verified component
   if (user?.is_verified) {

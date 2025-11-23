@@ -7,7 +7,7 @@
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "../../components/Button";
+import { Button } from "@mantine/core";
 
 export const ServicesPage: React.FC = () => {
   const navigate = useNavigate();

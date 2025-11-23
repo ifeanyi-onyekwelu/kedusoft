@@ -1,7 +1,7 @@
 import { Card, ActionIcon, Badge } from "@mantine/core";
 import { Link } from "react-router-dom";
 import formatAmount from "../../../utils/helpers";
-import { Button } from "../../Button";
+import { Button } from "@mantine/core";
 import { useUser } from "../../../context/UserContext";
 import {
   applyForProperty,
@@ -208,7 +208,9 @@ function PropertyCard({ propertyData }: { propertyData: Property }) {
             variant="outlined"
           />
           {user?.role === "tenant" && (
-            <Button label="Apply Now" variant="filled" onClick={handleApply} />
+            <Button variant="filled" onClick={handleApply}>
+              Apply Now
+            </Button>
           )}
         </div>
       </div>

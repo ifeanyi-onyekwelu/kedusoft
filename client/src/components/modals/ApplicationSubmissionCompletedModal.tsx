@@ -1,6 +1,7 @@
 import { Modal } from "@mantine/core";
 import { IconXboxX } from "@tabler/icons-react";
-import { Button } from "../Button";
+import { Button } from "@mantine/core";
+import { Link } from "react-router-dom";
 
 interface ApplicationSubmissionCompletedModalProps {
   opened: boolean;
@@ -26,7 +27,9 @@ function ApplicationSubmissionCompletedModal({
           Your Application is successful. Kindly await a response from the
           owner.
         </p>
-        <Button label="Proceed to Dashboard" to="/tenants" radius="lg" />
+        <Button component={Link} to="/tenants" radius="lg">
+          Proceed to Dashboard
+        </Button>
       </div>
     </Modal>
   );

@@ -1,6 +1,6 @@
 import { FaBath, FaBed, FaMapMarkerAlt } from "react-icons/fa";
 import { MdOutlineSquareFoot } from "react-icons/md";
-import { Button } from "./Button";
+import { Button } from "@mantine/core";
 import { Link } from "react-router-dom";
 
 export function Property() {
@@ -53,7 +53,9 @@ export function Property() {
 
       <div className="flex justify-between items-center md:flex-row flex-col">
         <h4 className="font-semibold text-xl">N1, 550 000</h4>
-        <Button label="View Now" variant="filled" to="/property" />
+        <Button component={Link} to="/property" variant="filled">
+          View Now
+        </Button>
       </div>
     </div>
   );

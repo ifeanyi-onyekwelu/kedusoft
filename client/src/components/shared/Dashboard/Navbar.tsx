@@ -1,3 +1,4 @@
+import React, { useState, useEffect, useRef } from "react";
 import {
   IconSearch,
   IconBell,
@@ -20,7 +21,8 @@ import { useAuthOperations } from "../../../apis/authApi";
 import { useUser } from "../../../context/UserContext";
 import { BiPlusCircle } from "react-icons/bi";
 import { IoMdClose } from "react-icons/io";
-import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { formatDistanceToNow } from "date-fns";
 
 type HeaderProps = {
   role: string;
@@ -33,16 +35,44 @@ const Header = ({ role, opened, toggle }: HeaderProps) => {
   const navigate = useNavigate();
   const [showVerificationToast, setShowVerificationToast] = useState(false);
   const [userMenuOpened, setUserMenuOpened] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const { logout: apiLogout } = useAuthOperations();
+  const notificationsRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  // Sample notifications data
+  const notifications = [
+    {
+      id: 1,
+      type: "message",
+      content: "You have a new message from your landlord.",
+      link: "/messages",
+      timestamp: new Date(Date.now() - 3600 * 1000), // 1 hour ago
+    },
+    {
+      id: 2,
+      type: "verification",
+      content: "Your account verification is complete.",
+      link: "/settings/verification",
+      timestamp: new Date(Date.now() - 86400 * 1000), // 1 day ago
+    },
+    {
+      id: 3,
+      type: "reminder",
+      content: "Your rent payment is due in 3 days.",
+      link: "/payments",
+      timestamp: new Date(Date.now() - 604800 * 1000), // 1 week ago
+    },
+  ];
 
   // Show verification toast when user is not verified
-  useEffect(() => {
+  React.useEffect(() => {
     if (user && !user.is_verified) {
       setShowVerificationToast(true);
       // Auto-hide toast after 10 seconds
       const timer = setTimeout(() => {
         setShowVerificationToast(false);
-      }, 10000);
+      }, 3000);
       return () => clearTimeout(timer);
     }
   }, [user]);
@@ -65,10 +95,31 @@ const Header = ({ role, opened, toggle }: HeaderProps) => {
   };
 
   const handleCompleteVerification = () => {
-    // Navigate to document upload/verification page
     navigate("/settings/verification");
     setShowVerificationToast(false);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        notificationsRef.current &&
+        !notificationsRef.current.contains(event.target as Node)
+      ) {
+        setNotificationsOpen(false);
+      }
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(event.target as Node)
+      ) {
+        setUserMenuOpened(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <>
@@ -128,12 +179,19 @@ const Header = ({ role, opened, toggle }: HeaderProps) => {
               </svg>
             </button>
 
-            <div className="flex items-center gap-1">
-              <IconHome className="text-blue-600" size={24} />
-              <span className="text-lg font-semibold text-gray-900">
-                Homies
-              </span>
-            </div>
+            <Link to="/" className="flex items-center gap-2">
+              <motion.div
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="flex items-center"
+              >
+                <motion.img
+                  src="/images/brand/logo_cropped.png"
+                  alt="PropConnect Logo"
+                  className="h-12 w-auto object-contain"
+                />
+              </motion.div>
+            </Link>
           </div>
 
           {/* Center Section - Search */}
@@ -158,9 +216,46 @@ const Header = ({ role, opened, toggle }: HeaderProps) => {
             </div>
 
             {/* Notification Bell */}
-            <button className="p-1 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100">
-              <IconBell size={20} />
-            </button>
+            <div className="relative" ref={notificationsRef}>
+              <button
+                className="p-1 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                onClick={() => setNotificationsOpen(!notificationsOpen)}
+              >
+                <IconBell size={20} />
+              </button>
+
+              {notificationsOpen && (
+                <div className="absolute right-0 mt-2 w-80 bg-white shadow-lg rounded-lg p-4 z-50">
+                  <h4 className="text-sm font-medium text-gray-700 mb-3">
+                    Your Notifications
+                  </h4>
+                  <ul className="space-y-3">
+                    {notifications.map((notification) => (
+                      <li
+                        key={notification.id}
+                        className="p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        <Link
+                          to={notification.link}
+                          className="flex items-start gap-3"
+                        >
+                          <div className="flex-1">
+                            <p className="text-sm text-gray-800">
+                              {notification.content}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {formatDistanceToNow(notification.timestamp, {
+                                addSuffix: true,
+                              })}
+                            </p>
+                          </div>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
 
             {/* Add Property Button (Landlord only) */}
             {role === "landlord" && (
@@ -174,7 +269,7 @@ const Header = ({ role, opened, toggle }: HeaderProps) => {
             )}
 
             {/* User Menu */}
-            <div className="relative group">
+            <div className="relative" ref={userMenuRef}>
               <button
                 className="flex items-center gap-2 focus:outline-none"
                 onClick={() => setUserMenuOpened(!userMenuOpened)}
@@ -202,6 +297,11 @@ const Header = ({ role, opened, toggle }: HeaderProps) => {
                         Unverified
                       </span>
                     )}
+                    {user?.is_verified && (
+                      <span className="px-1.5 py-0.5 text-xs bg-green-100 text-green-700 rounded-full font-medium">
+                        Verified
+                      </span>
+                    )}
                   </div>
                   <p className="text-xs text-gray-500 capitalize">{role}</p>
                 </div>
@@ -209,153 +309,160 @@ const Header = ({ role, opened, toggle }: HeaderProps) => {
               </button>
 
               {/* Dropdown Menu */}
-              <div
-                className={`absolute right-0 mt-2 w-[25rem] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ${
-                  userMenuOpened ? "block" : "hidden"
-                }`}
-              >
-                {/* Document verification reminder for unverified users */}
-                {!user?.is_verified && (
-                  <div className="px-4 py-3 bg-blue-50 border-b border-blue-100">
-                    <div className="flex items-center gap-2">
-                      <IconInfoCircle className="text-blue-600" size={16} />
-                      <div>
-                        <p className="text-sm font-medium text-blue-800">
-                          Documents Required
-                        </p>
-                        <button
-                          onClick={handleCompleteVerification}
-                          className="text-xs text-blue-700 underline hover:text-blue-800"
+              {userMenuOpened && (
+                <div className="absolute right-0 mt-2 w-[25rem] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  {/* Document verification reminder for unverified users */}
+                  {!user?.is_verified && (
+                    <div className="px-4 py-3 bg-blue-50 border-b border-blue-100">
+                      <div className="flex items-center gap-2">
+                        <IconInfoCircle className="text-blue-600" size={16} />
+                        <div>
+                          <p className="text-sm font-medium text-blue-800">
+                            Documents Required
+                          </p>
+                          <button
+                            onClick={handleCompleteVerification}
+                            className="text-xs text-blue-700 underline hover:text-blue-800"
+                          >
+                            Upload identity documents
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}{" "}
+                  {/* 2-Column Grid Layout */}
+                  <div className="p-4">
+                    <div className="grid grid-cols-2 gap-6">
+                      {/* Left Column - Main Navigation */}
+                      <div className="space-y-1">
+                        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                          My Homies
+                        </h3>
+
+                        {role === "tenant" && (
+                          <>
+                            <Link
+                              to="/tenants/liked"
+                              className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                              onClick={() => setUserMenuOpened(false)}
+                            >
+                              <IconHeartFilled
+                                size={16}
+                                className="text-gray-400"
+                              />
+                              <span>Favorites</span>
+                            </Link>
+                            <Link
+                              to="#"
+                              className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                              onClick={() => setUserMenuOpened(false)}
+                            >
+                              <IconBookmark
+                                size={16}
+                                className="text-gray-400"
+                              />
+                              <span>Saved Searches</span>
+                            </Link>
+                            <Link
+                              to="#"
+                              className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                              onClick={() => setUserMenuOpened(false)}
+                            >
+                              <IconClock size={16} className="text-gray-400" />
+                              <span>Pending Screenings</span>
+                            </Link>
+                            <Link
+                              to="#"
+                              className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                              onClick={() => setUserMenuOpened(false)}
+                            >
+                              <IconMapPin size={16} className="text-gray-400" />
+                              <span>Appointments</span>
+                            </Link>
+                          </>
+                        )}
+
+                        {role === "landlord" && (
+                          <>
+                            <Link
+                              to="/property-owner/properties"
+                              className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                              onClick={() => setUserMenuOpened(false)}
+                            >
+                              <IconHome size={16} className="text-gray-400" />
+                              <span>My Properties</span>
+                            </Link>
+                            <Link
+                              to="#"
+                              className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                              onClick={() => setUserMenuOpened(false)}
+                            >
+                              <IconFileText
+                                size={16}
+                                className="text-gray-400"
+                              />
+                              <span>Applications</span>
+                            </Link>
+                            <Link
+                              to="#"
+                              className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                              onClick={() => setUserMenuOpened(false)}
+                            >
+                              <IconUser size={16} className="text-gray-400" />
+                              <span>Tenants</span>
+                            </Link>
+                            <Link
+                              to="#"
+                              className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                              onClick={() => setUserMenuOpened(false)}
+                            >
+                              <IconStar size={16} className="text-gray-400" />
+                              <span>Reviews</span>
+                            </Link>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Right Column - Settings */}
+                      <div className="space-y-1">
+                        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                          Settings
+                        </h3>
+
+                        <Link
+                          to="#"
+                          className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                          onClick={() => setUserMenuOpened(false)}
                         >
-                          Upload identity documents
+                          <IconBellRinging
+                            size={16}
+                            className="text-gray-400"
+                          />
+                          <span>Notifications</span>
+                        </Link>
+                        <Link
+                          to="/settings/profile"
+                          className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                          onClick={() => setUserMenuOpened(false)}
+                        >
+                          <IconSettings size={16} className="text-gray-400" />
+                          <span>Account Settings</span>
+                        </Link>
+                        <button
+                          onClick={() => {
+                            setUserMenuOpened(false);
+                            handleLogout();
+                          }}
+                          className="flex w-full items-center gap-3 px-2 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                        >
+                          <IconLogout size={16} className="text-red-500" />
+                          <span>Sign Out</span>
                         </button>
                       </div>
                     </div>
                   </div>
-                )}{" "}
-                {/* 2-Column Grid Layout */}
-                <div className="p-4">
-                  <div className="grid grid-cols-2 gap-6">
-                    {/* Left Column - Main Navigation */}
-                    <div className="space-y-1">
-                      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                        My Homies
-                      </h3>
-
-                      {role === "tenant" && (
-                        <>
-                          <Link
-                            to="/tenants/liked"
-                            className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
-                            onClick={() => setUserMenuOpened(false)}
-                          >
-                            <IconHeartFilled
-                              size={16}
-                              className="text-gray-400"
-                            />
-                            <span>Favorites</span>
-                          </Link>
-                          <Link
-                            to="#"
-                            className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
-                            onClick={() => setUserMenuOpened(false)}
-                          >
-                            <IconBookmark size={16} className="text-gray-400" />
-                            <span>Saved Searches</span>
-                          </Link>
-                          <Link
-                            to="#"
-                            className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
-                            onClick={() => setUserMenuOpened(false)}
-                          >
-                            <IconClock size={16} className="text-gray-400" />
-                            <span>Pending Screenings</span>
-                          </Link>
-                          <Link
-                            to="#"
-                            className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
-                            onClick={() => setUserMenuOpened(false)}
-                          >
-                            <IconMapPin size={16} className="text-gray-400" />
-                            <span>Appointments</span>
-                          </Link>
-                        </>
-                      )}
-
-                      {role === "landlord" && (
-                        <>
-                          <Link
-                            to="/property-owner/properties"
-                            className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
-                            onClick={() => setUserMenuOpened(false)}
-                          >
-                            <IconHome size={16} className="text-gray-400" />
-                            <span>My Properties</span>
-                          </Link>
-                          <Link
-                            to="#"
-                            className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
-                            onClick={() => setUserMenuOpened(false)}
-                          >
-                            <IconFileText size={16} className="text-gray-400" />
-                            <span>Applications</span>
-                          </Link>
-                          <Link
-                            to="#"
-                            className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
-                            onClick={() => setUserMenuOpened(false)}
-                          >
-                            <IconUser size={16} className="text-gray-400" />
-                            <span>Tenants</span>
-                          </Link>
-                          <Link
-                            to="#"
-                            className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
-                            onClick={() => setUserMenuOpened(false)}
-                          >
-                            <IconStar size={16} className="text-gray-400" />
-                            <span>Reviews</span>
-                          </Link>
-                        </>
-                      )}
-                    </div>
-
-                    {/* Right Column - Settings */}
-                    <div className="space-y-1">
-                      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                        Settings
-                      </h3>
-
-                      <Link
-                        to="#"
-                        className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
-                        onClick={() => setUserMenuOpened(false)}
-                      >
-                        <IconBellRinging size={16} className="text-gray-400" />
-                        <span>Notifications</span>
-                      </Link>
-                      <Link
-                        to="/settings/profile"
-                        className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
-                        onClick={() => setUserMenuOpened(false)}
-                      >
-                        <IconSettings size={16} className="text-gray-400" />
-                        <span>Account Settings</span>
-                      </Link>
-                      <button
-                        onClick={() => {
-                          setUserMenuOpened(false);
-                          handleLogout();
-                        }}
-                        className="flex w-full items-center gap-3 px-2 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                      >
-                        <IconLogout size={16} className="text-red-500" />
-                        <span>Sign Out</span>
-                      </button>
-                    </div>
-                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

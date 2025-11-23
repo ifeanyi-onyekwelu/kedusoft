@@ -1,6 +1,7 @@
 import { IconExclamationMark, IconXboxX } from "@tabler/icons-react";
 import { Modal } from "@mantine/core";
-import { Button } from "../Button";
+import { Button } from "@mantine/core";
+import { Link } from "react-router-dom";
 
 interface LoginRequiredModalProps {
   opened: boolean;
@@ -31,7 +32,9 @@ function LoginRequiredModal({ opened, close }: LoginRequiredModalProps) {
             to="/auth?authAction=register&role=tenant"
             variant="filled"
           />
-          <Button label="Login" to="/auth?authType=login" variant="outlined" />
+          <Button component={Link} to="/auth?authType=login" variant="outline">
+            Login
+          </Button>
         </div>
       </div>
     </Modal>

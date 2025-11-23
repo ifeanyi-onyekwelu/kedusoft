@@ -1,5 +1,5 @@
 import { IconArrowUp, IconPlus } from "@tabler/icons-react";
-import { Button } from "../../../../components/Button";
+import { Button } from "@mantine/core";
 import StatsCard from "../StatsCard";
 import DoughnutChart from "../DoughnutChart";
 import PropertiesRentedChart from "./PropertiesRentedChart";

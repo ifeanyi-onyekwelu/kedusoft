@@ -1,4 +1,5 @@
-import { Button } from "../../../Button";
+import { Button } from "@mantine/core";
+import { Link } from "react-router-dom";
 
 function PendingUserCard({ user }: any) {
   return (
@@ -27,8 +28,10 @@ function PendingUserCard({ user }: any) {
       </p>
 
       <div className="flex justify-between">
-        <Button label="View Details" radius="md" to="/admin/users/pending/id" />
-        <Button label="Start Verification" radius="md" />
+        <Button component={Link} to="/admin/users/pending/id" radius="md">
+          View Details
+        </Button>
+        <Button radius="md">Start Verification</Button>
       </div>
     </div>
   );

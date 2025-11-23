@@ -5,7 +5,7 @@
  */
 
 import { useNavigate } from "react-router-dom";
-import { Button } from "../../components/Button";
+import { Button } from "@mantine/core";
 
 export const PropertyManagement = () => {
   const navigate = useNavigate();

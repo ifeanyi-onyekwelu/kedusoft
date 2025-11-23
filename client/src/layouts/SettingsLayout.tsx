@@ -9,7 +9,7 @@ import Sidebar, { RoleLinks } from "../components/shared/Dashboard/Sidebar";
 import { useUser } from "../context/UserContext";
 import { useDisclosure } from "@mantine/hooks";
 import Header from "../components/shared/Dashboard/Navbar";
-import Loader from "../components/Loader";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 const ListItem = ({ link, isActive }: any) => {
   const resolvedPath = useResolvedPath(link.path);
@@ -75,7 +75,7 @@ function SettingsLayout() {
   const { user } = useUser();
 
   if (!user) {
-    return <Loader loading={!user} />;
+    return <LoadingSpinner loading={!user} />;
   }
 
   const role = user.role as keyof RoleLinks;

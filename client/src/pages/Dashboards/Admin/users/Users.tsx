@@ -1,4 +1,4 @@
-import { Button } from "../../../../components/Button";
+import { Button } from "@mantine/core";
 import DoughnutChart from "../DoughnutChart";
 import StatsCard from "../StatsCard";
 import UsersTab from "./UserTabs";

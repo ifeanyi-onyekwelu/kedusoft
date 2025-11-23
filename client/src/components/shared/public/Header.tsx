@@ -72,16 +72,19 @@ const AuthLinks = () => {
           Sign In
         </Link>
 
-        <Link
-          to="/auth/register"
-          className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-900 text-white hover:bg-gray-800 transition-all shadow-sm"
+        <Button
+          variant="filled"
+          color="#0ea5e9"
+          onClick={() => navigate("/auth/register")}
+          size="sm"
+          className="ml-2"
         >
           Sign Up
-        </Link>
+        </Button>
 
         <Button
           variant="filled"
-          color="#290665"
+          color="#fb7185"
           onClick={() => navigate("/auth/register?role=landlord")}
           size="sm"
           className="ml-2"

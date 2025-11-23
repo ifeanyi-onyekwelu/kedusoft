@@ -1,6 +1,6 @@
 import { IconArrowLeft } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
-import { Button } from "../../../../components/Button";
+import { Button } from "@mantine/core";
 import PendingUserCard from "../../../../components/screens/Dashboards/Admin/PendingUserCard";
 
 function AllPendingUsers() {

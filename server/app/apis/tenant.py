@@ -432,11 +432,7 @@ def get_all_applications_tenant():
     applications_data = [
         {
             "application_id": app.id,
-            "property": {
-                "id": app.property.id,
-                "address": app.property.address,
-                "name": app.property.name,
-            },
+            "property": serialize(app.property),
             "status": app.status,
             "screening_status": "screened" if app.viewed_at else "unscreened",
             "date_applied": app.created_at.isoformat(),
@@ -446,6 +442,9 @@ def get_all_applications_tenant():
                 if app.status == "accepted"
                 else ("rejected" if app.status == "rejected" else "pending")
             ),
+            "category": (
+                serialize(app.property.category) if app.property.category else None
+            ),
         }
         for app in applications
     ]
@@ -454,7 +453,7 @@ def get_all_applications_tenant():
         "unscreened": sum(1 for app in applications if app.viewed_at is None),
         "screened": sum(1 for app in applications if app.viewed_at is not None),
         "pending": sum(1 for app in applications if app.status == "pending"),
-        "in-progress": sum(1 for app in applications if app.status == "in-progress"),
+        "under-review": sum(1 for app in applications if app.status == "under-review"),
         "accepted": sum(1 for app in applications if app.status == "accepted"),
         "rejected": sum(1 for app in applications if app.status == "rejected"),
     }
@@ -472,7 +471,7 @@ def get_all_applications_tenant():
 def get_application_tenant(application_id):
     """Get details of a specific application"""
     user_id, _, _ = get_logged_in_user()
-    # Get application with joined property data
+
     application = (
         g.session.query(Application)
         .join(Property)
@@ -482,6 +481,10 @@ def get_application_tenant(application_id):
 
     if not application:
         raise CustomRequestError("Application not found", 404)
+
+    property = get_item_by_id(g.session, Property, application.property_id)
+    if not property:
+        raise CustomRequestError("Property not found", 404)
 
     response_data = {
         "application_id": application.id,
@@ -496,8 +499,11 @@ def get_application_tenant(application_id):
             if application.status == "accepted"
             else "rejected" if application.status == "rejected" else "pending"
         ),
-        "property": application.property,
     }
+    response_data["property"] = serialize(property)
+    response_data["category"] = (
+        serialize(property.category) if property.category else None
+    )
     return response(
         "Application retrieved successfully", {"application": response_data}
     )
@@ -981,32 +987,12 @@ def get_recommended_properties():
     # 1. Budget Match (40% weight) - Most Important
     budget_score = (
         case(
-            [
-                # Perfect budget match gets highest score
-                (
-                    and_(
-                        Property.rent_amount >= user_recommendation.min_budget,
-                        Property.rent_amount <= user_recommendation.max_budget,
-                    ),
-                    100,
-                ),
-                # Slightly over budget but within 20% gets good score
-                (
-                    and_(
-                        Property.rent_amount > user_recommendation.max_budget,
-                        Property.rent_amount <= user_recommendation.max_budget * 1.2,
-                    ),
-                    70,
-                ),
-                # Under minimum budget but within 20% gets decent score
-                (
-                    and_(
-                        Property.rent_amount < user_recommendation.min_budget,
-                        Property.rent_amount >= user_recommendation.min_budget * 0.8,
-                    ),
-                    60,
-                ),
-            ],
+            (Property.rent_amount >= user_recommendation.min_budget, 100),
+            (Property.rent_amount <= user_recommendation.max_budget, 100),
+            (Property.rent_amount > user_recommendation.max_budget, 70),
+            (Property.rent_amount <= user_recommendation.max_budget * 1.2, 70),
+            (Property.rent_amount < user_recommendation.min_budget, 60),
+            (Property.rent_amount >= user_recommendation.min_budget * 0.8, 60),
             else_=0,
         )
         * 0.4
@@ -1026,30 +1012,24 @@ def get_recommended_properties():
                 ]
             )
 
-        location_score = case([(or_(*location_conditions), 100)], else_=0) * 0.25
+        location_score = case((or_(*location_conditions), 100), else_=0) * 0.25
         score_conditions.append(location_score)
 
     # 3. Bedrooms Match (15% weight)
     if user_recommendation.preferred_bedrooms:
         bedroom_score = (
             case(
-                [
-                    (Property.bedrooms == user_recommendation.preferred_bedrooms, 100),
-                    (
-                        func.abs(
-                            Property.bedrooms - user_recommendation.preferred_bedrooms
-                        )
-                        == 1,
-                        70,
-                    ),
-                    (
-                        func.abs(
-                            Property.bedrooms - user_recommendation.preferred_bedrooms
-                        )
-                        == 2,
-                        40,
-                    ),
-                ],
+                (Property.bedrooms == user_recommendation.preferred_bedrooms, 100),
+                (
+                    func.abs(Property.bedrooms - user_recommendation.preferred_bedrooms)
+                    == 1,
+                    70,
+                ),
+                (
+                    func.abs(Property.bedrooms - user_recommendation.preferred_bedrooms)
+                    == 2,
+                    40,
+                ),
                 else_=0,
             )
             * 0.15
@@ -1060,19 +1040,17 @@ def get_recommended_properties():
     if user_recommendation.preferred_bathrooms:
         bathroom_score = (
             case(
-                [
-                    (
-                        Property.bathrooms == user_recommendation.preferred_bathrooms,
-                        100,
-                    ),
-                    (
-                        func.abs(
-                            Property.bathrooms - user_recommendation.preferred_bathrooms
-                        )
-                        <= 1,
-                        70,
-                    ),
-                ],
+                (
+                    Property.bathrooms == user_recommendation.preferred_bathrooms,
+                    100,
+                ),
+                (
+                    func.abs(
+                        Property.bathrooms - user_recommendation.preferred_bathrooms
+                    )
+                    <= 1,
+                    70,
+                ),
                 else_=0,
             )
             * 0.1
@@ -1084,12 +1062,10 @@ def get_recommended_properties():
     if user_recommendation.preferred_furnished:
         furnished_score = (
             case(
-                [
-                    (
-                        Property.furnished == user_recommendation.preferred_furnished,
-                        100,
-                    ),
-                ],
+                (
+                    Property.furnished == user_recommendation.preferred_furnished,
+                    100,
+                ),
                 else_=0,
             )
             * 0.05
@@ -1101,12 +1077,10 @@ def get_recommended_properties():
         # This is a simplified amenities check - can be enhanced with JSON operations
         amenities_score = (
             case(
-                [
-                    (
-                        Property.amenities.isnot(None),
-                        50,
-                    )  # Basic score if property has amenities
-                ],
+                (
+                    Property.amenities.isnot(None),
+                    50,
+                ),  # Basic score if property has amenities
                 else_=0,
             )
             * 0.05

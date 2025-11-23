@@ -1,6 +1,6 @@
 import { IconArrowLeft, IconCheck } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
-import { Button } from "../../../../components/Button";
+import { Button } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { TextInput } from "@mantine/core";
 import RentalHistoryTable from "../../../../components/screens/Dashboards/Admin/PropertiesTable";
@@ -32,10 +32,10 @@ function UserDetails() {
         </Link>
 
         <div className="flex space-x-2">
-          <Button label="Message User" />
-          <Button label="Suspend Account" />
-          <Button label="Reset Password" />
-          <Button label="Delete Account" />
+          <Button>Message User</Button>
+          <Button>Suspend Account</Button>
+          <Button>Reset Password</Button>
+          <Button>Delete Account</Button>
         </div>
       </div>
 

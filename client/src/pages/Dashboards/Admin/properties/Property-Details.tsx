@@ -1,7 +1,7 @@
 import { IconArrowLeft, IconCheck } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 import ImageGallery from "../../../../components/screens/Public/ImageGallery";
-import { Button } from "../../../../components/Button";
+import { Button } from "@mantine/core";
 import { Switch } from "@mantine/core";
 
 function PropertyDetails({ property }: any) {
@@ -24,9 +24,9 @@ function PropertyDetails({ property }: any) {
         </Link>
 
         <div className="flex space-x-2">
-          <Button label="Message Owner" />
-          <Button label="Edit Property" />
-          <Button label="Delete Property" />
+          <Button>Message Owner</Button>
+          <Button>Edit Property</Button>
+          <Button>Delete Property</Button>
         </div>
       </div>
 

@@ -1,6 +1,6 @@
 import { IconArrowLeft, IconClock, IconMapPin } from "@tabler/icons-react";
 import { Divider } from "@mantine/core";
-import { Button } from "../../../../components/Button";
+import { Button } from "@mantine/core";
 
 function TransactionDetails() {
   return (
@@ -61,8 +61,12 @@ function TransactionDetails() {
 
       <div className="px-12 w-3/5">
         <div className="space-x-5 flex">
-          <Button label="Pay for rent" to="" variant="filled" />
-          <Button label="Message PO" to="" variant="outlined" />
+          <Button component="a" href="" variant="filled">
+            Pay for rent
+          </Button>
+          <Button component="a" href="" variant="outline">
+            Message PO
+          </Button>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button } from "../../components/Button";
+import { Button } from "@mantine/core";
 
 export const ContactUs = () => {
   const [formData, setFormData] = useState({

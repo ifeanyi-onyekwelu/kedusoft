@@ -1,4 +1,4 @@
-import { Button } from "../../../Button";
+import { Button } from "@mantine/core";
 import PropertyCard from "../../../shared/public/PropertyCard";
 import { getFeaturedProperties } from "../../../../apis/publicApi";
 import { useState, useEffect } from "react";
