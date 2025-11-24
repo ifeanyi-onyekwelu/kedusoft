@@ -28,7 +28,7 @@ function Hero() {
       <div className="absolute w-full h-full bg-black/60"></div>
 
       {/* Content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center z-10 relative max-w-7xl">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center z-10 relative max-w-window">
         <div className="flex flex-col justify-center h-full w-full">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

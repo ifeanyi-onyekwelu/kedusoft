@@ -121,7 +121,7 @@ export const Resources = () => {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <div className="bg-blue-600 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-4">Resources</h1>
           <p className="text-xl text-blue-100 max-w-2xl mx-auto">
             Everything you need to know about renting—guides, tools, and support
@@ -131,7 +131,7 @@ export const Resources = () => {
 
       {/* Guides Section */}
       <div className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
               Helpful Guides
@@ -161,7 +161,7 @@ export const Resources = () => {
 
       {/* Tools Section */}
       <div className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
               Useful Tools
@@ -191,7 +191,7 @@ export const Resources = () => {
 
       {/* Quick Links Section */}
       <div className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
               Quick Links
@@ -230,7 +230,7 @@ export const Resources = () => {
 
       {/* Legal Resources */}
       <div className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
               Legal & Policies

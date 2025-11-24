@@ -209,19 +209,12 @@ const Dashboard = () => {
         <Header name={user?.firstName || "Tenant"} />
         <Group gap="sm">
           <Button
-            variant="light"
-            leftSection={<IconBell size={16} />}
-            size="sm"
-          >
-            Notifications
-          </Button>
-          <Button
             variant="filled"
             color="#290665"
             leftSection={<IconHome size={16} />}
             size="sm"
           >
-            Find Properties
+            Find Your Next Property
           </Button>
         </Group>
       </div>

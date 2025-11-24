@@ -139,7 +139,7 @@ function Hero() {
         <div className="absolute inset-0 bg-black/20" />
 
         <motion.div
-          className="relative z-10 w-max-window mx-auto"
+          className="relative z-10 w-window mx-auto"
           initial="hidden"
           animate="visible"
           variants={containerVariants}

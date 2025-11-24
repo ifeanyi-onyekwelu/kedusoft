@@ -3,7 +3,6 @@ import { Carousel } from "@mantine/carousel";
 import { Text, Loader } from "@mantine/core";
 import { useState, useEffect, useCallback } from "react";
 import PropertyCard from "../../../shared/public/PropertyCard";
-import classes from "./Popular.module.css";
 import { useUserState } from "../../../../hooks/useUserState";
 import { usePublicOperations } from "../../../../apis/publicApi";
 import { useLoading } from "../../../../hooks/useLoading";
@@ -94,7 +93,7 @@ function Popular() {
   if (userStateLoading || loading) {
     return (
       <div className="relative h-fit bg-white py-10">
-        <div className="max-w-7xl mx-auto p-8 flex justify-center items-center min-h-96">
+        <div className="max-w-window mx-auto p-8 flex justify-center items-center min-h-96">
           <div className="text-center">
             <Loader size="lg" className="mb-4" />
             <Text>Loading popular properties near you...</Text>
@@ -108,7 +107,7 @@ function Popular() {
   if (error) {
     return (
       <div className="relative h-fit bg-white py-10">
-        <div className="max-w-7xl mx-auto p-8">
+        <div className="max-w-window mx-auto p-8">
           <div className="text-center">
             <Text color="red" className="mb-4">
               {error}
@@ -124,7 +123,7 @@ function Popular() {
   if (!properties.length) {
     return (
       <div className="relative h-fit bg-white py-10">
-        <div className="max-w-7xl mx-auto p-8">
+        <div className="max-w-window mx-auto p-8">
           <div className="text-center">
             <Text className="mb-4">
               No properties found near your location.
@@ -138,7 +137,7 @@ function Popular() {
 
   return (
     <div className="relative h-fit bg-white py-10">
-      <motion.div className="max-w-7xl mx-auto p-8">
+      <motion.div className="max-w-window mx-auto p-8">
         <motion.div className="space-y-1 mb-14">
           <motion.h1
             initial={{ opacity: 0 }}
@@ -157,7 +156,6 @@ function Popular() {
           slideSize={{ base: "100%", sm: "50%", md: "33.333%" }}
           slideGap={{ base: "sm", sm: "md" }}
           withControls={true}
-          className={classes.rootCarousel}
         >
           {slides}
         </Carousel>

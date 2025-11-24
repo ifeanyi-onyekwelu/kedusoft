@@ -30,7 +30,7 @@ function OurProcess() {
 
   return (
     <section className="py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto bg-gradient-to-br from-gray-900 to-black rounded-3xl overflow-hidden shadow-2xl">
+      <div className="max-w-window mx-auto bg-gradient-to-br from-gray-900 to-black rounded-3xl overflow-hidden shadow-2xl">
         <div className="bg-white/90 backdrop-blur-sm rounded-3xl m-2 p-8 md:p-12 space-y-12">
           <div className="text-center space-y-4">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900">

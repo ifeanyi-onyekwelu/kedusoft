@@ -1,10 +1,8 @@
-import { Stack } from "@mantine/core";
 import {
   FaHome,
   FaBuilding,
   FaCity,
   FaHotel,
-  FaHouseUser,
   FaBed,
   FaWarehouse,
 } from "react-icons/fa";
@@ -13,8 +11,6 @@ import { motion } from "framer-motion";
 import { ElementType } from "react";
 import { Link } from "react-router-dom";
 import { useMantineTheme } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
-import classes from "./Popular.module.css";
 import "@mantine/carousel/styles.css";
 
 interface ApartmentCardProps {
@@ -167,7 +163,6 @@ const ApartmentCard = ({
 
 function Explore() {
   const theme = useMantineTheme();
-  const mobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
   const items = apartmentTypes.map((item, index) => (
     <Carousel.Slide key={item.title}>
@@ -177,7 +172,7 @@ function Explore() {
 
   return (
     <div className="relative h-fit bg-gray-50 py-20">
-      <motion.div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <motion.div className="max-w-window mx-auto px-4 sm:px-6 md:px-8">
         <motion.div className="text-center mb-12">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -221,12 +216,7 @@ function Explore() {
           <Carousel
             slideSize={{ base: "50%", sm: "33.33%", md: "25%", lg: "16.66%" }}
             slideGap={{ base: "md", sm: "lg" }}
-            align="start"
-            slidesToScroll={mobile ? 1 : 2}
             withControls={true}
-            loop={false}
-            containScroll="trimSnaps"
-            className={classes.rootCarousel}
             styles={{
               control: {
                 backgroundColor: "white",

@@ -2,10 +2,9 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   IconArrowLeft,
-  IconHome,
   IconShieldCheck,
-  IconUsers,
-  IconStar,
+  IconClock,
+  IconRocket,
 } from "@tabler/icons-react";
 
 function AuthLayout() {
@@ -13,19 +12,20 @@ function AuthLayout() {
 
   const features = [
     {
-      icon: IconHome,
-      title: "10,000+ Properties",
-      description: "Browse verified listings across Nigeria",
+      icon: IconRocket,
+      title: "Coming Soon",
+      description:
+        "Be among the first to experience revolutionary property hunting",
+    },
+    {
+      icon: IconClock,
+      title: "Early Access",
+      description: "Join our waitlist for exclusive launch benefits",
     },
     {
       icon: IconShieldCheck,
-      title: "Secure & Safe",
-      description: "All transactions are protected",
-    },
-    {
-      icon: IconUsers,
-      title: "50,000+ Users",
-      description: "Join our growing community",
+      title: "Verified Platform",
+      description: "We're building a trusted community from day one",
     },
   ];
 
@@ -40,20 +40,24 @@ function AuthLayout() {
 
       {/* Header */}
       <div className="relative z-10 py-6 px-6 lg:px-12">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="max-w-max-window mx-auto flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <motion.div
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="text-2xl font-black text-primary tracking-tight"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="flex items-center"
             >
-              KEDUSOFT
+              <motion.img
+                src="/images/brand/logo_cropped.png"
+                alt="PropConnect Logo"
+                className="h-14 w-auto object-contain"
+              />
             </motion.div>
           </Link>
 
           <Link
             to="/"
-            className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors font-medium"
+            className="flex items-center gap-2 text-gray-600 hover:text-accent transition-colors font-medium"
           >
             <IconArrowLeft size={18} />
             <span className="hidden sm:inline">Back to home</span>
@@ -62,10 +66,10 @@ function AuthLayout() {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 py-8 px-6">
-        <div className="max-w-6xl mx-auto">
+      <div className="relative z-10 py-8 px-6 lg:px-12">
+        <div className="max-w-window mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Side - Marketing Content */}
+            {/* Left Side - Pre-launch Content */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -74,23 +78,21 @@ function AuthLayout() {
             >
               <div className="space-y-6">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-blue-100">
-                  <IconStar
-                    size={16}
-                    className="text-amber-500"
-                    fill="currentColor"
-                  />
+                  <IconRocket size={16} className="text-blue-600" />
                   <span className="text-sm font-medium text-gray-700">
-                    Rated 4.9/5 by 10,000+ users
+                    Launching Soon • Join the Waitlist
                   </span>
                 </div>
 
                 <h1 className="text-5xl font-bold text-gray-900 leading-tight">
-                  Find Your Perfect <span className="text-blue-600">Home</span>
+                  Property Hunting{" "}
+                  <span className="text-blue-600">Reimagined</span>
                 </h1>
 
                 <p className="text-xl text-gray-600 leading-relaxed">
-                  Join thousands of Nigerians who found their dream property
-                  through our trusted platform.
+                  We're building the future of real estate in Nigeria. Get ready
+                  for a seamless, secure, and smarter way to find your perfect
+                  property.
                 </p>
 
                 {/* Features */}
@@ -118,24 +120,25 @@ function AuthLayout() {
                   ))}
                 </div>
 
-                {/* Trust Indicators */}
-                <div className="flex items-center gap-6 pt-6 border-t border-gray-200">
-                  <div>
-                    <div className="text-2xl font-bold text-gray-900">10K+</div>
-                    <div className="text-sm text-gray-600">
-                      Properties Listed
-                    </div>
-                  </div>
-                  <div className="w-px h-12 bg-gray-200"></div>
-                  <div>
-                    <div className="text-2xl font-bold text-gray-900">50K+</div>
-                    <div className="text-sm text-gray-600">Happy Tenants</div>
-                  </div>
-                  <div className="w-px h-12 bg-gray-200"></div>
-                  <div>
-                    <div className="text-2xl font-bold text-gray-900">5K+</div>
-                    <div className="text-sm text-gray-600">Property Owners</div>
-                  </div>
+                {/* Value Proposition */}
+                <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-100 mt-8">
+                  <h3 className="font-semibold text-gray-900 mb-3 text-lg">
+                    Why Join Early?
+                  </h3>
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    <li className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <span>Exclusive early access to platform features</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <span>Special launch bonuses and incentives</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <span>Help shape the future of PropConnect</span>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </motion.div>
@@ -148,6 +151,25 @@ function AuthLayout() {
               className="w-full"
             >
               <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 lg:p-10">
+                {/* Pre-launch notice */}
+                <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                  <div className="flex items-start gap-3">
+                    <IconClock
+                      size={20}
+                      className="text-amber-600 mt-0.5 flex-shrink-0"
+                    />
+                    <div>
+                      <p className="text-sm text-amber-800 font-medium">
+                        We're launching soon!
+                      </p>
+                      <p className="text-xs text-amber-700 mt-1">
+                        Join our community early and be the first to experience
+                        PropConnect.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 <Outlet />
 
                 {/* Footer links */}
@@ -160,12 +182,12 @@ function AuthLayout() {
                           to="/auth/register"
                           className="text-blue-600 font-semibold hover:text-blue-700 transition-colors"
                         >
-                          Sign up
+                          Join waitlist
                         </Link>
                       </>
                     ) : location.pathname.includes("register") ? (
                       <>
-                        Already have an account?{" "}
+                        Already signed up?{" "}
                         <Link
                           to="/auth/login"
                           className="text-blue-600 font-semibold hover:text-blue-700 transition-colors"

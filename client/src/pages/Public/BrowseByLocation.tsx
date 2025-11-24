@@ -180,7 +180,7 @@ const BrowseByLocation = () => {
           backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images/sunset.jpg ')`,
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="text-center"
             initial={{ opacity: 0, y: 30 }}
@@ -216,7 +216,7 @@ const BrowseByLocation = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Popular States Section */}
         <motion.div
           className="mb-16"

@@ -4,7 +4,7 @@ import { SimpleGrid, Pagination, Group } from "@mantine/core";
 
 function SearchResults() {
   return (
-    <div className="bg-[#F9F9F9] flex max-w-7xl mx-auto">
+    <div className="bg-[#F9F9F9] flex max-w-window mx-auto">
       <div className="flex-2 md:block hidden fixed overflow-y-auto p-3 h-screen bg-white">
         <SearchFilter />
       </div>

@@ -23,7 +23,7 @@
 ## ⚠️⚠️ Medium Priority
 
 ### Landing Page
-- [ ] Header dropdown should be wider
+- [x] Header dropdown should be wider
 - [ ] Popular near you section should have a link to view all
 - [ ] Explore property types should have the types from the backend and also total number of properties in the properties
 - [ ] Discover locations should show locations from the backend and total number of properties in the locations
@@ -38,7 +38,7 @@
 - [ ] Build the pending screenings page
 - [ ] Build the appointment page
 - [ ] The search bar in the header should open a centered modal when clicked and the tenant can navigate to any part of the dashboard and website they are authorized to and can also search for properties in it too
-- [ ] The notifications button in the dashboard should be removed
+- [x] The notifications button in the dashboard should be removed
 
 ### Landlord Dashboard
 - [ ] In the application details add 2 sections one showing the user's profile and the details entered from the applications form to check for matching if not show risk of fraud

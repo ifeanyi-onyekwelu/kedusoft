@@ -207,7 +207,7 @@ function PropertyDetails() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       {/* Breadcrumb/Back Navigation */}
-      <div className="max-w-7xl mx-auto mb-6">
+      <div className="max-w-window mx-auto mb-6">
         <Button
           variant="subtle"
           leftSection={<IconArrowLeft size={18} />}
@@ -218,7 +218,7 @@ function PropertyDetails() {
         </Button>
       </div>
 
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-window mx-auto">
         {/* Header Card */}
         <Card shadow="sm" padding="lg" radius="md" withBorder className="mb-6">
           <Group justify="space-between" align="flex-start">

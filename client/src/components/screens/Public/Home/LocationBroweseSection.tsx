@@ -79,8 +79,18 @@ const LinkGroup = ({
             className="text-sm text-primary hover:text-primary/80 font-semibold flex items-center gap-1 transition-colors"
           >
             View all
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </Link>
         )}
@@ -140,7 +150,9 @@ const LinkGroup = ({
           whileTap={{ scale: 0.98 }}
           whileHover={{ scale: 1.02 }}
         >
-          <span>{expanded ? "Show less" : `Show ${items.length - 12} more`}</span>
+          <span>
+            {expanded ? "Show less" : `Show ${items.length - 12} more`}
+          </span>
           <motion.svg
             className="w-4 h-4"
             fill="none"
@@ -149,7 +161,12 @@ const LinkGroup = ({
             animate={{ rotate: expanded ? 180 : 0 }}
             transition={{ duration: 0.3 }}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </motion.svg>
         </motion.button>
       )}
@@ -208,7 +225,7 @@ const LocationBrowseSection = () => {
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-100 rounded-full blur-3xl" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header Section */}
         <motion.div
           className="text-center mb-12"
@@ -251,7 +268,8 @@ const LocationBrowseSection = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto"
           >
-            Find your perfect home in Nigeria's most popular cities and states with our comprehensive listings
+            Find your perfect home in Nigeria's most popular cities and states
+            with our comprehensive listings
           </motion.p>
         </motion.div>
 

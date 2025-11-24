@@ -49,7 +49,7 @@ const FeaturedListings = () => {
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500 rounded-full filter blur-3xl\"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Enhanced Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 px-4 md:px-8 gap-6">
           <div className="flex-1">

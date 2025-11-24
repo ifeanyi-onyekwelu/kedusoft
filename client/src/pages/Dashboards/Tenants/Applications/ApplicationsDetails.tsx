@@ -536,7 +536,7 @@ function ApplicationsDetails() {
 
       {/* Header */}
       <div className="bg-white shadow-sm border-b rounded-lg mb-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button
@@ -577,7 +577,7 @@ function ApplicationsDetails() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-window mx-auto">
         <Grid>
           {/* Main Content */}
           <Grid.Col span={{ base: 12, lg: 8 }}>

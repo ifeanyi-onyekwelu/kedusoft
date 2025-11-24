@@ -52,7 +52,7 @@ const HowItWorksSection = () => {
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl"></div>
       </div>
 
-      <Container size="xl" className="relative z-10">
+      <div className="relative z-10 max-w-window px-6 sm:px-8">
         <motion.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
@@ -196,7 +196,7 @@ const HowItWorksSection = () => {
             <IconArrowRight size={20} />
           </Link>
         </motion.div>
-      </Container>
+      </div>
     </section>
   );
 };

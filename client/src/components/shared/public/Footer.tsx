@@ -54,7 +54,7 @@ const Footer = () => {
   return (
     <footer className="bg-gray-900 text-gray-300">
       {/* Main Footer Content */}
-      <div className="max-max-window mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-window mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Top Section - Brand and Newsletter */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-10 border-b border-gray-700">
           {/* Brand Section */}

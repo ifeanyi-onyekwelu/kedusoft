@@ -10,7 +10,7 @@ export function FeaturesSection() {
   return (
     <div className="bg-gradient-to-b from-white to-gray-50 py-20">
       {/* Features Cards Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-20">
           <p className="text-lg text-indigo-600 font-semibold mb-4">
             Why Choose Us
@@ -86,7 +86,7 @@ export function FeaturesSection() {
       </div>
 
       {/* Conveniences Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-32">
+      <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8 mt-32">
         <div className="bg-gradient-to-r from-indigo-900 to-purple-800 rounded-3xl overflow-hidden shadow-2xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
             <div className="p-12">

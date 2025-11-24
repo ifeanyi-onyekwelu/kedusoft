@@ -103,7 +103,7 @@ export const AgentsPage = () => {
           <div className="absolute inset-0 bg-black/70"></div>
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
+        <div className="relative max-w-window mx-auto px-4 sm:px-6 lg:px-8 text-white">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
             <div className="max-w-2xl">
@@ -200,7 +200,7 @@ export const AgentsPage = () => {
 
       {/* Coming Soon Notice */}
       <div className="border-b border-gray-200 bg-blue-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 rounded-full text-sm font-semibold text-blue-700 mb-4">
               <span>🔨</span>
@@ -220,7 +220,7 @@ export const AgentsPage = () => {
 
       {/* Benefits Section */}
       <div id="benefits" className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-3">
               Planned Features for Agents
@@ -258,7 +258,7 @@ export const AgentsPage = () => {
 
       {/* How It Will Work */}
       <div className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-3">
               How It Will Work
@@ -293,7 +293,7 @@ export const AgentsPage = () => {
 
       {/* Features List */}
       <div className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl font-bold text-gray-900 mb-4">

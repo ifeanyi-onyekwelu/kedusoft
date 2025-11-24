@@ -10,6 +10,7 @@ import {
   Button,
   Divider,
   ScrollArea,
+  SimpleGrid,
 } from "@mantine/core";
 import { useState } from "react";
 import {
@@ -18,6 +19,16 @@ import {
   IconHome,
   IconHeartFilled,
   IconStar,
+  IconBuilding,
+  IconMapPin,
+  IconTrendingUp,
+  IconHelp,
+  IconNews,
+  IconPhone,
+  IconBed,
+  IconBath,
+  IconCar,
+  IconRuler,
 } from "@tabler/icons-react";
 import { BiPlusCircle } from "react-icons/bi";
 import { useDisclosure } from "@mantine/hooks";
@@ -29,7 +40,6 @@ import {
   IconChevronDown,
   IconChevronRight,
   IconLogout,
-  IconMapPin,
 } from "@tabler/icons-react";
 import useAuth from "../../../hooks/useAuth";
 import { useUser } from "../../../context/UserContext";
@@ -451,44 +461,397 @@ const MobileNavItem = ({
   );
 };
 
+// Enhanced dropdown components with grid layout
+const BuyDropdown = () => (
+  <div className="w-[800px] p-6">
+    <SimpleGrid cols={3} spacing="lg">
+      {/* Property Types */}
+      <div>
+        <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+          <IconHome size={16} className="text-blue-600" />
+          Property Types
+        </h3>
+        <div className="space-y-2">
+          {[
+            {
+              label: "Apartments",
+              path: "/listings?purpose=sale&type=apartment",
+              icon: IconBuilding,
+            },
+            {
+              label: "Houses",
+              path: "/listings?purpose=sale&type=house",
+              icon: IconHome,
+            },
+            {
+              label: "Duplex",
+              path: "/listings?purpose=sale&type=duplex",
+              icon: IconBuilding,
+            },
+            {
+              label: "Lands",
+              path: "/listings?purpose=sale&type=land",
+              icon: IconMapPin,
+            },
+            {
+              label: "Commercial",
+              path: "/listings?purpose=sale&type=commercial",
+              icon: IconBuilding,
+            },
+          ].map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors group"
+            >
+              <item.icon
+                size={18}
+                className="text-gray-400 group-hover:text-blue-600"
+              />
+              <span className="text-sm text-gray-700 group-hover:text-blue-600">
+                {item.label}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Popular Features */}
+      <div>
+        <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+          <IconStar size={16} className="text-amber-500" />
+          Popular Features
+        </h3>
+        <div className="space-y-2">
+          {[
+            {
+              label: "Swimming Pool",
+              path: "/listings?purpose=sale&amenities=pool",
+            },
+            { label: "4+ Bedrooms", path: "/listings?purpose=sale&bedrooms=4" },
+            {
+              label: "Gated Estate",
+              path: "/listings?purpose=sale&amenities=gated",
+            },
+            {
+              label: "New Construction",
+              path: "/listings?purpose=sale&new=true",
+            },
+            {
+              label: "Waterfront",
+              path: "/listings?purpose=sale&amenities=waterfront",
+            },
+          ].map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className="block p-2 rounded-lg hover:bg-gray-50 transition-colors text-sm text-gray-700 hover:text-blue-600"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Price Range & Locations */}
+      <div>
+        <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+          <IconMapPin size={16} className="text-green-600" />
+          Popular Locations
+        </h3>
+        <div className="space-y-2">
+          {[
+            {
+              label: "Lagos Mainland",
+              path: "/listings?purpose=sale&location=lagos-mainland",
+            },
+            {
+              label: "Lagos Island",
+              path: "/listings?purpose=sale&location=lagos-island",
+            },
+            {
+              label: "Abuja Central",
+              path: "/listings?purpose=sale&location=abuja-central",
+            },
+            {
+              label: "Port Harcourt",
+              path: "/listings?purpose=sale&location=port-harcourt",
+            },
+            { label: "Ibadan", path: "/listings?purpose=sale&location=ibadan" },
+          ].map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className="block p-2 rounded-lg hover:bg-gray-50 transition-colors text-sm text-gray-700 hover:text-blue-600"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </SimpleGrid>
+
+    {/* Bottom Section */}
+    <div className="mt-6 pt-6 border-t border-gray-200">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Link
+            to="/listings?purpose=sale&featured=true"
+            className="text-sm font-medium text-blue-600 hover:text-blue-700"
+          >
+            🔥 Featured Properties
+          </Link>
+          <Link
+            to="/listings?purpose=sale&discount=true"
+            className="text-sm font-medium text-green-600 hover:text-green-700"
+          >
+            💰 Great Deals
+          </Link>
+        </div>
+        <Link
+          to="/listings?purpose=sale"
+          className="text-sm font-semibold text-gray-900 hover:text-blue-600"
+        >
+          View All Properties →
+        </Link>
+      </div>
+    </div>
+  </div>
+);
+
+const RentDropdown = () => (
+  <div className="w-[800px] p-6">
+    <SimpleGrid cols={3} spacing="lg">
+      {/* Rental Types */}
+      <div>
+        <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+          <IconBed size={16} className="text-purple-600" />
+          Rental Types
+        </h3>
+        <div className="space-y-2">
+          {[
+            {
+              label: "Studio Apartments",
+              path: "/listings?purpose=rent&type=studio",
+            },
+            {
+              label: "1-2 Bedrooms",
+              path: "/listings?purpose=rent&bedrooms=1-2",
+            },
+            { label: "3+ Bedrooms", path: "/listings?purpose=rent&bedrooms=3" },
+            { label: "Shortlets", path: "/shortlet" },
+            {
+              label: "Serviced Apartments",
+              path: "/listings?purpose=rent&type=serviced",
+            },
+          ].map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className="block p-2 rounded-lg hover:bg-gray-50 transition-colors text-sm text-gray-700 hover:text-blue-600"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Budget Range */}
+      <div>
+        <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+          <IconTrendingUp size={16} className="text-green-600" />
+          Budget Range
+        </h3>
+        <div className="space-y-2">
+          {[
+            {
+              label: "Under ₦500k/year",
+              path: "/listings?purpose=rent&maxPrice=500000",
+            },
+            {
+              label: "₦500k - ₦1M/year",
+              path: "/listings?purpose=rent&minPrice=500000&maxPrice=1000000",
+            },
+            {
+              label: "₦1M - ₦2M/year",
+              path: "/listings?purpose=rent&minPrice=1000000&maxPrice=2000000",
+            },
+            {
+              label: "₦2M+/year",
+              path: "/listings?purpose=rent&minPrice=2000000",
+            },
+            {
+              label: "Flexible Payment",
+              path: "/listings?purpose=rent&payment=flexible",
+            },
+          ].map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className="block p-2 rounded-lg hover:bg-gray-50 transition-colors text-sm text-gray-700 hover:text-blue-600"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Popular Areas */}
+      <div>
+        <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+          <IconMapPin size={16} className="text-red-600" />
+          Hot Locations
+        </h3>
+        <div className="space-y-2">
+          {[
+            {
+              label: "Lekki, Lagos",
+              path: "/listings?purpose=rent&location=lekki",
+            },
+            {
+              label: "Victoria Island",
+              path: "/listings?purpose=rent&location=victoria-island",
+            },
+            {
+              label: "Maitama, Abuja",
+              path: "/listings?purpose=rent&location=maitama",
+            },
+            {
+              label: "GRA Port Harcourt",
+              path: "/listings?purpose=rent&location=gra-ph",
+            },
+            {
+              label: "Bodija, Ibadan",
+              path: "/listings?purpose=rent&location=bodija",
+            },
+          ].map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className="block p-2 rounded-lg hover:bg-gray-50 transition-colors text-sm text-gray-700 hover:text-blue-600"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </SimpleGrid>
+
+    {/* Bottom Section */}
+    <div className="mt-6 pt-6 border-t border-gray-200">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Link
+            to="/listings?purpose=rent&furnished=true"
+            className="text-sm font-medium text-blue-600 hover:text-blue-700"
+          >
+            🛋️ Furnished Apartments
+          </Link>
+          <Link
+            to="/listings?purpose=rent&utilities=included"
+            className="text-sm font-medium text-green-600 hover:text-green-700"
+          >
+            💡 Utilities Included
+          </Link>
+        </div>
+        <Link
+          to="/listings?purpose=rent"
+          className="text-sm font-semibold text-gray-900 hover:text-blue-600"
+        >
+          Browse All Rentals →
+        </Link>
+      </div>
+    </div>
+  </div>
+);
+
+const LocationsDropdown = () => (
+  <div className="w-[600px] p-6">
+    <SimpleGrid cols={2} spacing="lg">
+      {/* Major Cities */}
+      <div>
+        <h3 className="text-sm font-semibold text-gray-900 mb-3">
+          🏙️ Major Cities
+        </h3>
+        <div className="space-y-2">
+          {[
+            { label: "Lagos", path: "/locations/lagos", count: "2.4K" },
+            { label: "Abuja", path: "/locations/abuja", count: "1.8K" },
+            {
+              label: "Port Harcourt",
+              path: "/locations/port-harcourt",
+              count: "890",
+            },
+            { label: "Ibadan", path: "/locations/ibadan", count: "760" },
+            { label: "Kano", path: "/locations/kano", count: "540" },
+          ].map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors group"
+            >
+              <span className="text-sm text-gray-700 group-hover:text-blue-600">
+                {item.label}
+              </span>
+              <span className="text-xs text-gray-400">
+                {item.count} properties
+              </span>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Emerging Areas */}
+      <div>
+        <h3 className="text-sm font-semibold text-gray-900 mb-3">
+          🚀 Emerging Areas
+        </h3>
+        <div className="space-y-2">
+          {[
+            { label: "Epe, Lagos", path: "/locations/epe" },
+            { label: "Lugbe, Abuja", path: "/locations/lugbe" },
+            { label: "Elelenwo, PH", path: "/locations/elelenwo" },
+            { label: "Akobo, Ibadan", path: "/locations/akobo" },
+            { label: "View All Locations", path: "/locations" },
+          ].map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className="block p-2 rounded-lg hover:bg-gray-50 transition-colors text-sm text-gray-700 hover:text-blue-600"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </SimpleGrid>
+  </div>
+);
+
 const navLinks = [
   {
-    path: "/listings?purpose=sale",
     label: "Buy",
-    children: [
-      { path: "/listings?purpose=sale", label: "All Properties for Sale" },
-      { path: "/listings?purpose=sale&type=apartment", label: "Apartments" },
-      { path: "/listings?purpose=sale&type=house", label: "Houses" },
-      { path: "/listings?purpose=sale&type=duplex", label: "Duplex" },
-      { path: "/listings?purpose=sale&featured=true", label: "Featured" },
-    ],
+    component: BuyDropdown,
   },
   {
-    path: "/listings?purpose=rent",
     label: "Rent",
-    children: [
-      { path: "/listings?purpose=rent", label: "All Properties for Rent" },
-      { path: "/listings?purpose=rent&type=apartment", label: "Apartments" },
-      { path: "/listings?purpose=rent&type=house", label: "Houses" },
-      { path: "/listings?purpose=rent&type=duplex", label: "Duplex" },
-      {
-        path: "/listings?purpose=rent&type=self-contain",
-        label: "Self-Contain",
-      },
-      { path: "/listings?purpose=rent&featured=true", label: "Featured" },
-    ],
+    component: RentDropdown,
   },
   {
-    path: "/shortlet",
     label: "Shortlet",
+    path: "/shortlet",
   },
   {
-    path: "/services",
-    label: "Services",
+    label: "Commercial",
+    path: "/commercial",
   },
   {
-    path: "/agents",
+    label: "Locations",
+    component: LocationsDropdown,
+  },
+  {
     label: "Agents",
+    path: "/agents",
   },
 ];
 
@@ -502,7 +865,7 @@ function Header() {
       component="header"
       className="sticky top-0 w-full z-50 bg-white border-b border-gray-100 shadow-sm"
     >
-      <Box className="max-max-window mx-auto px-4 sm:px-6 lg:px-8">
+      <Box className="max-w-window  mx-auto px-4 sm:px-6 lg:px-8">
         <Flex justify="space-between" align="center" h={rem(70)}>
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
@@ -520,9 +883,9 @@ function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <Group gap={2} visibleFrom="md">
+          <Group gap={2} visibleFrom="lg" className="flex-1 justify-center">
             {navLinks.map((link) => {
-              if (link.children) {
+              if (link.component) {
                 return (
                   <Menu
                     key={link.label}
@@ -535,33 +898,19 @@ function Header() {
                     offset={8}
                   >
                     <Menu.Target>
-                      <Link
-                        to={link.path!}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-all ${
-                          pathname.includes(link.path!)
+                      <div
+                        className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-all cursor-pointer ${
+                          pathname.includes(link.label.toLowerCase())
                             ? "text-primary bg-primary/5"
                             : "text-gray-700 hover:text-primary hover:bg-gray-50"
                         }`}
                       >
                         <span>{link.label}</span>
                         <IconChevronDown size={14} className="opacity-60" />
-                      </Link>
+                      </div>
                     </Menu.Target>
-                    <Menu.Dropdown className="min-w-[220px] rounded-xl shadow-lg border border-gray-100 p-2">
-                      {link.children.map((child, index) => (
-                        <Menu.Item
-                          key={child.path}
-                          component={Link}
-                          to={child.path}
-                          className={`text-sm rounded-lg px-3 py-2.5 text-gray-700 hover:text-primary hover:bg-primary/5 transition-colors ${
-                            index === 0
-                              ? "font-medium border-b border-gray-100 mb-1 pb-3"
-                              : ""
-                          }`}
-                        >
-                          {child.label}
-                        </Menu.Item>
-                      ))}
+                    <Menu.Dropdown className="rounded-2xl shadow-xl border border-gray-200 overflow-hidden p-0">
+                      <link.component />
                     </Menu.Dropdown>
                   </Menu>
                 );
@@ -609,8 +958,12 @@ function Header() {
         zIndex={1000000}
         title={
           <Link to="/" onClick={closeDrawer}>
-            <div className="w-fit py-1 rounded-lg flex items-center justify-center font-bold">
-              Rentify
+            <div className="flex items-center gap-2">
+              <motion.img
+                src="/images/brand/logo_cropped.png"
+                alt="PropConnect Logo"
+                className="h-10 w-auto object-contain"
+              />
             </div>
           </Link>
         }

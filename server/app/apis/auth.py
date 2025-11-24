@@ -439,6 +439,12 @@ def login_page():
 
         # Create response
         user_data = dict_except(user.to_dict(), "password")
+        # Determine onboarding status based on user role
+        is_onboarded = (
+            user.is_landlord_onboarded
+            if user.role == "landlord"
+            else user.is_tenant_onboarded
+        )
         resp = make_response(
             response(
                 "Login successful",
@@ -447,7 +453,7 @@ def login_page():
                     "refreshToken": refresh_token,
                     "user": user_data,
                     "is_email_verified": user.is_email_verified,
-                    "is_onboarded": user.is_onboarded,
+                    "is_onboarded": is_onboarded,
                 },
             )
         )
@@ -697,6 +703,12 @@ def google_login():
 
         # Create response
         user_data = dict_except(serialize(user), "password")
+        # Determine onboarding status based on user role
+        is_onboarded = (
+            user.is_landlord_onboarded
+            if user.role == "landlord"
+            else user.is_tenant_onboarded
+        )
         resp = make_response(
             response(
                 "Google login successful",
@@ -705,7 +717,7 @@ def google_login():
                     "refreshToken": refresh_token,
                     "user": user_data,
                     "is_email_verified": user.is_email_verified,
-                    "is_onboarded": user.is_onboarded,
+                    "is_onboarded": is_onboarded,
                 },
             )
         )

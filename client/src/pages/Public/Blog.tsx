@@ -103,7 +103,7 @@ export const Blog = () => {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <div className="bg-blue-600 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-4">Our Blog</h1>
           <p className="text-xl text-blue-100 max-w-2xl mx-auto">
             Tips, guides, and insights to help you navigate the rental market
@@ -113,7 +113,7 @@ export const Blog = () => {
 
       {/* Categories Filter */}
       <div className="border-b border-gray-200 bg-white sticky top-0 z-10 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex gap-4 overflow-x-auto py-4">
             {categories.map((category) => (
               <button
@@ -134,7 +134,7 @@ export const Blog = () => {
 
       {/* Articles Grid */}
       <div className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
           {filteredArticles.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredArticles.map((article) => (
