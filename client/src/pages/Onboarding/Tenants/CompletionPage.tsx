@@ -10,16 +10,44 @@ import {
   IconCurrencyNaira,
   IconUser,
   IconArrowLeft,
+  IconExclamationCircle,
+  IconRefresh,
 } from "@tabler/icons-react";
 import { FaIdCard } from "react-icons/fa6";
+import { useState } from "react";
 
 export default function CompletionPage() {
   const navigate = useNavigate();
   const { preferences, completeOnboarding } = useOnboarding();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleComplete = async () => {
-    await completeOnboarding();
-    navigate("/onboarding/completion");
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const success = await completeOnboarding();
+      console.log("Onboarding completion response:", success);
+
+      if (success) {
+        navigate("/onboarding/personalizing");
+      } else {
+        setError("Failed to save your preferences. Please try again.");
+      }
+    } catch (err) {
+      console.error("Onboarding completion error:", err);
+      setError(
+        "An unexpected error occurred. Please try again or contact support if the problem persists."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleRetry = () => {
+    setError(null);
+    handleComplete();
   };
 
   const formatNaira = (amount: number) => {
@@ -49,7 +77,7 @@ export default function CompletionPage() {
         },
         { label: "Pets", value: preferences.hasPets ? "Yes" : "No" },
       ],
-      route: "/onboarding/personal",
+      route: "/onboarding/tenant/personal",
     },
     {
       id: "property",
@@ -67,7 +95,7 @@ export default function CompletionPage() {
         { label: "Furnished", value: preferences.furnished },
         { label: "Pets Allowed", value: preferences.pets },
       ],
-      route: "/onboarding/property-details",
+      route: "/onboarding/tenant/property-details",
     },
     {
       id: "location",
@@ -76,14 +104,14 @@ export default function CompletionPage() {
       data: [
         { label: "Selected Areas", value: preferences.locations?.join(", ") },
       ],
-      route: "/onboarding/location",
+      route: "/onboarding/tenant/location",
     },
     {
       id: "vibe",
       title: "Home Style",
       icon: IconPalette,
       data: [{ label: "Selected Styles", value: preferences.vibe?.join(", ") }],
-      route: "/onboarding/vibes",
+      route: "/onboarding/tenant/vibes",
     },
     {
       id: "features",
@@ -92,7 +120,7 @@ export default function CompletionPage() {
       data: [
         { label: "Selected Features", value: preferences.features?.join(", ") },
       ],
-      route: "/onboarding/features",
+      route: "/onboarding/tenant/features",
     },
     {
       id: "budget",
@@ -112,7 +140,7 @@ export default function CompletionPage() {
         { label: "Payment Frequency", value: preferences.paymentFrequency },
         { label: "Move-in Date", value: preferences.moveInDate },
       ],
-      route: "/onboarding/budget",
+      route: "/onboarding/tenant/budget",
     },
     {
       id: "verification",
@@ -127,7 +155,7 @@ export default function CompletionPage() {
           } documents uploaded`,
         },
       ],
-      route: "/onboarding/verification",
+      route: "/onboarding/tenant/verification",
     },
   ];
 
@@ -166,6 +194,40 @@ export default function CompletionPage() {
           </div>
 
           <div className="p-8">
+            {/* Error Alert */}
+            {error && (
+              <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <IconExclamationCircle
+                    size={20}
+                    className="text-red-600 mt-0.5 flex-shrink-0"
+                  />
+                  <div className="flex-1">
+                    <h3 className="text-red-800 font-medium mb-1">
+                      Submission Failed
+                    </h3>
+                    <p className="text-red-700 text-sm">{error}</p>
+                    <div className="flex gap-3 mt-3">
+                      <button
+                        onClick={handleRetry}
+                        disabled={isSubmitting}
+                        className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      >
+                        <IconRefresh size={16} />
+                        Try Again
+                      </button>
+                      <button
+                        onClick={() => setError(null)}
+                        className="bg-white text-red-700 border border-red-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors"
+                      >
+                        Dismiss
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Progress Summary */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 text-center">
@@ -220,7 +282,8 @@ export default function CompletionPage() {
                       <button
                         type="button"
                         onClick={() => navigate(section.route)}
-                        className="flex items-center gap-2 text-blue-900 hover:text-blue-700 transition-colors bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg"
+                        disabled={isSubmitting}
+                        className="flex items-center gap-2 text-blue-900 hover:text-blue-700 transition-colors bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <IconEdit size={16} />
                         <span className="text-sm font-medium">Edit</span>
@@ -269,8 +332,9 @@ export default function CompletionPage() {
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 type="button"
-                onClick={() => navigate("/onboarding/verification")}
-                className="flex-1 bg-white text-slate-700 px-6 py-4 rounded-lg border border-slate-300 hover:bg-slate-50 transition-all duration-200 font-medium flex items-center justify-center"
+                onClick={() => navigate("/onboarding/tenant/verification")}
+                disabled={isSubmitting}
+                className="flex-1 bg-white text-slate-700 px-6 py-4 rounded-lg border border-slate-300 hover:bg-slate-50 transition-all duration-200 font-medium flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <IconArrowLeft size={20} className="mr-2" />
                 Back to Verification
@@ -278,10 +342,24 @@ export default function CompletionPage() {
 
               <button
                 onClick={handleComplete}
-                className="flex-1 bg-blue-900 text-white px-6 py-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center hover:bg-blue-800 hover:shadow-lg"
+                disabled={isSubmitting}
+                className={`flex-1 px-6 py-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center ${
+                  isSubmitting
+                    ? "bg-blue-600 cursor-not-allowed"
+                    : "bg-blue-900 hover:bg-blue-800 hover:shadow-lg"
+                } text-white`}
               >
-                Complete Onboarding
-                <IconCheck size={20} className="ml-2" />
+                {isSubmitting ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                    Saving Your Preferences...
+                  </>
+                ) : (
+                  <>
+                    Complete Onboarding
+                    <IconCheck size={20} className="ml-2" />
+                  </>
+                )}
               </button>
             </div>
 

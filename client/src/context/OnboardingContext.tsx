@@ -110,17 +110,10 @@ export function OnboardingProvider({
   const completeOnboarding = async () => {
     try {
       // Submit preferences to generate recommendations
-      await submitPreferences();
-
-      // Here you would typically also:
-      // 1. Upload verification documents to your backend
-      // 2. Update user profile with personal details
-      // 3. Mark user as onboarded in your database
+      const response = await submitPreferences();
 
       setIsOnboardingComplete(true);
-
-      // You might want to store the completion status in localStorage or your backend
-      localStorage.setItem("onboardingComplete", "true");
+      return response;
     } catch (error) {
       console.error("Error completing onboarding:", error);
       throw error;
