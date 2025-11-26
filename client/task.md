@@ -3,7 +3,7 @@
 ### Landing Page
 - [x] Add a logo
 - [x] The property card share and like button should be functional
-- [ ] The integrated map should be fixed and not scrollable
+- [x] The integrated map should be fixed and not scrollable
 
 ### Tenant Dashboard
 - [x] Fix the recommendation page error
@@ -14,7 +14,7 @@
 
 ### Landlord Dashboard
 - [ ] The onboarding bug when the landlord creates a new account they are onboarded but when they login again after they still get redirected to the onboarding screen
-- [ ] The map search bug that refreshes the page when the search button is pressed
+- [x] The map search bug that refreshes the page when the search button is pressed
 - [ ] Fix the invite for screening and reject application show a confirmation modal before confirming
 - [ ] Fix the maintenance request form the property is not displaying in the dropdown and if there is no one show no tenant to display also in the property
 - [ ] Fix the schedule property inspection form the property is not displaying in the dropdown and if there is no property show no property to display

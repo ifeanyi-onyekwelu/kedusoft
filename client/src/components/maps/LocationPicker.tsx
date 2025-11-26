@@ -75,6 +75,13 @@ interface LocationPickerProps {
     lat: number;
     lng: number;
     address?: string;
+    addressComponents?: {
+      street?: string;
+      area?: string;
+      city?: string;
+      state?: string;
+      zipcode?: string;
+    };
   }) => void;
   initialLocation?: { lat: number; lng: number };
   address?: string;
@@ -94,35 +101,17 @@ const MapClickHandler: React.FC<{
   return null;
 };
 
-// Component to handle geolocation
-const GeolocationHandler: React.FC<{
-  onLocationFound: (lat: number, lng: number) => void;
-}> = ({ onLocationFound }) => {
+// Component to update map center when location changes
+const MapCenterUpdater: React.FC<{ center: [number, number] }> = ({
+  center,
+}) => {
   const map = useMap();
 
-  const handleGeolocation = useCallback(() => {
-    map.locate({
-      setView: true,
-      maxZoom: 16,
-      enableHighAccuracy: true,
-    });
-  }, [map]);
-
   useEffect(() => {
-    map.on("locationfound", (e) => {
-      const { lat, lng } = e.latlng;
-      onLocationFound(lat, lng);
-    });
-
-    map.on("locationerror", (e) => {
-      console.error("Location access denied:", e.message);
-    });
-
-    return () => {
-      map.off("locationfound");
-      map.off("locationerror");
-    };
-  }, [map, onLocationFound]);
+    if (center && center[0] && center[1]) {
+      map.setView(center, 16, { animate: true, duration: 1 });
+    }
+  }, [center, map]);
 
   return null;
 };
@@ -145,6 +134,28 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
       : [6.5244, 3.3792] // Lagos, Nigeria
   );
 
+  // Parse address components from Nominatim response
+  const parseAddressComponents = (data: any) => {
+    const address = data.address || {};
+    const components: any = {};
+
+    // Extract address components with fallbacks
+    components.street =
+      address.road || address.pedestrian || address.footway || "";
+    components.area =
+      address.suburb || address.neighbourhood || address.quarter || "";
+    components.city =
+      address.city ||
+      address.town ||
+      address.village ||
+      address.municipality ||
+      "";
+    components.state = address.state || address.region || "";
+    components.zipcode = address.postcode || "";
+
+    return components;
+  };
+
   // Reverse geocoding using Nominatim (free service)
   const reverseGeocode = async (lat: number, lng: number) => {
     try {
@@ -156,9 +167,15 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
 
       if (data && data.display_name) {
         const formattedAddress = data.display_name;
+        const addressComponents = parseAddressComponents(data);
+
         setSearchAddress(formattedAddress);
         onAddressChange?.(formattedAddress);
-        return formattedAddress;
+
+        return {
+          address: formattedAddress,
+          components: addressComponents,
+        };
       }
     } catch (error) {
       console.error("Reverse geocoding failed:", error);
@@ -177,16 +194,27 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
           address + ", Nigeria"
-        )}&limit=1`
+        )}&limit=1&addressdetails=1`
       );
       const data = await response.json();
 
       if (data && data.length > 0) {
-        const { lat, lon } = data[0];
+        const { lat, lon, display_name, address: addressDetails } = data[0];
         const location = { lat: parseFloat(lat), lng: parseFloat(lon) };
+        const addressComponents = parseAddressComponents({
+          address: addressDetails,
+        });
+
         setSelectedLocation(location);
         setMapCenter([location.lat, location.lng]);
-        onLocationSelect({ ...location, address });
+        setSearchAddress(display_name);
+        onAddressChange?.(display_name);
+
+        onLocationSelect({
+          ...location,
+          address: display_name,
+          addressComponents,
+        });
       }
     } catch (error) {
       console.error("Geocoding failed:", error);
@@ -198,22 +226,41 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
   const handleMapClick = async (lat: number, lng: number) => {
     const location = { lat, lng };
     setSelectedLocation(location);
+    setMapCenter([lat, lng]);
 
     // Try to get address for the selected location
-    const address = await reverseGeocode(lat, lng);
-    onLocationSelect({ ...location, address });
+    const result = await reverseGeocode(lat, lng);
+    if (result) {
+      onLocationSelect({
+        ...location,
+        address: result.address,
+        addressComponents: result.components,
+      });
+    } else {
+      onLocationSelect(location);
+    }
   };
 
   const handleCurrentLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
           const { latitude, longitude } = position.coords;
           const location = { lat: latitude, lng: longitude };
           setSelectedLocation(location);
           setMapCenter([latitude, longitude]);
-          reverseGeocode(latitude, longitude);
-          onLocationSelect(location);
+
+          // Get address for current location
+          const result = await reverseGeocode(latitude, longitude);
+          if (result) {
+            onLocationSelect({
+              ...location,
+              address: result.address,
+              addressComponents: result.components,
+            });
+          } else {
+            onLocationSelect(location);
+          }
         },
         (error) => {
           console.error("Geolocation error:", error);
@@ -226,6 +273,14 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     geocodeAddress(searchAddress);
+  };
+
+  // Handle Enter key press in the search input
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      geocodeAddress(searchAddress);
+    }
   };
 
   const clearLocation = () => {
@@ -259,13 +314,14 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
 
       <Stack gap="md" mt="md">
         {/* Address Search */}
-        <form onSubmit={handleSearchSubmit}>
+        <div>
           <Grid align="end">
             <Grid.Col span={{ base: 12, md: 8 }}>
               <TextInput
                 placeholder="Enter property address to search..."
                 value={searchAddress}
                 onChange={(e) => setSearchAddress(e.currentTarget.value)}
+                onKeyPress={handleKeyPress}
                 leftSection={<IconSearch size={16} />}
                 disabled={isGeocoding}
               />
@@ -273,7 +329,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
             <Grid.Col span={{ base: 12, md: 4 }}>
               <Group gap="xs">
                 <Button
-                  type="submit"
+                  onClick={() => geocodeAddress(searchAddress)}
                   loading={isGeocoding}
                   disabled={!searchAddress.trim()}
                   size="sm"
@@ -304,7 +360,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
               </Group>
             </Grid.Col>
           </Grid>
-        </form>
+        </div>
 
         {/* Selected Location Info */}
         {selectedLocation && (
@@ -338,6 +394,9 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
+
+            {/* Update map center when location changes */}
+            <MapCenterUpdater center={mapCenter} />
 
             <MapClickHandler onLocationSelect={handleMapClick} />
 

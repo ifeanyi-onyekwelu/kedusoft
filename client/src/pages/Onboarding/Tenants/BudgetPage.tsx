@@ -2,11 +2,14 @@ import { useNavigate } from "react-router-dom";
 import { useOnboarding } from "../../../context/OnboardingContext";
 import { useState, useEffect } from "react";
 import {
-  FaHome,
-  FaCalendarAlt,
-  FaMoneyBillWave,
-  FaInfoCircle,
-} from "react-icons/fa";
+  IconCurrencyNaira,
+  IconCalendar,
+  IconCash,
+  IconInfoCircle,
+  IconArrowLeft,
+  IconArrowRight,
+  IconCheck,
+} from "@tabler/icons-react";
 
 // Payment frequency options
 const PAYMENT_FREQUENCIES = [
@@ -35,8 +38,6 @@ export default function BudgetPage() {
   const navigate = useNavigate();
   const { updatePreference, preferences } = useOnboarding();
 
-  // State initialization with defaults
-  // Already using preferences, but ensure defaults are correct
   const [budget, setBudget] = useState<number>(preferences.budget || 300000);
   const [minBudget, setMinBudget] = useState<number>(
     preferences.minBudget || 100000
@@ -79,7 +80,7 @@ export default function BudgetPage() {
     updatePreference("moveInDate", moveInDate);
     updatePreference("additionalCosts", additionalCosts);
 
-    navigate("/onboarding/summary");
+    navigate("/onboarding/tenant/summary");
   };
 
   const toggleAdditionalCost = (cost: string) => {
@@ -88,276 +89,230 @@ export default function BudgetPage() {
     );
   };
 
-  // Budget range slider positions
-  const minPosition = ((minBudget - 50000) / (2500000 - 50000)) * 100;
-  const maxPosition = ((maxBudget - 50000) / (2500000 - 50000)) * 100;
-  const preferredPosition = ((budget - 50000) / (2500000 - 50000)) * 100;
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex flex-col items-center justify-center p-4">
-      <div className="max-w-4xl w-full bg-white rounded-2xl shadow-xl overflow-hidden">
-        {/* Header Section */}
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 md:p-8 text-white relative overflow-hidden">
-          <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-indigo-500 opacity-20"></div>
-          <div className="absolute -bottom-20 -left-20 w-60 h-60 rounded-full bg-purple-500 opacity-20"></div>
-
-          <div className="relative z-10">
-            <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
-              <FaMoneyBillWave className="text-yellow-300" />
-              Your Rental Budget & Timeline
-            </h1>
-            <p className="mt-2 opacity-90">
-              Set your financial parameters and move-in schedule
-            </p>
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-6xl">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="w-2 h-8 bg-blue-900 rounded-full"></div>
+            <h2 className="text-xl font-semibold text-slate-700">
+              Step 5 of 5
+            </h2>
           </div>
+          <h1 className="text-3xl font-bold text-slate-900 mb-3">
+            Budget & Timeline
+          </h1>
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+            Set your financial parameters and preferred move-in schedule
+          </p>
         </div>
 
-        <div className="p-6 md:p-8">
-          {/* Budget Range Section */}
-          <div className="mb-8 bg-indigo-50 rounded-xl p-5 border border-indigo-100">
-            <div className="flex justify-between mb-1">
-              <span className="text-sm font-medium text-gray-700">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="p-8">
+            {/* Budget Range Section */}
+            <div className="mb-8 bg-slate-50 p-6 rounded-xl border border-slate-200">
+              <h3 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
+                <IconCurrencyNaira size={20} className="text-blue-900" />
                 Your Budget Range
-              </span>
-              <span className="text-sm font-medium text-indigo-600">
-                {formatNaira(minBudget)} - {formatNaira(maxBudget)}
-              </span>
-            </div>
-
-            {/* Range track visualization */}
-            <div className="relative h-16 mt-6">
-              {/* Background track */}
-              <div className="absolute top-1/2 left-0 right-0 h-1.5 bg-gray-200 rounded-full transform -translate-y-1/2" />
-
-              {/* Active range */}
-              <div
-                className="absolute top-1/2 h-1.5 bg-indigo-500 rounded-full transform -translate-y-1/2"
-                style={{
-                  left: `${minPosition}%`,
-                  right: `${100 - maxPosition}%`,
-                }}
-              />
-
-              {/* Min thumb */}
-              <div
-                className="absolute top-1/2 w-6 h-6 bg-white border-2 border-indigo-600 rounded-full transform -translate-y-1/2 -translate-x-1/2 flex items-center justify-center shadow-md cursor-pointer"
-                style={{ left: `${minPosition}%` }}
-              >
-                <div className="w-2 h-2 bg-indigo-600 rounded-full" />
-              </div>
-
-              {/* Max thumb */}
-              <div
-                className="absolute top-1/2 w-6 h-6 bg-white border-2 border-indigo-600 rounded-full transform -translate-y-1/2 -translate-x-1/2 flex items-center justify-center shadow-md cursor-pointer"
-                style={{ left: `${maxPosition}%` }}
-              >
-                <div className="w-2 h-2 bg-indigo-600 rounded-full" />
-              </div>
-
-              {/* Preferred budget indicator */}
-              <div
-                className="absolute top-1/2 w-8 h-8 bg-indigo-600 rounded-full transform -translate-y-1/2 -translate-x-1/2 flex items-center justify-center shadow-lg cursor-pointer"
-                style={{ left: `${preferredPosition}%` }}
-              >
-                <div className="w-3 h-3 bg-white rounded-full" />
-              </div>
-
-              {/* Budget labels */}
-              <div className="absolute top-0 left-0 right-0 flex justify-between text-xs text-gray-500">
-                <span>₦50K</span>
-                <span>₦1M</span>
-                <span>₦2.5M</span>
-              </div>
-            </div>
-
-            {/* Budget cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-              <BudgetCard
-                title="Minimum Budget"
-                value={minBudget}
-                formattedValue={formatNaira(minBudget)}
-                onChange={setMinBudget}
-                min={50000}
-                max={maxBudget}
-                color="bg-blue-100"
-              />
-              <BudgetCard
-                title="Preferred Budget"
-                value={budget}
-                formattedValue={formatNaira(budget)}
-                onChange={setBudget}
-                min={minBudget}
-                max={maxBudget}
-                color="bg-indigo-100"
-              />
-              <BudgetCard
-                title="Maximum Budget"
-                value={maxBudget}
-                formattedValue={formatNaira(maxBudget)}
-                onChange={setMaxBudget}
-                min={minBudget}
-                max={2500000}
-                color="bg-purple-100"
-              />
-            </div>
-
-            {/* Budget summary */}
-            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-5 border border-indigo-100 mt-6">
-              <h3 className="font-medium text-indigo-800 mb-3 flex items-center gap-2">
-                <FaHome className="text-indigo-600" />
-                Your Budget Summary
               </h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Min Budget:</span>
-                  <span className="font-medium">{formatNaira(minBudget)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Preferred Budget:</span>
-                  <span className="font-medium text-indigo-700">
-                    {formatNaira(budget)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Max Budget:</span>
-                  <span className="font-medium">{formatNaira(maxBudget)}</span>
-                </div>
-                <div className="h-px bg-gray-200 my-2"></div>
-                <div className="flex justify-between font-medium">
-                  <span className="text-gray-700">Total Range:</span>
-                  <span className="text-indigo-700">
-                    {formatNaira(minBudget)} - {formatNaira(maxBudget)}
-                  </span>
+
+              {/* Budget Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <BudgetCard
+                  title="Minimum Budget"
+                  value={minBudget}
+                  formattedValue={formatNaira(minBudget)}
+                  onChange={setMinBudget}
+                  min={50000}
+                  max={maxBudget}
+                  icon={IconCurrencyNaira}
+                  color="bg-blue-100"
+                />
+                <BudgetCard
+                  title="Preferred Budget"
+                  value={budget}
+                  formattedValue={formatNaira(budget)}
+                  onChange={setBudget}
+                  min={minBudget}
+                  max={maxBudget}
+                  icon={IconCash}
+                  color="bg-sky-100"
+                />
+                <BudgetCard
+                  title="Maximum Budget"
+                  value={maxBudget}
+                  formattedValue={formatNaira(maxBudget)}
+                  onChange={setMaxBudget}
+                  min={minBudget}
+                  max={2500000}
+                  icon={IconCurrencyNaira}
+                  color="bg-slate-100"
+                />
+              </div>
+
+              {/* Budget Summary */}
+              <div className="bg-slate-900 text-white p-6 rounded-xl">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <IconCheck size={20} className="text-sky-400" />
+                  Budget Summary
+                </h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-slate-300">Minimum Budget:</span>
+                    <span className="font-medium">
+                      {formatNaira(minBudget)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-300">Preferred Budget:</span>
+                    <span className="font-medium text-sky-400">
+                      {formatNaira(budget)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-300">Maximum Budget:</span>
+                    <span className="font-medium">
+                      {formatNaira(maxBudget)}
+                    </span>
+                  </div>
+                  <div className="h-px bg-slate-700 my-3"></div>
+                  <div className="flex justify-between font-medium">
+                    <span className="text-slate-300">Total Range:</span>
+                    <span className="text-sky-400">
+                      {formatNaira(minBudget)} - {formatNaira(maxBudget)}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Payment Frequency */}
-          <div className="mb-8 bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              Payment Frequency
-            </label>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {PAYMENT_FREQUENCIES.map((freq) => (
-                <button
-                  key={freq.id}
-                  type="button"
-                  onClick={() => setPaymentFrequency(freq.id)}
-                  className={`p-4 rounded-xl border transition-all flex flex-col items-center
-                    ${
-                      paymentFrequency === freq.id
-                        ? "bg-indigo-50 border-indigo-300 ring-2 ring-indigo-200 shadow-sm"
-                        : "bg-gray-50 border-gray-200 hover:bg-gray-100"
-                    }
-                  `}
-                >
-                  <div className="text-lg font-medium mb-1">{freq.label}</div>
-                  <div className="text-xs text-gray-600">
-                    {freq.description}
-                  </div>
-                </button>
-              ))}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              {/* Payment Frequency */}
+              <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                  <IconCash size={20} className="text-blue-900" />
+                  Payment Frequency
+                </h3>
+                <div className="space-y-3">
+                  {PAYMENT_FREQUENCIES.map((freq) => (
+                    <button
+                      key={freq.id}
+                      type="button"
+                      onClick={() => setPaymentFrequency(freq.id)}
+                      className={`w-full p-4 rounded-lg border transition-all duration-200 text-left
+                        ${
+                          paymentFrequency === freq.id
+                            ? "bg-blue-900 text-white border-blue-900 shadow-sm"
+                            : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
+                        }
+                      `}
+                    >
+                      <div className="font-medium mb-1">{freq.label}</div>
+                      <div
+                        className={`text-sm ${
+                          paymentFrequency === freq.id
+                            ? "text-blue-200"
+                            : "text-slate-600"
+                        }`}
+                      >
+                        {freq.description}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Move-in Date */}
+              <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                  <IconCalendar size={20} className="text-blue-900" />
+                  Move-in Timeline
+                </h3>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-3">
+                    When do you plan to move in?
+                  </label>
+                  <input
+                    type="date"
+                    value={moveInDate}
+                    onChange={(e) => setMoveInDate(e.target.value)}
+                    min={new Date().toISOString().split("T")[0]}
+                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-blue-900 bg-white"
+                  />
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* Move-in Date */}
-          <div className="mb-8 bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
-            <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-              <FaCalendarAlt className="text-indigo-500" />
-              When do you plan to move in?
-            </label>
-            <div className="relative max-w-xs">
-              <input
-                type="date"
-                value={moveInDate}
-                onChange={(e) => setMoveInDate(e.target.value)}
-                min={new Date().toISOString().split("T")[0]}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              />
+            {/* Additional Costs */}
+            <div className="mb-8 bg-slate-50 p-6 rounded-xl border border-slate-200">
+              <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                <IconInfoCircle size={20} className="text-blue-900" />
+                Additional Costs to Include
+              </h3>
+              <p className="text-sm text-slate-600 mb-4">
+                Select which additional costs should be considered in your
+                budget
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                {ADDITIONAL_COSTS.map((cost) => (
+                  <button
+                    key={cost.id}
+                    type="button"
+                    onClick={() => toggleAdditionalCost(cost.id)}
+                    className={`p-4 rounded-lg border transition-all duration-200 flex flex-col items-center text-center
+                      ${
+                        additionalCosts.includes(cost.id)
+                          ? "bg-blue-900 text-white border-blue-900 shadow-sm"
+                          : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
+                      }
+                    `}
+                  >
+                    <div className="font-medium mb-2">{cost.label}</div>
+                    <div
+                      className={`text-xs ${
+                        additionalCosts.includes(cost.id)
+                          ? "text-blue-200"
+                          : "text-slate-600"
+                      }`}
+                    >
+                      {cost.description}
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Additional Costs */}
-          <div className="mb-8 bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
-            <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-              <FaInfoCircle className="text-indigo-500" />
-              Which additional costs should be included in your budget?
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-              {ADDITIONAL_COSTS.map((cost) => (
-                <button
-                  key={cost.id}
-                  type="button"
-                  onClick={() => toggleAdditionalCost(cost.id)}
-                  className={`p-3 rounded-xl border transition-all flex flex-col items-center
-                    ${
-                      additionalCosts.includes(cost.id)
-                        ? "bg-indigo-100 text-indigo-700 border-indigo-300 shadow-sm"
-                        : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"
-                    }
-                  `}
-                >
-                  <div className="font-medium mb-1">{cost.label}</div>
-                  <div className="text-xs text-gray-600">
-                    {cost.description}
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Navigation Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 mt-8">
-            <button
-              type="button"
-              onClick={() => navigate(-1)}
-              className="flex-1 bg-gray-100 text-gray-700 px-6 py-4 rounded-xl hover:bg-gray-200 transition font-medium flex items-center justify-center"
-            >
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            {/* Navigation */}
+            <div className="flex flex-col sm:flex-row gap-4 mt-12 pt-8 border-t border-slate-200">
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="flex-1 bg-white text-slate-700 px-6 py-4 rounded-lg border border-slate-300 hover:bg-slate-50 transition-all duration-200 font-medium flex items-center justify-center"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-              Back
-            </button>
+                <IconArrowLeft size={20} className="mr-2" />
+                Back
+              </button>
 
-            <button
-              onClick={handleNext}
-              className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-4 rounded-xl font-semibold transition-all flex items-center justify-center hover:shadow-lg transform hover:-translate-y-0.5"
-            >
-              Almost Done - Review Your Preferences
-              <svg
-                className="w-5 h-5 ml-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+              <button
+                onClick={handleNext}
+                className="flex-1 bg-blue-900 text-white px-6 py-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center hover:bg-blue-800 hover:shadow-lg"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
+                Review Your Preferences
+                <IconArrowRight size={20} className="ml-2" />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="mt-6 text-center text-sm text-gray-500 max-w-xl">
-        <p>
-          Your budget information helps us find properties that match your
-          financial comfort zone. All amounts are in Nigerian Naira (₦).
-        </p>
+        {/* Help Text */}
+        <div className="mt-8 text-center text-sm text-slate-500 max-w-xl mx-auto">
+          <p className="flex items-center justify-center">
+            <IconInfoCircle size={16} className="mr-2" />
+            Your budget information helps us find properties that match your
+            financial comfort zone
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -371,6 +326,7 @@ function BudgetCard({
   onChange,
   min,
   max,
+  icon: IconComponent,
   color,
 }: {
   title: string;
@@ -379,17 +335,21 @@ function BudgetCard({
   onChange: (value: number) => void;
   min: number;
   max: number;
+  icon: any;
   color: string;
 }) {
   return (
-    <div
-      className={`${color} rounded-lg p-4 border border-indigo-100 shadow-sm`}
-    >
-      <h4 className="text-sm font-medium text-gray-700 mb-2">{title}</h4>
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-lg font-bold text-indigo-700">
-          {formattedValue}
-        </span>
+    <div className={`${color} p-6 rounded-xl border border-slate-200`}>
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+          <IconComponent size={20} className="text-blue-900" />
+        </div>
+        <div>
+          <h4 className="text-sm font-medium text-slate-700">{title}</h4>
+          <div className="text-lg font-bold text-blue-900">
+            {formattedValue}
+          </div>
+        </div>
       </div>
       <input
         type="range"
@@ -397,9 +357,9 @@ function BudgetCard({
         max={max}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+        className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-900"
       />
-      <div className="flex justify-between text-xs text-gray-500 mt-1">
+      <div className="flex justify-between text-xs text-slate-500 mt-2">
         <span>{formatNaira(min)}</span>
         <span>{formatNaira(max)}</span>
       </div>

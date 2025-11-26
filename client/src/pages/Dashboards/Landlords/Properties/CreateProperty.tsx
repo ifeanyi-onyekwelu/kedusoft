@@ -49,6 +49,7 @@ import { ErrorState } from "../../../../components/ErrorState";
 import { showNotification } from "../../../../utils/helpers";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { Waves } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // Enhanced interface matching the property model
 interface EnhancedPropertyFormData {
@@ -123,6 +124,7 @@ const EnhancedAddProperty: React.FC = () => {
   const { loading } = useLoading();
   const { savePropertyDraft, createProperty } = useLandlordOperations();
   const { getAllCategories } = usePublicOperations();
+  const navigate = useNavigate();
 
   // Form with complete property model fields
   const form = useForm<EnhancedPropertyFormData>({
@@ -445,17 +447,19 @@ const EnhancedAddProperty: React.FC = () => {
           </div>
           <Group>
             <Button
-              to="/property-owner/properties"
-              label="Cancel"
+              onClick={() => navigate("/property-owner/properties")}
               variant="outlined"
-              icon={<IconX size={16} />}
-            />
+              leftSection={<IconX size={16} />}
+            >
+              Cancel
+            </Button>
             <Button
               variant="filled"
-              icon={<IconDeviceFloppy size={16} />}
+              leftSection={<IconDeviceFloppy size={16} />}
               onClick={handleSaveDraft}
-              label="Save Draft"
-            />
+            >
+              Save Draft
+            </Button>
           </Group>
         </Group>
 
@@ -788,10 +792,31 @@ const EnhancedAddProperty: React.FC = () => {
                   onLocationSelect={(location) => {
                     form.setFieldValue("latitude", location.lat);
                     form.setFieldValue("longitude", location.lng);
+
                     if (location.address) {
                       // Auto-fill address if not already set
                       if (!form.values.address) {
                         form.setFieldValue("address", location.address);
+                      }
+                    }
+
+                    // Auto-fill address components if available and not already set
+                    if (location.addressComponents) {
+                      const components = location.addressComponents;
+                      if (components.street && !form.values.street) {
+                        form.setFieldValue("street", components.street);
+                      }
+                      if (components.area && !form.values.area) {
+                        form.setFieldValue("area", components.area);
+                      }
+                      if (components.city && !form.values.city) {
+                        form.setFieldValue("city", components.city);
+                      }
+                      if (components.state && !form.values.state) {
+                        form.setFieldValue("state", components.state);
+                      }
+                      if (components.zipcode && !form.values.zipcode) {
+                        form.setFieldValue("zipcode", components.zipcode);
                       }
                     }
                   }}
@@ -810,7 +835,6 @@ const EnhancedAddProperty: React.FC = () => {
                     }
                   }}
                 />
-
                 <Card shadow="sm" p="lg" radius="md">
                   <Card.Section p="md" bg="gray.0">
                     <Group>
@@ -845,7 +869,6 @@ const EnhancedAddProperty: React.FC = () => {
                     />
                   </Stack>
                 </Card>
-
                 <Card shadow="sm" p="lg" radius="md">
                   <Card.Section p="md" bg="gray.0">
                     <Group>
@@ -911,7 +934,6 @@ const EnhancedAddProperty: React.FC = () => {
                     )}
                   </Stack>
                 </Card>
-
                 <Card shadow="sm" p="lg" radius="md">
                   <Card.Section p="md" bg="gray.0">
                     <Group>
@@ -999,7 +1021,6 @@ const EnhancedAddProperty: React.FC = () => {
                     />
                   </Stack>
                 </Card>
-
                 <Card shadow="sm" p="lg" radius="md">
                   <Card.Section p="md" bg="gray.0">
                     <Group>
@@ -1431,11 +1452,9 @@ const EnhancedAddProperty: React.FC = () => {
           <Group justify="space-between" mt="xl">
             <Group>
               {active > 0 && (
-                <Button
-                  label="Previous"
-                  variant="outlined"
-                  onClick={prevStep}
-                />
+                <Button variant="outlined" onClick={prevStep}>
+                  Previous
+                </Button>
               )}
             </Group>
 
@@ -1443,11 +1462,9 @@ const EnhancedAddProperty: React.FC = () => {
               {active < 4 ? (
                 <Button onClick={nextStep}>Next Step</Button>
               ) : (
-                <Button
-                  type="submit"
-                  icon={<IconCheck size={20} />}
-                  label="Create Property"
-                />
+                <Button type="submit" leftSection={<IconCheck size={20} />}>
+                  Create Property
+                </Button>
               )}
             </Group>
           </Group>

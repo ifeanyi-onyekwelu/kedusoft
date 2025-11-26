@@ -90,7 +90,7 @@ function LoginPage() {
 
       if (!is_onboarded) {
         if (role === "tenant") {
-          navigate("/onboarding/welcome");
+          navigate("/onboarding/tenant/welcome");
         } else if (role === "landlord") {
           navigate("/onboarding/landlord/welcome");
         }

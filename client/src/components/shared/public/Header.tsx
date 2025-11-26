@@ -22,13 +22,7 @@ import {
   IconBuilding,
   IconMapPin,
   IconTrendingUp,
-  IconHelp,
-  IconNews,
-  IconPhone,
   IconBed,
-  IconBath,
-  IconCar,
-  IconRuler,
 } from "@tabler/icons-react";
 import { BiPlusCircle } from "react-icons/bi";
 import { useDisclosure } from "@mantine/hooks";

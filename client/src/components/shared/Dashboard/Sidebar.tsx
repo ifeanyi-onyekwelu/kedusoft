@@ -13,6 +13,7 @@ import {
   IconChevronLeft,
   IconChevronRight,
   IconBrain,
+  IconUser,
 } from "@tabler/icons-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Tooltip, Collapse } from "@mantine/core";
@@ -154,6 +155,21 @@ const Sidebar: React.FC<SidebarProps> = ({
           { name: "All Properties", path: "/property-owner/properties" },
           { name: "Add New", path: "/property-owner/properties/add" },
         ],
+      },
+      {
+        name: "Maintenance",
+        path: "/property-owner/maintenance",
+        icon: <StyledIcon icon={IconBed} />,
+      },
+      {
+        name: "Transactions",
+        path: "/property-owner/transactions",
+        icon: <StyledIcon icon={IconCreditCard} />,
+      },
+      {
+        name: "Inspections",
+        path: "/property-owner/inspections",
+        icon: <StyledIcon icon={IconUser} />,
       },
       {
         name: "Messages",
@@ -399,13 +415,6 @@ const Sidebar: React.FC<SidebarProps> = ({
               <StyledIcon icon={IconSettings} />
               <span>Settings</span>
             </BottomLinks>
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 text-gray-700 hover:text-red-600 transition-all text-sm"
-            >
-              <StyledIcon icon={IconLogout} />
-              <span>Logout</span>
-            </button>
           </>
         )}
       </div>
