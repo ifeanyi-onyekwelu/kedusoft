@@ -145,7 +145,7 @@ const PropertyCard = ({ propertyData }: { propertyData: Property }) => {
                   event.stopPropagation();
                   handleShare();
                 }}
-                className="bg-white/90 backdrop-blur-sm hover:bg-white shadow-lg"
+                color="#fb7185"
                 radius="xl"
               >
                 <IconShare size={18} className="text-gray-200" />
@@ -163,11 +163,7 @@ const PropertyCard = ({ propertyData }: { propertyData: Property }) => {
                   handleLike();
                 }}
                 loading={loading}
-                className={`${
-                  isFavorite
-                    ? "bg-red-500 hover:bg-red-600"
-                    : "bg-white/90 backdrop-blur-sm hover:bg-white"
-                } shadow-lg`}
+                color={isFavorite ? "#ef4444" : "#0ea5e9"}
                 radius="xl"
               >
                 <IconHeart
@@ -180,7 +176,7 @@ const PropertyCard = ({ propertyData }: { propertyData: Property }) => {
           </div>
 
           {/* Price Tag */}
-          <div className="absolute bottom-4 left-4 bg-white rounded-lg px-3 py-1.5 shadow-lg">
+          <div className="absolute bottom-4 left-4 bg-white rounded-lg px-3 py-1.5 shadow-lg border border-accent">
             <div className="flex items-baseline gap-1">
               <span className="text-lg font-bold text-primary">
                 ₦{formatAmount(propertyData.rent_amount)}

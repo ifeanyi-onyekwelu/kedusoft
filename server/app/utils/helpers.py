@@ -76,9 +76,21 @@ def serialize(item_list):
 def seed_categories(session):
     categories = [
         {"name": "Apartment"},
+        {"name": "Self-Contained / Studio / Mini-Flat"},
         {"name": "Duplex"},
         {"name": "Bungalow"},
-        {"name": "Office"},
+        {"name": "Detached / Semi-Detached"},
+        {"name": "Serviced Apartment / Condo"},
+        {"name": "Boys' Quarters (BQ)"},
+        {"name": "Shared Apartment / Co-Living"},
+        {"name": "Hostel / Student Housing"},
+        {"name": "Short-Let"},
+        {"name": "Office Space"},
+        {"name": "Shop / Store"},
+        {"name": "Co-Office Space"},
+        {"name": "Warehouse / Industrial Space"},
+        {"name": "Lodge / Guest House"},
+        {"name": "Land (Residential / Commercial / Agricultural)"},
     ]
     for cat in categories:
         exists = session.query(Category).filter_by(name=cat["name"]).first()

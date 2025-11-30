@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
+import SectionHeader from "../SectionHeader";
+import { FaMapMarkerAlt } from "react-icons/fa";
 
 const nigerianStates = [
   "Lagos",
@@ -53,8 +55,6 @@ const MotionLink = motion(Link);
 const LinkGroup = ({
   title,
   items,
-  linkType,
-  propertyType,
   showViewAll = false,
 }: {
   title: string;
@@ -227,51 +227,13 @@ const LocationBrowseSection = () => {
 
       <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header Section */}
-        <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-primary/10 text-primary px-5 py-2.5 rounded-full text-sm font-semibold mb-6"
-          >
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                clipRule="evenodd"
-              />
-            </svg>
-            BROWSE BY LOCATION
-          </motion.div>
-
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
-          >
-            Search Properties by <span className="text-primary">Location</span>
-          </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto"
-          >
-            Find your perfect home in Nigeria's most popular cities and states
-            with our comprehensive listings
-          </motion.p>
-        </motion.div>
+        <SectionHeader
+          badgeTitle="Browse by Location"
+          badgeIcon={<FaMapMarkerAlt />}
+          title="Find Properties Near You"
+          emphasizedText="Location First"
+          description="Search homes by states, regions, and neighborhoods to discover where your next home could be."
+        />
 
         {/* Links Container */}
         <motion.div

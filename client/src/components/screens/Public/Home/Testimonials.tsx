@@ -1,10 +1,11 @@
-import { Box, Container, Group, Avatar, Text, Title, rem } from "@mantine/core";
+import { Box, Container, Group, Avatar, Text, rem } from "@mantine/core";
 import "@mantine/carousel/styles.css";
 import "@mantine/core/styles.css";
 import { IconQuote } from "@tabler/icons-react";
 import { Carousel } from "@mantine/carousel";
-import { useMediaQuery } from "@mantine/hooks";
 import { motion } from "framer-motion";
+import SectionHeader from "../SectionHeader";
+import { FaCommentDots } from "react-icons/fa6";
 
 const testimonials = [
   {
@@ -52,63 +53,13 @@ const Testimonials = () => {
 
       <Container size="xl" className="relative z-10">
         {/* Header Section */}
-        <div className="text-center mb-16">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-primary/10 text-primary px-5 py-2.5 rounded-full text-sm font-semibold mb-6"
-          >
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
-            TRUSTED BY TENANTS
-          </motion.div>
-
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4"
-          >
-            What Our <span className="text-primary">Customers</span> Say
-          </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto mb-10"
-          >
-            Hear from thousands of satisfied renters who found their perfect
-            home through our platform
-          </motion.p>
-
-          {/* Stats Row */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="grid grid-cols-3 gap-6 max-w-2xl mx-auto"
-          >
-            {[
-              { value: "4.9/5", label: "Average Rating" },
-              { value: "5,000+", label: "Happy Tenants" },
-              { value: "10,000+", label: "Reviews" },
-            ].map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-primary mb-1">
-                  {stat.value}
-                </div>
-                <div className="text-sm text-gray-600">{stat.label}</div>
-              </div>
-            ))}
-          </motion.div>
-        </div>
+        <SectionHeader
+          badgeTitle="Testimonials"
+          badgeIcon={<FaCommentDots />}
+          title="What Our Clients Say"
+          emphasizedText="Trusted by Many"
+          description="Hear from real people who found their home through us — authentic experiences from satisfied clients."
+        />
 
         {/* Testimonials Carousel */}
         <motion.div
@@ -120,9 +71,7 @@ const Testimonials = () => {
           <Carousel
             slideSize={{ base: "100%", sm: "50%" }}
             slideGap="xl"
-            align="start"
             height="100%"
-            loop
             withIndicators
             styles={{
               indicator: {
@@ -138,7 +87,7 @@ const Testimonials = () => {
               },
             }}
           >
-            {testimonials.map((testimonial, index) => (
+            {testimonials.map((testimonial) => (
               <Carousel.Slide key={testimonial.id}>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}

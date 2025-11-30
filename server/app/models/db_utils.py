@@ -183,6 +183,32 @@ def count_items(session: Session, model):
     return session.query(model).count()
 
 
+def count_items_by_filter(
+    session: Session, model, filters: dict = None, complex_filters=None
+):
+    """
+    Counts the number of items matching the given filter criteria.
+    Efficient method that only fetches the count from the database.
+
+    :param session: SQLAlchemy session object.
+    :param model: ORM model class.
+    :param filters: Dictionary of filter criteria (default: None)
+    :param complex_filters: List of complex filter conditions (default: None)
+    :return: Count of items matching the filters.
+    """
+    query = session.query(model)
+
+    # Apply simple filters if provided
+    if filters and isinstance(filters, dict):
+        query = query.filter_by(**filters)
+
+    # Apply complex filters if provided
+    if complex_filters:
+        query = query.filter(*complex_filters)
+
+    return query.count()
+
+
 from sqlalchemy.orm import Query
 from typing import Tuple
 

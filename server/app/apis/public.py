@@ -15,6 +15,7 @@ from ..models.db_utils import (
     get_item_by_id,
     get_items_by_filter,
     create_item,
+    count_items_by_filter,
 )
 from sqlalchemy.orm import joinedload
 from sqlalchemy import or_, func, and_, desc
@@ -34,10 +35,28 @@ public = Blueprint("public", __name__)
 @public.route("/categories", methods=["GET"])
 @catch_exception
 def get_all_categories():
-    """Fetches all categories"""
+    """Fetches all categories with property count for each"""
     categories = get_all_items(g.session, Category)
-    serialized_categories = serialize(categories)
-    return response("Categories fetched successfully", serialized_categories)
+
+    categories_with_counts = []
+    for category in categories:
+        # Count properties in this category that are available using the helper function
+        property_count = count_items_by_filter(
+            g.session,
+            Property,
+            filters={
+                "deleted": False,
+                "is_available": True,
+                "category_id": category.id,
+            },
+        )
+        logger.info("Counts", property_count)
+
+        categories_with_counts.append(
+            {**serialize(category), "property_count": property_count}
+        )
+
+    return response("Categories fetched successfully", categories_with_counts)
 
 
 @public.route("/categories/<string:category_id>/properties", methods=["GET"])

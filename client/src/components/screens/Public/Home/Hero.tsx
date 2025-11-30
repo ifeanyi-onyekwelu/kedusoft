@@ -101,11 +101,17 @@ function Hero() {
       // Build location string - prefer specific address or fall back to city/state
       const locationString = fullAddress || city;
 
+      // UPDATE THE LOCATION STATE - THIS IS THE MISSING LINE
+      setLocation(locationString);
+
       // Navigate to listings page with location and coordinates
       const params = new URLSearchParams();
       params.append("location", locationString);
       params.append("lat", latitude.toString());
       params.append("lng", longitude.toString());
+
+      // If you want to automatically navigate after getting location, uncomment:
+      // navigate(`/listings?${params.toString()}`);
     } catch (error) {
       console.error("Error getting location:", error);
       toast.error(
@@ -145,19 +151,19 @@ function Hero() {
           variants={containerVariants}
         >
           <div className="text-start space-y-12">
-            {/* Main Heading - Exact Zillow Style */}
+            {/* Main Heading - Updated Caption */}
             <motion.div variants={itemVariants} className="space-y-6">
               <h1 className="text-white font-black text-4xl md:text-5xl lg:text-6xl leading-tight">
-                Agents. Tours.
+                Find Your Next Home.
                 <br />
-                Loans. Homes.
+                Simple. Fast. Stress-Free.
               </h1>
             </motion.div>
 
             {/* Simple Search Bar - Zillow Style */}
             <motion.div variants={itemVariants} className="max-w-2xl">
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div className="flex">
+              <div className="bg-white rounded-sm shadow-lg overflow-hidden">
+                <div className="flex items-stretch">
                   <div className="flex-1">
                     <Combobox store={combobox} withinPortal={false}>
                       <Combobox.Target>
@@ -203,11 +209,12 @@ function Hero() {
                     </Combobox>
                   </div>
 
-                  <Button
-                    leftSection={<IconSearch color="black" />}
+                  <button
                     onClick={searchListings}
-                    className="bg-transparent hover:bg-gray-100 border-0 rounded-l-none px-8 font-semibold h-full"
-                  />
+                    className="bg-accent hover:bg-accent/80 font-bold transition-colors duration-300 cursor-pointer text-white border-0 rounded-l-none px-8"
+                  >
+                    Find
+                  </button>
                 </div>
               </div>
             </motion.div>

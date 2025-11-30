@@ -5,79 +5,86 @@ import {
   FaHotel,
   FaBed,
   FaWarehouse,
+  FaStar,
+  FaLandmark,
+  FaKey,
+  FaUsers,
+  FaGraduationCap,
+  FaBriefcase,
+  FaStore,
+  FaMapPin,
 } from "react-icons/fa";
 import { Carousel } from "@mantine/carousel";
 import { motion } from "framer-motion";
-import { ElementType } from "react";
+import { ElementType, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useMantineTheme } from "@mantine/core";
+import { useMantineTheme, Skeleton } from "@mantine/core";
 import "@mantine/carousel/styles.css";
+import SectionHeader from "../SectionHeader";
+import { usePublicOperations } from "@/apis/publicApi";
+import { useLoading } from "@/hooks/useLoading";
+import { ErrorState } from "@/components/ErrorState";
 
-interface ApartmentCardProps {
+interface CategoryCardProps {
   icon: ElementType;
   title: string;
   href: string;
-  totalProperties: string;
+  totalProperties: number;
+  id?: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  property_count: number;
+  description?: string;
 }
 
 const MotionLink = motion(Link);
 
-const apartmentTypes: ApartmentCardProps[] = [
-  {
-    icon: FaWarehouse,
-    title: "Lodge",
-    href: "/listings?property_type=lodge",
-    totalProperties: "240",
-  },
-  {
-    icon: FaBed,
-    title: "Studio",
-    href: "/listings?property_type=studio",
-    totalProperties: "180",
-  },
-  {
-    icon: FaCity,
-    title: "Penthouse",
-    href: "/listings?property_type=penthouse",
-    totalProperties: "45",
-  },
-  {
-    icon: FaBuilding,
-    title: "Apartment",
-    href: "/listings?property_type=apartment",
-    totalProperties: "420",
-  },
-  {
-    icon: FaHome,
-    title: "Duplex",
-    href: "/listings?property_type=duplex",
-    totalProperties: "165",
-  },
-  {
-    icon: FaHotel,
-    title: "Self-Contain",
-    href: "/listings?property_type=self_contain",
-    totalProperties: "280",
-  },
-  {
-    icon: FaBuilding,
-    title: "Mini Flat",
-    href: "/listings?property_type=mini_flat",
-    totalProperties: "195",
-  },
-];
+// Mapping of category names to icons
+const categoryIconMap: Record<string, ElementType> = {
+  apartment: FaBuilding,
+  "self-contained / studio / mini-flat": FaBed,
+  duplex: FaHome,
+  bungalow: FaLandmark,
+  "detached / semi-detached": FaHome,
+  "serviced apartment / condo": FaCity,
+  "boys' quarters (bq)": FaKey,
+  "shared apartment / co-living": FaUsers,
+  "hostel / student housing": FaGraduationCap,
+  "short-let": FaHotel,
+  "office space": FaBriefcase,
+  "shop / store": FaStore,
+  "co-office space": FaBriefcase,
+  "warehouse / industrial space": FaWarehouse,
+  "lodge / guest house": FaHotel,
+  "land (residential / commercial / agricultural)": FaMapPin,
+};
 
-const ApartmentCard = ({
+// Function to get icon based on category name
+const getIconForCategory = (categoryName: string): ElementType => {
+  const lowerName = categoryName.toLowerCase().trim();
+  return categoryIconMap[lowerName] || FaHome; // Default to FaHome if not found
+};
+
+// Function to truncate long category names
+const truncateCategoryName = (name: string, maxLength: number = 12): string => {
+  if (name.length <= maxLength) return name;
+  return name.substring(0, maxLength) + "...";
+};
+
+const CategoryCard = ({
   data,
   index,
 }: {
-  data: ApartmentCardProps;
+  data: CategoryCardProps;
   index: number;
 }) => {
   return (
     <MotionLink to={data.href} className="block group h-full">
       <motion.div
-        className="relative rounded-2xl p-8 bg-white cursor-pointer overflow-hidden h-full flex flex-col justify-between min-h-[200px] shadow-sm hover:shadow-2xl transition-shadow duration-500"
+        className="relative rounded-2xl p-8 bg-white border border-accent/20 cursor-pointer overflow-hidden h-full flex flex-col justify-between min-h-[200px]"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-50px" }}
@@ -86,16 +93,13 @@ const ApartmentCard = ({
           delay: index * 0.1,
           ease: [0.25, 0.46, 0.45, 0.94],
         }}
-        whileHover={{
-          y: -12,
-          transition: { duration: 0.3, ease: [0.34, 1.56, 0.64, 1] },
-        }}
+        title={data.title}
       >
         {/* Decorative corner element */}
-        <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-full transition-all duration-300 group-hover:bg-primary/10 group-hover:w-32 group-hover:h-32"></div>
+        <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-full transition-all duration-300 group-hover:bg-accent group-hover:w-32 group-hover:h-32"></div>
 
         {/* Subtle border glow */}
-        <div className="absolute inset-0 rounded-2xl border border-gray-100 group-hover:border-primary/30 transition-all duration-300"></div>
+        <div className="absolute inset-0 rounded-2xl border border-gray-100 group-hover:border-accent/30 transition-all duration-300"></div>
 
         <div className="relative z-10">
           {/* Icon container */}
@@ -122,15 +126,17 @@ const ApartmentCard = ({
 
           {/* Text content */}
           <div className="space-y-2">
-            <h4 className="font-bold text-lg text-gray-900 group-hover:text-primary transition-colors duration-300">
-              {data.title}
+            <h4 className="font-bold text-lg text-gray-900 group-hover:text-primary transition-colors duration-300 truncate">
+              {truncateCategoryName(data.title)}
             </h4>
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-500 font-medium">
                 {data.totalProperties}
               </span>
               <span className="text-xs text-gray-400">
-                Properties Available
+                {data.totalProperties === 1
+                  ? "Property Available"
+                  : "Properties Available"}
               </span>
             </div>
           </div>
@@ -163,10 +169,65 @@ const ApartmentCard = ({
 
 function Explore() {
   const theme = useMantineTheme();
+  const { getAllCategories } = usePublicOperations();
+  const { loading, withLoading } = useLoading();
+  const [error, setError] = useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
 
-  const items = apartmentTypes.map((item, index) => (
-    <Carousel.Slide key={item.title}>
-      <ApartmentCard data={item} index={index} />
+  const fetchCategories = async () => {
+    try {
+      const response = await withLoading(getAllCategories());
+
+      // Transform API response to component format
+      const transformedCategories: Category[] = Array.isArray(response)
+        ? response
+        : response.data || [];
+
+      setCategories(transformedCategories);
+    } catch (error) {
+      setError("Failed to fetch categories. Please try again later.");
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  if (loading)
+    return (
+      <div className="relative h-fit bg-gray-50 py-20">
+        <div className="max-w-window mx-auto px-4 sm:px-6 md:px-8">
+          <div className="text-center mb-12">
+            <SectionHeader
+              badgeTitle="PROPERTY TYPES"
+              badgeIcon={<FaStar />}
+              title="Explore"
+              emphasizedText="Property Types"
+              description="Loading property types..."
+            />
+          </div>
+          <Skeleton height={200} circle mb="xl" />
+        </div>
+      </div>
+    );
+
+  if (error)
+    return (
+      <ErrorState message={error} onRetry={fetchCategories} loading={loading} />
+    );
+
+  // Transform categories to category cards with icons
+  const categoryCards: CategoryCardProps[] = categories.map((category) => ({
+    id: category.id,
+    icon: getIconForCategory(category.name),
+    title: category.name.charAt(0).toUpperCase() + category.name.slice(1),
+    href: `/listings?category=${encodeURIComponent(category.name)}`,
+    totalProperties: category.property_count,
+  }));
+
+  const items = categoryCards.map((item, index) => (
+    <Carousel.Slide key={item.id || item.title}>
+      <CategoryCard data={item} index={index} />
     </Carousel.Slide>
   ));
 
@@ -174,37 +235,13 @@ function Explore() {
     <div className="relative h-fit bg-gray-50 py-20">
       <motion.div className="max-w-window mx-auto px-4 sm:px-6 md:px-8">
         <motion.div className="text-center mb-12">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-primary/10 text-primary px-5 py-2.5 rounded-full text-sm font-semibold mb-6"
-          >
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-            </svg>
-            PROPERTY TYPES
-          </motion.div>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4"
-          >
-            Explore <span className="text-primary">Property Types</span>
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-gray-600 text-base md:text-lg max-w-2xl mx-auto"
-          >
-            From cozy studios to spacious penthouses - find the perfect home
-            that suits your lifestyle and budget
-          </motion.p>
+          <SectionHeader
+            badgeTitle="PROPERTY TYPES"
+            badgeIcon={<FaStar />}
+            title="Explore"
+            emphasizedText="Property Types"
+            description="From cozy studios to spacious penthouses - find the perfect home that suits your lifestyle and budget"
+          />
         </motion.div>
 
         <motion.div
@@ -226,12 +263,6 @@ function Explore() {
                 width: "48px",
                 height: "48px",
                 borderRadius: "12px",
-                "&:hover": {
-                  backgroundColor: theme.colors[theme.primaryColor][6],
-                  color: "white",
-                  transform: "scale(1.05)",
-                },
-                transition: "all 0.2s ease",
               },
             }}
           >

@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
 import { Carousel } from "@mantine/carousel";
 import { useMantineTheme } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
 import "@mantine/carousel/styles.css";
 import { Link } from "react-router-dom";
+import SectionHeader from "../SectionHeader";
+import { FaCity } from "react-icons/fa6";
 
 interface CityCardProps {
   imageUrl: string;
@@ -190,51 +191,13 @@ function PropertiesByCities() {
 
       <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header Section */}
-        <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-primary/10 text-primary px-5 py-2.5 rounded-full text-sm font-semibold mb-6"
-          >
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                clipRule="evenodd"
-              />
-            </svg>
-            EXPLORE LOCATIONS
-          </motion.div>
-
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4"
-          >
-            Discover <span className="text-primary">Popular Cities</span>
-          </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto"
-          >
-            Explore amazing properties in Nigeria's most sought-after cities and
-            find your perfect home
-          </motion.p>
-        </motion.div>
+        <SectionHeader
+          badgeTitle="Properties by City"
+          badgeIcon={<FaCity />}
+          title="Browse by Cities"
+          emphasizedText="Top Locations"
+          description="Find homes across the most popular cities — search by location to discover properties near you."
+        />
 
         {/* Carousel Section */}
         <motion.div
