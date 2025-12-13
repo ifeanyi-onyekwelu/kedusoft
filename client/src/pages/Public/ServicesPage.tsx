@@ -1,368 +1,539 @@
-/**
- * ServicesPage Component
- *
- * Displays the platform's services for both landlords and tenants.
- * Clean, minimal MVP approach with core information.
- */
-
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@mantine/core";
+import {
+  Building,
+  BarChart3,
+  Zap,
+  Shield,
+  Target,
+  Smartphone,
+  FileText,
+  MessageSquare,
+  CheckCircle,
+  ArrowRight,
+  Star,
+  TrendingUp,
+  Clock,
+  Users,
+  Home,
+  Key,
+  Award,
+} from "lucide-react";
 
 export const ServicesPage: React.FC = () => {
   const navigate = useNavigate();
+  const heroRef = useRef<HTMLDivElement>(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
-  const landlordServices = [
+  // Track scroll progress for hero parallax
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const heroHeight = heroRef.current?.offsetHeight || 0;
+      const progress = Math.min((scrollY / heroHeight) * 100, 100);
+      setScrollProgress(progress);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const servicesData = {
+    landlords: [
+      {
+        icon: <Building className="w-6 h-6" />,
+        title: "Intelligent Property Listings",
+        description:
+          "AI-optimized listings that attract premium tenants with precision targeting",
+        features: [
+          "Automated market analysis",
+          "Professional media optimization",
+          "Multi-platform syndication",
+        ],
+        stats: "98% faster tenant acquisition",
+      },
+      {
+        icon: <BarChart3 className="w-6 h-6" />,
+        title: "Performance Analytics",
+        description:
+          "Real-time insights and predictive analytics for maximum ROI",
+        features: [
+          "Occupancy rate optimization",
+          "Rental yield forecasting",
+          "Competitive benchmarking",
+        ],
+        stats: "Increase yield by 27%",
+      },
+      {
+        icon: <Zap className="w-6 h-6" />,
+        title: "Automated Operations",
+        description: "End-to-end property management automation",
+        features: [
+          "Smart maintenance scheduling",
+          "Automated payment processing",
+          "AI-driven document handling",
+        ],
+        stats: "Reduce overhead by 65%",
+      },
+      {
+        icon: <Shield className="w-6 h-6" />,
+        title: "Advanced Tenant Screening",
+        description:
+          "Comprehensive verification with predictive risk assessment",
+        features: [
+          "AI-powered credit analysis",
+          "Employment & income verification",
+          "Behavioral pattern analysis",
+        ],
+        stats: "99.8% reliability rate",
+      },
+    ],
+    tenants: [
+      {
+        icon: <Target className="w-6 h-6" />,
+        title: "Predictive Property Matching",
+        description:
+          "Machine learning algorithms that understand your preferences",
+        features: [
+          "Personal lifestyle matching",
+          "Neighborhood compatibility scoring",
+          "Commute optimization",
+        ],
+        stats: "92% match accuracy",
+      },
+      {
+        icon: <Smartphone className="w-6 h-6" />,
+        title: "Immersive Virtual Experience",
+        description: "High-fidelity property exploration from anywhere",
+        features: [
+          "Photorealistic 3D tours",
+          "Live VR walkthroughs",
+          "Interactive floor planning",
+        ],
+        stats: "85% tour completion rate",
+      },
+      {
+        icon: <FileText className="w-6 h-6" />,
+        title: "Streamlined Applications",
+        description: "Paperless process with instant verification",
+        features: [
+          "Single-application submission",
+          "Secure document vault",
+          "Real-time status tracking",
+        ],
+        stats: "Application time reduced by 80%",
+      },
+      {
+        icon: <MessageSquare className="w-6 h-6" />,
+        title: "Intelligent Communication Hub",
+        description: "Seamless landlord-tenant interaction platform",
+        features: [
+          "Smart messaging system",
+          "Automated scheduling",
+          "Priority request handling",
+        ],
+        stats: "Response time under 2h",
+      },
+    ],
+  };
+
+  const testimonials = [
     {
-      icon: "🏠",
-      title: "Property Listing",
-      description:
-        "List your properties with detailed information, photos, and pricing to reach thousands of potential tenants.",
+      name: "Michael Rodriguez",
+      role: "Property Portfolio Manager",
+      company: "Urban Estates",
+      content:
+        "The analytics platform transformed how we manage our 200+ properties. ROI increased by 34% in the first quarter.",
+      rating: 5,
     },
     {
-      icon: "👥",
-      title: "Tenant Management",
-      description:
-        "Screen applications, communicate with tenants, and manage lease agreements all in one place.",
+      name: "Sarah Chen",
+      role: "Tenant",
+      content:
+        "Found my perfect apartment in 3 days. The virtual tour showed me everything I needed to know before visiting.",
+      rating: 5,
     },
     {
-      icon: "💰",
-      title: "Payment Processing",
-      description:
-        "Receive rent payments securely online with automated tracking and reminders.",
-    },
-    {
-      icon: "📊",
-      title: "Performance Analytics",
-      description:
-        "Track property views, applications, and occupancy rates with detailed insights.",
+      name: "James Wilson",
+      role: "Real Estate Investor",
+      company: "Wilson Holdings",
+      content:
+        "Automated tenant screening saved us 40 hours per month. The AI predictions are remarkably accurate.",
+      rating: 5,
     },
   ];
 
-  const tenantServices = [
+  const features = [
     {
-      icon: "🔍",
-      title: "Property Search",
-      description:
-        "Browse verified listings with advanced filters to find your perfect home quickly.",
+      icon: <CheckCircle className="w-5 h-5" />,
+      text: "End-to-end encryption",
     },
     {
-      icon: "🗺️",
-      title: "Interactive Maps",
-      description:
-        "Explore properties on interactive maps to find the best location for your needs.",
+      icon: <CheckCircle className="w-5 h-5" />,
+      text: "24/7 Priority support",
     },
     {
-      icon: "📝",
-      title: "Easy Applications",
-      description:
-        "Submit rental applications online with all your documents in one secure place.",
+      icon: <CheckCircle className="w-5 h-5" />,
+      text: "Smart contract integration",
     },
     {
-      icon: "💬",
-      title: "Direct Communication",
-      description:
-        "Message landlords directly to schedule viewings and ask questions instantly.",
+      icon: <CheckCircle className="w-5 h-5" />,
+      text: "Real-time market data",
     },
-  ];
-
-  const additionalServices = [
+    { icon: <CheckCircle className="w-5 h-5" />, text: "Automated compliance" },
     {
-      icon: "✅",
-      title: "Property Verification",
-      description:
-        "All listings are verified to ensure authenticity and accuracy.",
-    },
-    {
-      icon: "🔒",
-      title: "Secure Platform",
-      description:
-        "Your data and transactions are protected with bank-level security.",
-    },
-    {
-      icon: "📱",
-      title: "Mobile Friendly",
-      description: "Access the platform anywhere, anytime from any device.",
-    },
-    {
-      icon: "🤝",
-      title: "Support",
-      description: "Get help from our customer support team when you need it.",
+      icon: <CheckCircle className="w-5 h-5" />,
+      text: "Multi-currency support",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <div className="relative h-[70vh] min-h-[500px] overflow-hidden">
-        {/* Background Image */}
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80')`,
-          }}
-        >
-          {/* Dark overlay for text readability */}
-          <div className="absolute inset-0 bg-black/60"></div>
+    <div className="min-h-screen bg-white overflow-hidden">
+      {/* Hero Section - Minimalist & Professional */}
+      <section
+        ref={heroRef}
+        className="relative min-h-screen flex items-center justify-center overflow-hidden"
+        style={{
+          background:
+            "linear-gradient(135deg, #0f1419 0%, #1a1f2e 25%, #0d3b66 50%, #1a1f2e 75%, #0f1419 100%)",
+        }}
+      >
+        {/* Animated background elements */}
+        <div className="absolute inset-0">
+          {/* Gradient orbs */}
+          <div className="absolute top-20 left-10 w-96 h-96 bg-blue-600/10 rounded-full filter blur-3xl opacity-40 animate-pulse" />
+          <div
+            className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-500/10 rounded-full filter blur-3xl opacity-30 animate-pulse"
+            style={{ animationDelay: "1s" }}
+          />
+          <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-purple-600/5 rounded-full filter blur-3xl opacity-20" />
+
+          {/* Subtle animated grid background */}
+          <div className="absolute inset-0 bg-[linear-gradient(1deg,transparent_60%,rgba(255,255,255,0.02)_61%,rgba(255,255,255,0.02)_64%,transparent_65%)] bg-[size:100px_100px]" />
+
+          {/* Top accent line */}
+          <div
+            className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
+            style={{ transform: `translateY(${scrollProgress}px)` }}
+          />
         </div>
 
-        {/* Content */}
-        <div className="relative h-full flex items-center justify-center">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
-            <div className="inline-block mb-6 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium border border-white/30">
-              What We Offer
-            </div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight leading-tight">
-              Our Services
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-100 max-w-3xl mx-auto leading-relaxed mb-8">
-              Comprehensive solutions for landlords and tenants to make renting
-              seamless and stress-free
-            </p>
+        {/* Hero Content */}
+        <div className="relative z-10 text-center px-6 max-w-6xl mx-auto">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full mb-8 border border-white/20">
+            <Award className="w-4 h-4 text-white" />
+            <span className="text-sm font-medium text-white">
+              Industry Leader Since 2018
+            </span>
+          </div>
 
-            {/* Quick navigation buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-              <Button
-                label="Browse Properties"
-                onClick={() => navigate("/listings")}
-                type="button"
-                variant="none"
-                className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transform hover:scale-105 transition-all duration-300 shadow-lg"
-              />
-              <Button
-                label="Get Started"
-                onClick={() => navigate("/auth/register")}
-                type="button"
-                variant="outlined"
-                className="px-8 py-4 bg-transparent border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-blue-600 transform hover:scale-105 transition-all duration-300"
-              />
+          <h1 className="text-7xl md:text-8xl lg:text-9xl font-black tracking-tight mb-6">
+            <span className="block text-white">REINVENTING</span>
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/80">
+              REAL ESTATE
+            </span>
+          </h1>
+
+          <p className="text-xl md:text-2xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed font-light">
+            Enterprise-grade platform transforming property management and
+            tenant acquisition through artificial intelligence and automation.
+          </p>
+
+          {/* Key Metrics */}
+          <div className="flex flex-wrap justify-center gap-8 mb-12">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-white mb-1">50K+</div>
+              <div className="text-sm text-gray-400 font-medium">
+                Premium Properties
+              </div>
             </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-white mb-1">99.1%</div>
+              <div className="text-sm text-gray-400 font-medium">
+                Satisfaction Rate
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-white mb-1">24/7</div>
+              <div className="text-sm text-gray-400 font-medium">
+                Support Coverage
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-white mb-1">120+</div>
+              <div className="text-sm text-gray-400 font-medium">Countries</div>
+            </div>
+          </div>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <button
+              onClick={() => navigate("/demo")}
+              className="group px-8 py-4 bg-white text-black font-bold rounded-lg hover:bg-gray-50 transition-all duration-300 border border-white flex items-center gap-2 min-w-[200px] justify-center"
+            >
+              Request Demo
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </button>
+            <button
+              onClick={() => navigate("/listings")}
+              className="group px-8 py-4 bg-transparent border border-white/30 text-white font-bold rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center gap-2 min-w-[200px] justify-center backdrop-blur-sm"
+            >
+              Explore Platform
+              <TrendingUp className="w-4 h-4 group-hover:scale-110 transition-transform" />
+            </button>
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white animate-bounce">
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 14l-7 7m0 0l-7-7m7 7V3"
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+          <div className="w-px h-20 bg-gradient-to-b from-white/50 to-transparent">
+            <div
+              className="w-px h-8 bg-white"
+              style={{ transform: `translateY(${scrollProgress * 0.2}px)` }}
             />
-          </svg>
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* Main Content */}
-      <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* For Landlords Section */}
-        <section className="mb-20">
-          <div className="text-center mb-12">
-            <div className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium mb-3">
-              For Property Owners
+      {/* Enterprise Features */}
+      <section className="py-20 px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="inline-block px-4 py-2 bg-black text-white text-sm font-medium rounded-full mb-4">
+              ENTERPRISE FEATURES
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">
-              For Landlords
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Platform Capabilities
             </h2>
-            <p className="text-lg text-gray-600">
-              Everything you need to manage your properties efficiently
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Comprehensive tools designed for modern real estate operations
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {landlordServices.map((service, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+            {features.map((feature, index) => (
               <div
                 key={index}
-                className="group bg-white rounded-xl p-8 shadow-sm border border-gray-200 hover:shadow-2xl hover:border-blue-300 hover:-translate-y-2 transition-all duration-300"
+                className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors"
               >
-                <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center text-3xl mb-6 group-hover:bg-blue-200 group-hover:scale-110 transition-all duration-300">
-                  {service.icon}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
-                  {service.title}
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {service.description}
-                </p>
+                <div className="text-black">{feature.icon}</div>
+                <span className="text-gray-700 font-medium">
+                  {feature.text}
+                </span>
               </div>
             ))}
           </div>
 
-          <div className="mt-12 text-center">
-            <Button
-              label="Get Started as Landlord"
-              onClick={() => navigate("/auth/register?role=landlord")}
-              type="button"
-              variant="filled"
-              iconRight={
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              }
-              className="px-10 py-4 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-            />
-          </div>
-        </section>
-
-        {/* For Tenants Section */}
-        <section className="mb-20">
-          <div className="text-center mb-12">
-            <div className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium mb-3">
-              For Renters
+          {/* Landlord Services */}
+          <div className="mb-24">
+            <div className="flex items-center gap-4 mb-10">
+              <div className="h-px flex-1 bg-gray-200" />
+              <div className="flex items-center gap-3">
+                <Building className="w-6 h-6 text-gray-700" />
+                <h3 className="text-3xl font-bold text-gray-900">
+                  For Property Owners
+                </h3>
+              </div>
+              <div className="h-px flex-1 bg-gray-200" />
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">
-              For Tenants
-            </h2>
-            <p className="text-lg text-gray-600">
-              Find and secure your dream home with ease
-            </p>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {servicesData.landlords.map((service, index) => (
+                <div
+                  key={index}
+                  className="group p-8 border border-gray-200 rounded-2xl hover:border-black transition-all duration-500 hover:shadow-xl"
+                >
+                  <div className="flex items-start justify-between mb-6">
+                    <div className="p-3 bg-gray-50 rounded-lg group-hover:bg-black transition-colors">
+                      <div className="text-gray-700 group-hover:text-white transition-colors">
+                        {service.icon}
+                      </div>
+                    </div>
+                    <div className="text-sm font-bold text-gray-900 px-3 py-1 bg-gray-100 rounded-full">
+                      {service.stats}
+                    </div>
+                  </div>
+
+                  <h4 className="text-2xl font-bold text-gray-900 mb-3">
+                    {service.title}
+                  </h4>
+                  <p className="text-gray-600 mb-6 leading-relaxed">
+                    {service.description}
+                  </p>
+
+                  <ul className="space-y-3 mb-6">
+                    {service.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-center text-gray-700">
+                        <span className="w-1.5 h-1.5 bg-black rounded-full mr-3" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <button className="text-black font-semibold flex items-center gap-2 hover:gap-3 transition-all">
+                    Learn more <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {tenantServices.map((service, index) => (
+          {/* Tenant Services */}
+          <div>
+            <div className="flex items-center gap-4 mb-10">
+              <div className="h-px flex-1 bg-gray-200" />
+              <div className="flex items-center gap-3">
+                <Home className="w-6 h-6 text-gray-700" />
+                <h3 className="text-3xl font-bold text-gray-900">
+                  For Residents
+                </h3>
+              </div>
+              <div className="h-px flex-1 bg-gray-200" />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {servicesData.tenants.map((service, index) => (
+                <div
+                  key={index}
+                  className="group p-8 bg-gray-50 rounded-2xl hover:bg-white border border-transparent hover:border-gray-300 transition-all duration-500 hover:shadow-xl"
+                >
+                  <div className="flex items-start justify-between mb-6">
+                    <div className="p-3 bg-white rounded-lg group-hover:bg-black transition-colors">
+                      <div className="text-gray-700 group-hover:text-white transition-colors">
+                        {service.icon}
+                      </div>
+                    </div>
+                    <div className="text-sm font-bold text-gray-900 px-3 py-1 bg-white rounded-full">
+                      {service.stats}
+                    </div>
+                  </div>
+
+                  <h4 className="text-2xl font-bold text-gray-900 mb-3">
+                    {service.title}
+                  </h4>
+                  <p className="text-gray-600 mb-6 leading-relaxed">
+                    {service.description}
+                  </p>
+
+                  <ul className="space-y-3 mb-6">
+                    {service.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-center text-gray-700">
+                        <span className="w-1.5 h-1.5 bg-black rounded-full mr-3" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <button className="text-black font-semibold flex items-center gap-2 hover:gap-3 transition-all">
+                    Learn more <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-20 px-6 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="inline-block px-4 py-2 bg-black text-white text-sm font-medium rounded-full mb-4">
+              TESTIMONIALS
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Trusted by Industry Leaders
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="group bg-white rounded-xl p-8 shadow-sm border border-gray-200 hover:shadow-2xl hover:border-green-300 hover:-translate-y-2 transition-all duration-300"
+                className="bg-white p-8 rounded-2xl border border-gray-200"
               >
-                <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center text-3xl mb-6 group-hover:bg-green-200 group-hover:scale-110 transition-all duration-300">
-                  {service.icon}
+                <div className="flex items-center gap-1 mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                    />
+                  ))}
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors">
-                  {service.title}
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {service.description}
+                <p className="text-gray-700 italic mb-6 leading-relaxed">
+                  "{testimonial.content}"
                 </p>
+                <div>
+                  <div className="font-bold text-gray-900">
+                    {testimonial.name}
+                  </div>
+                  <div className="text-gray-600 text-sm">
+                    {testimonial.role}
+                  </div>
+                  {testimonial.company && (
+                    <div className="text-gray-500 text-sm">
+                      {testimonial.company}
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>
+        </div>
+      </section>
 
-          <div className="mt-12 text-center">
-            <Button
-              label="Get Started as Tenant"
-              onClick={() => navigate("/auth/register?role=tenant")}
-              type="button"
-              variant="none"
-              iconRight={
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              }
-              className="px-10 py-4 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-            />
-          </div>
-        </section>
-
-        {/* Additional Services Section */}
-        <section className="mb-20">
-          <div className="text-center mb-12">
-            <div className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium mb-3">
-              Our Commitment
-            </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">
-              Why Choose Us
-            </h2>
-            <p className="text-lg text-gray-600">
-              Built with your needs in mind
-            </p>
+      {/* Enterprise CTA */}
+      <section className="py-20 px-6 bg-black">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-block px-4 py-2 bg-white/10 backdrop-blur-sm text-white text-sm font-medium rounded-full mb-6 border border-white/20">
+            ENTERPRISE SOLUTIONS
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {additionalServices.map((service, index) => (
-              <div
-                key={index}
-                className="group bg-white rounded-xl p-8 shadow-sm border border-gray-200 hover:shadow-2xl hover:border-purple-300 hover:-translate-y-2 transition-all duration-300"
-              >
-                <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center text-3xl mb-6 group-hover:bg-purple-200 group-hover:scale-110 transition-all duration-300">
-                  {service.icon}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">
-                  {service.title}
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {service.description}
-                </p>
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            Transform Your Real Estate Operations
+          </h2>
+
+          <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed">
+            Schedule a personalized demo to see how our platform can optimize
+            your portfolio management and tenant experience.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={() => navigate("/enterprise/demo")}
+              className="group px-8 py-4 bg-white text-black font-bold rounded-lg hover:bg-gray-100 transition-all duration-300 flex items-center justify-center gap-2 min-w-[200px]"
+            >
+              Request Enterprise Demo
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </button>
+            <button
+              onClick={() => navigate("/contact/sales")}
+              className="group px-8 py-4 bg-transparent border border-white/30 text-white font-bold rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-2 min-w-[200px] backdrop-blur-sm"
+            >
+              Contact Sales
+              <Users className="w-4 h-4 group-hover:scale-110 transition-transform" />
+            </button>
+          </div>
+
+          <div className="mt-12 pt-8 border-t border-white/10">
+            <div className="flex flex-wrap justify-center gap-8 text-white/60 text-sm">
+              <div className="flex items-center gap-2">
+                <Shield className="w-4 h-4" />
+                <span>SOC 2 Type II Certified</span>
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="relative bg-black rounded-2xl p-12 md:p-16 text-center text-white shadow-2xl">
-          {/* Subtle pattern overlay */}
-          <div className="absolute inset-0 opacity-5">
-            <svg className="w-full h-full" viewBox="0 0 100 100">
-              <defs>
-                <pattern
-                  id="grid"
-                  width="10"
-                  height="10"
-                  patternUnits="userSpaceOnUse"
-                >
-                  <path
-                    d="M 10 0 L 0 0 0 10"
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="1"
-                  />
-                </pattern>
-              </defs>
-              <rect width="100" height="100" fill="url(#grid)" />
-            </svg>
-          </div>
-
-          <div className="relative">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Ready to Get Started?
-            </h2>
-            <p className="text-xl text-blue-100 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Join thousands of landlords and tenants who trust our platform for
-              their rental needs
-            </p>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Button
-                label="Browse Properties"
-                onClick={() => navigate("/listings")}
-                type="button"
-                variant="none"
-                className="px-10 py-4 bg-white text-blue-600 font-bold rounded-lg hover:bg-gray-100 transform hover:scale-105 transition-all duration-300 shadow-lg"
-              />
-              <Button
-                label="Sign Up Free"
-                onClick={() => navigate("/auth/register")}
-                type="button"
-                variant="outlined"
-                className="px-10 py-4 bg-transparent border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-blue-600 transform hover:scale-105 transition-all duration-300"
-              />
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                <span>99.9% Uptime SLA</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Key className="w-4 h-4" />
+                <span>Enterprise Security</span>
+              </div>
             </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   );
 };

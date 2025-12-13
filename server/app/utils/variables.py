@@ -11,6 +11,9 @@ APP_URL = os.environ["APP_URL"]
 # JWT VARIABLES
 JWT_SECRET = os.environ["JWT_SECRET"]
 
+# PORT
+PORT = os.environ["PORT"]
+
 # CLOUDINARY VARIABLES
 CLOUD_NAME = os.environ["CLOUD_NAME"]
 CLOUD_API_KEY = os.environ["CLOUD_API_KEY"]

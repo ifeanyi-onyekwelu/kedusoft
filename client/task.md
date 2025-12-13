@@ -25,8 +25,8 @@
 ### Landing Page
 - [x] Header dropdown should be wider
 - [ ] Popular near you section should have a link to view all
-- [ ] Explore property types should have the types from the backend and also total number of properties in the properties
-- [ ] Discover locations should show locations from the backend and total number of properties in the locations
+- [x] Explore property types should have the types from the backend and also total number of properties in the properties
+- [x] Discover locations should show locations from the backend and total number of properties in the locations
 - [ ] Testimonials sections should be fetched from the backend
 - [ ] The listing page loading component should something better
 
@@ -44,7 +44,7 @@
 - [ ] In the application details add 2 sections one showing the user's profile and the details entered from the applications form to check for matching if not show risk of fraud
 - [ ] Build a better applicant details page and implement the message and download applicant functionality
 - [ ] Listing type should be [Rent,  Shortlet, Sale]
-- [ ] Property category should contain this options [Apartment, Self-Contained / Studio / Mini-Flat, Duplex, Bungalow, Detached / Semi-Detached, Serviced Apartment / Condo, Boys' Quarters (BQ), Shared Apartment / Co-Living, Hostel / Student Housing, Short-Let, Office Space, Shop / Store, Co-Office Space, Warehouse / Industrial Space, Lodge / Guest House, Land (Residential / Commercial / Agricultural)]
+- [x] Property category should contain this options [Apartment, Self-Contained / Studio / Mini-Flat, Duplex, Bungalow, Detached / Semi-Detached, Serviced Apartment / Condo, Boys' Quarters (BQ), Shared Apartment / Co-Living, Hostel / Student Housing, Short-Let, Office Space, Shop / Store, Co-Office Space, Warehouse / Industrial Space, Lodge / Guest House, Land (Residential / Commercial / Agricultural)]
 - [ ] The review step looks too bad it needs to be fixed
 - [ ] Implement the messages functionality for the landlord
 - [ ] Build the reports pages

@@ -30,7 +30,7 @@ function PublicRoutes() {
     <Routes>
       <Route element={<PublicLayout />}>
         <Route index element={<Home />} />
-        <Route path="browse-locations" element={<BrowseByLocation />} />
+        <Route path="locations" element={<BrowseByLocation />} />
         <Route path="shortlet" element={<ShortletsPage />} />
         <Route path="services" element={<ServicesPage />} />
         <Route path="agents" element={<AgentsPage />} />

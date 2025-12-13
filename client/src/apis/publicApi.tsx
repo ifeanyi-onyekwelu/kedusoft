@@ -52,6 +52,11 @@ export const publicApi = {
     return response.data;
   },
 
+  async getLatestProperties() {
+    const response = await axiosInstance.get("/public/properties/latest");
+    return response.data;
+  },
+
   async getNearbyProperties(
     latitude: number,
     longitude: number,
@@ -64,6 +69,11 @@ export const publicApi = {
         radius_km,
       },
     });
+    return response.data;
+  },
+
+  async getCities() {
+    const response = await axiosInstance.get("/public/cities");
     return response.data;
   },
 };
@@ -105,6 +115,12 @@ export const usePublicOperations = () => {
     });
   }, [executeOperation]);
 
+  const getLatestProperties = useCallback(async () => {
+    return executeOperation(() => publicApi.getLatestProperties(), {
+      customErrorMessage: "Failed to load latest properties",
+    });
+  }, [executeOperation]);
+
   const getNearbyProperties = useCallback(
     async (latitude: number, longitude: number, radius_km: number = 10) => {
       return executeOperation(
@@ -117,12 +133,20 @@ export const usePublicOperations = () => {
     [executeOperation]
   );
 
+  const getCities = useCallback(async () => {
+    return executeOperation(() => publicApi.getCities(), {
+      customErrorMessage: "Failed to load cities",
+    });
+  }, [executeOperation]);
+
   return {
     getAllCategories,
     getAllProperties,
     getPropertyById,
     getFeaturedProperties,
+    getLatestProperties,
     getNearbyProperties,
+    getCities,
   };
 };
 
@@ -134,4 +158,6 @@ export const getAllCategories = publicApi.getAllCategories;
 export const getAllProperties = publicApi.getAllProperties;
 export const getPropertyById = publicApi.getPropertyById;
 export const getFeaturedProperties = publicApi.getFeaturedProperties;
+export const getLatestProperties = publicApi.getLatestProperties;
 export const getNearbyProperties = publicApi.getNearbyProperties;
+export const getCities = publicApi.getCities;

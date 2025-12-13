@@ -20,6 +20,36 @@ function Popular() {
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Fetch nearby properties
+  const fetchNearbyProperties = useCallback(async () => {
+    try {
+      setError(null);
+      const location = userLocation || (await getUserLocation());
+
+      if (!location) {
+        throw new Error("Unable to get location");
+      }
+
+      const response = await withLoading(
+        getNearbyProperties(location.latitude, location.longitude, 20) // 20km radius
+      );
+
+      const nearbyProps = response.data.map(
+        (item: any) => item.property || item
+      );
+
+      setProperties(nearbyProps.slice(0, 6));
+    } catch (error: any) {
+      setError(error.message || "Failed to load nearby properties");
+      setProperties([]);
+    }
+  }, [userLocation]);
+
+  // Initialize location and fetch properties
+  useEffect(() => {
+    fetchNearbyProperties();
+  }, [fetchNearbyProperties]);
+
   // Get user's current location
   const getUserLocation = useCallback(async () => {
     try {
@@ -52,36 +82,6 @@ function Popular() {
       return defaultLocation;
     }
   }, []);
-
-  // Fetch nearby properties
-  const fetchNearbyProperties = useCallback(async () => {
-    try {
-      setError(null);
-      const location = userLocation || (await getUserLocation());
-
-      if (!location) {
-        throw new Error("Unable to get location");
-      }
-
-      const response = await withLoading(
-        getNearbyProperties(location.latitude, location.longitude, 20) // 20km radius
-      );
-
-      const nearbyProps = response.data.map(
-        (item: any) => item.property || item
-      );
-
-      setProperties(nearbyProps.slice(0, 6));
-    } catch (error: any) {
-      setError(error.message || "Failed to load nearby properties");
-      setProperties([]);
-    }
-  }, [userLocation]);
-
-  // Initialize location and fetch properties
-  useEffect(() => {
-    fetchNearbyProperties();
-  }, [fetchNearbyProperties]);
 
   const slides = properties.map((property, index) => (
     <Carousel.Slide key={property.id || index}>

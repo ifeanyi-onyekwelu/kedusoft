@@ -3,16 +3,31 @@ import { Carousel } from "@mantine/carousel";
 import { useMantineTheme } from "@mantine/core";
 import "@mantine/carousel/styles.css";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import SectionHeader from "../SectionHeader";
-import { FaCity } from "react-icons/fa6";
+import { FaCity, FaHouse } from "react-icons/fa6";
+import { usePublicOperations } from "@/apis/publicApi";
+import { useLoading } from "@/hooks/useLoading";
+import { ErrorState } from "@/components/ErrorState";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
-interface CityCardProps {
-  imageUrl: string;
-  cityName: string;
-  totalProperties: number;
-  linkPath: string;
-  index?: number;
+interface City {
+  city: string;
+  property_count: number;
 }
+
+// Generic city images to cycle through
+const CITY_IMAGE_URLS = [
+  "/images/houses/china.jpg",
+  "/images/houses/nigeria.jpg",
+  "/images/houses/street.jpg",
+  "/images/houses/hero.jpg",
+];
+
+// Get image URL by cycling through available images
+const getCityImageUrl = (index: number): string => {
+  return CITY_IMAGE_URLS[index % CITY_IMAGE_URLS.length];
+};
 
 const CityCard = ({
   imageUrl,
@@ -20,7 +35,15 @@ const CityCard = ({
   totalProperties,
   linkPath,
   index = 0,
-}: CityCardProps) => {
+}: {
+  imageUrl: string;
+  cityName: string;
+  totalProperties: number;
+  linkPath: string;
+  index?: number;
+}) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <Link to={linkPath} className="block group">
       <motion.div
@@ -33,6 +56,8 @@ const CityCard = ({
           delay: index * 0.1,
           ease: [0.25, 0.46, 0.45, 0.94],
         }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
         {/* Background Image with zoom effect */}
         <motion.div
@@ -59,9 +84,7 @@ const CityCard = ({
             className="self-start"
           >
             <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-              </svg>
+              <FaHouse />
               <span className="text-sm font-semibold">
                 {totalProperties}+ Properties
               </span>
@@ -74,7 +97,7 @@ const CityCard = ({
               <h3 className="text-3xl font-bold mb-2 group-hover:text-white transition-colors">
                 {cityName}
               </h3>
-              <p className="text-sm text-white/80 group-hover:text-white/90 transition-colors">
+              <p className="text-sm text-white/80 group-hover:text-white/90 transition-colors my-0">
                 Explore available properties
               </p>
             </div>
@@ -82,8 +105,8 @@ const CityCard = ({
             {/* CTA Button - slides up on hover */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              whileHover={{ opacity: 1, y: 0 }}
-              className="opacity-0 group-hover:opacity-100 transition-all duration-300"
+              animate={isHovered ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.3 }}
             >
               <div className="inline-flex items-center gap-2 bg-white text-primary px-5 py-2.5 rounded-full font-semibold text-sm shadow-lg hover:bg-gray-100 transition-colors">
                 View Properties
@@ -115,63 +138,18 @@ const CityCard = ({
 };
 
 // Example usage
-const CityCardsGrid = () => {
-  const cities = [
-    {
-      imageUrl: "/images/houses/china.jpg",
-      cityName: "Lagos",
-      totalProperties: 2845,
-      linkPath: "/listings?location=Lagos",
-    },
-    {
-      imageUrl: "/images/houses/nigeria.jpg",
-      cityName: "Enugu",
-      totalProperties: 1236,
-      linkPath: "/listings?location=Enugu",
-    },
-    {
-      imageUrl: "/images/houses/street.jpg",
-      cityName: "Aba",
-      totalProperties: 987,
-      linkPath: "/listings?location=Aba",
-    },
-    {
-      imageUrl: "/images/houses/hero.jpg",
-      cityName: "Onitsha",
-      totalProperties: 1142,
-      linkPath: "/listings?location=Onitsha",
-    },
-    {
-      imageUrl: "/images/houses/china.jpg",
-      cityName: "Awka",
-      totalProperties: 758,
-      linkPath: "/listings?location=Awka",
-    },
-    {
-      imageUrl: "/images/houses/nigeria.jpg",
-      cityName: "Owerri",
-      totalProperties: 896,
-      linkPath: "/listings?location=Owerri",
-    },
-    {
-      imageUrl: "/images/houses/street.jpg",
-      cityName: "Umuahia",
-      totalProperties: 542,
-      linkPath: "/listings?location=Umuahia",
-    },
-    {
-      imageUrl: "/images/houses/hero.jpg",
-      cityName: "Abakaliki",
-      totalProperties: 423,
-      linkPath: "/listings?location=Abakaliki",
-    },
-  ];
-
+const CityCardsGrid = ({ cities }: { cities: City[] }) => {
   return (
     <>
       {cities.map((city, index) => (
-        <Carousel.Slide key={`${city.cityName}-${index}`}>
-          <CityCard {...city} index={index} />
+        <Carousel.Slide key={`${city.city}-${index}`}>
+          <CityCard
+            imageUrl={getCityImageUrl(index)}
+            cityName={city.city}
+            totalProperties={city.property_count}
+            linkPath={`/listings?location=${encodeURIComponent(city.city)}`}
+            index={index}
+          />
         </Carousel.Slide>
       ))}
     </>
@@ -180,6 +158,35 @@ const CityCardsGrid = () => {
 
 function PropertiesByCities() {
   const theme = useMantineTheme();
+  const { getCities } = usePublicOperations();
+  const [cities, setCities] = useState<City[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const { loading, withLoading } = useLoading();
+
+  useEffect(() => {
+    const fetchCities = async () => {
+      try {
+        const response = await withLoading(getCities());
+        setCities(response.cities || []);
+        setError(null);
+      } catch (err) {
+        setError("Failed to load cities");
+        console.error("Error fetching cities:", err);
+      }
+    };
+
+    fetchCities();
+  }, []);
+
+  const handleRetry = async () => {
+    try {
+      const response = await withLoading(getCities());
+      setCities(response.cities || []);
+      setError(null);
+    } catch (err) {
+      setError("Failed to load cities");
+    }
+  };
 
   return (
     <section className="relative py-20 bg-gray-50 overflow-hidden">
@@ -199,73 +206,90 @@ function PropertiesByCities() {
           description="Find homes across the most popular cities — search by location to discover properties near you."
         />
 
-        {/* Carousel Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-        >
-          <Carousel
-            slideSize={{ base: "100%", sm: "50%", md: "33.333%", lg: "25%" }}
-            slideGap={{ base: "md", sm: "lg" }}
-            withControls={true}
-            styles={{
-              control: {
-                backgroundColor: "white",
-                color: theme.colors.dark[6],
-                border: "none",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                width: "48px",
-                height: "48px",
-                borderRadius: "12px",
-                "&:hover": {
-                  backgroundColor: theme.colors[theme.primaryColor][6],
-                  color: "white",
-                  transform: "scale(1.05)",
-                },
-                transition: "all 0.2s ease",
-              },
-            }}
-          >
-            <CityCardsGrid />
-          </Carousel>
-        </motion.div>
-
-        {/* View All Cities Button */}
-        <motion.div
-          className="text-center mt-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-        >
-          <Link
-            to="/listings"
-            className="inline-flex items-center gap-2 bg-white hover:bg-primary hover:text-white text-gray-900 px-8 py-4 rounded-full font-semibold transition-all shadow-md hover:shadow-xl hover:scale-105 border border-gray-200 hover:border-transparent"
-          >
-            View All Locations
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+        {error ? (
+          <ErrorState message={error} onRetry={handleRetry} loading={loading} />
+        ) : loading ? (
+          <LoadingSpinner label="Loading cities" />
+        ) : cities.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-600">No cities available</p>
+          </div>
+        ) : (
+          <>
+            {/* Carousel Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-            </svg>
-          </Link>
-        </motion.div>
+              <Carousel
+                slideSize={{
+                  base: "100%",
+                  sm: "50%",
+                  md: "33.333%",
+                  lg: "25%",
+                }}
+                slideGap={{ base: "md", sm: "lg" }}
+                withControls={cities.length > 4}
+                styles={{
+                  control: {
+                    backgroundColor: "white",
+                    color: theme.colors.dark[6],
+                    border: "none",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                    width: "48px",
+                    height: "48px",
+                    borderRadius: "12px",
+                    "&:hover": {
+                      backgroundColor: theme.colors[theme.primaryColor][6],
+                      color: "white",
+                      transform: "scale(1.05)",
+                    },
+                    transition: "all 0.2s ease",
+                  },
+                }}
+              >
+                <CityCardsGrid cities={cities} />
+              </Carousel>
+            </motion.div>
+
+            {/* View All Cities Button */}
+            <motion.div
+              className="text-center mt-12"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.8, duration: 0.6 }}
+            >
+              <Link
+                to="/locations"
+                className="inline-flex items-center gap-2 bg-white hover:bg-primary hover:text-white text-gray-900 px-8 py-4 rounded-full font-semibold transition-all shadow-md hover:shadow-xl hover:scale-105 border border-gray-200 hover:border-transparent"
+              >
+                View All Locations
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+              </Link>
+            </motion.div>
+          </>
+        )}
       </div>
     </section>
   );

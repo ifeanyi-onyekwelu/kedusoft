@@ -1,21 +1,55 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Carousel } from "@mantine/carousel";
 import { useMantineTheme } from "@mantine/core";
 import PropertyCard from "../../../shared/public/PropertyCard";
 import "@mantine/carousel/styles.css";
 import SectionHeader from "../SectionHeader";
 import { FaClock } from "react-icons/fa6";
+import { useLoading } from "@/hooks/useLoading";
+import { usePublicOperations } from "@/apis/publicApi";
+import { ErrorState } from "@/components/ErrorState";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 function RecentListing() {
   const theme = useMantineTheme();
-  const [properties] = useState<Property[]>([]);
+  const [properties, setProperties] = useState<Property[]>([]);
+  const { getLatestProperties } = usePublicOperations();
+  const [error, setError] = useState<string | null>(null);
+  const { loading, withLoading } = useLoading();
+  const fetchAttempted = useRef(false);
+
+  const fetchRecentProperties = useCallback(async () => {
+    try {
+      const response = await withLoading(getLatestProperties());
+      setProperties(response.properties);
+      setError(null);
+    } catch (error) {
+      setError("Failed to load latest properties");
+    }
+  }, [getLatestProperties, withLoading]);
+
+  useEffect(() => {
+    if (!fetchAttempted.current) {
+      fetchAttempted.current = true;
+      fetchRecentProperties();
+    }
+  }, [fetchRecentProperties]);
 
   const slides = properties.map((property, index) => (
     <Carousel.Slide key={`${property.id}-${index}`}>
       <PropertyCard propertyData={property} />
     </Carousel.Slide>
   ));
+
+  if (error)
+    return (
+      <ErrorState
+        message={error}
+        onRetry={fetchRecentProperties}
+        loading={loading}
+      />
+    );
 
   return (
     <section className="relative py-20 bg-white overflow-hidden">
@@ -35,67 +69,73 @@ function RecentListing() {
           description="Explore the newest listings added to our platform — fresh options updated regularly."
         />
 
-        {/* Carousel Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-        >
-          <Carousel
-            slideSize={{ base: "100%", sm: "50%", md: "33.333%" }}
-            slideGap={{ base: "md", sm: "lg" }}
-            withControls={true}
-            styles={{
-              control: {
-                backgroundColor: "white",
-                color: theme.colors.dark[6],
-                border: "none",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                width: "48px",
-                height: "48px",
-                borderRadius: "12px",
-                "&:hover": {
-                  backgroundColor: theme.colors[theme.primaryColor][6],
-                  color: "white",
-                  transform: "scale(1.05)",
-                },
-                transition: "all 0.2s ease",
-              },
-            }}
-          >
-            {slides}
-          </Carousel>
-        </motion.div>
-
-        {/* View All Button */}
-        <motion.div
-          className="text-center mt-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.6, duration: 0.6 }}
-        >
-          <a
-            href="/listings"
-            className="inline-flex items-center gap-2 bg-gray-100 hover:bg-primary hover:text-white text-gray-900 px-8 py-4 rounded-full font-semibold transition-all shadow-sm hover:shadow-xl hover:scale-105"
-          >
-            View All Properties
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+        {loading ? (
+          <LoadingSpinner label="Fetching recent properties" />
+        ) : (
+          <>
+            {/* Carousel Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 7l5 5m0 0l-5 5m5-5H6"
-              />
-            </svg>
-          </a>
-        </motion.div>
+              <Carousel
+                slideSize={{ base: "100%", sm: "50%", md: "33.333%" }}
+                slideGap={{ base: "md", sm: "lg" }}
+                withControls={true}
+                styles={{
+                  control: {
+                    backgroundColor: "white",
+                    color: theme.colors.dark[6],
+                    border: "none",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                    width: "48px",
+                    height: "48px",
+                    borderRadius: "12px",
+                    "&:hover": {
+                      backgroundColor: theme.colors[theme.primaryColor][6],
+                      color: "white",
+                      transform: "scale(1.05)",
+                    },
+                    transition: "all 0.2s ease",
+                  },
+                }}
+              >
+                {slides}
+              </Carousel>
+            </motion.div>
+
+            {/* View All Button */}
+            <motion.div
+              className="text-center mt-12"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6, duration: 0.6 }}
+            >
+              <a
+                href="/listings"
+                className="inline-flex items-center gap-2 bg-gray-100 hover:bg-primary hover:text-white text-gray-900 px-8 py-4 rounded-full font-semibold transition-all shadow-sm hover:shadow-xl hover:scale-105"
+              >
+                View All Properties
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  />
+                </svg>
+              </a>
+            </motion.div>
+          </>
+        )}
       </div>
     </section>
   );

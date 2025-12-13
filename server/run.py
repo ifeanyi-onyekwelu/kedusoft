@@ -1,5 +1,6 @@
 from app import create_app
 from app.models import db
+from .app.utils.variables import PORT
 
 app, socketio = create_app()
 
@@ -10,4 +11,5 @@ def make_shell_context():
 
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True, host="0.0.0.0", port=5000)
+    port = int(PORT)
+    socketio.run(app, host="0.0.0.0", port=port)

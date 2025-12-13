@@ -381,6 +381,59 @@ def get_featured_properties():
     return response("Featured properties", {"properties": serialize(featured)})
 
 
+@public.route("/properties/latest", methods=["GET"])
+@catch_exception
+def get_latest_properties():
+    """Returns 6 latest property listings ordered by creation date"""
+
+    latest = get_items_by_filter(
+        g.session,
+        Property,
+        {
+            # "verification_status": "approved",
+            "deleted": False,
+            "is_available": True,
+        },
+        order_by="created_at.desc()",
+        limit=6,
+    )
+
+    # Serialize properties with additional metadata
+    serialized_properties = []
+    for prop in latest:
+        prop_data = serialize(prop)
+        # Include property views count
+        property_views = get_items_by_filter(
+            g.session, PropertyView, {"property_id": prop.id}
+        )
+        prop_data["views_count"] = len(property_views)
+        serialized_properties.append(prop_data)
+
+    return response("Latest properties", {"properties": serialized_properties})
+
+
+@public.route("/cities", methods=["GET"])
+@catch_exception
+def get_cities_with_properties():
+    """Fetches all cities with property count for each"""
+
+    # Get all unique cities with available properties
+    cities_query = (
+        g.session.query(Property.city, func.count(Property.id).label("property_count"))
+        .filter(Property.deleted == False, Property.is_available == True)
+        .group_by(Property.city)
+        .order_by(func.count(Property.id).desc())
+        .all()
+    )
+
+    # Format the response
+    cities = [{"city": city, "property_count": count} for city, count in cities_query]
+
+    return response(
+        "Cities with properties retrieved successfully!", {"cities": cities}
+    )
+
+
 @public.route("/properties/search", methods=["GET"])
 @catch_exception
 def search_properties():

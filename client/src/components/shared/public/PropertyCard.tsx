@@ -181,7 +181,7 @@ const PropertyCard = ({ propertyData }: { propertyData: Property }) => {
               <span className="text-lg font-bold text-primary">
                 ₦{formatAmount(propertyData.rent_amount)}
               </span>
-              <span className="text-xs text-gray-500">/month</span>
+              <span className="text-xs font-bold text-accent">/month</span>
             </div>
           </div>
         </div>
