@@ -1,0 +1,68 @@
+name: CI Pipeline
+
+# Trigger on pushes to develop and pull requests to main
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      # Postgres service for backend tests
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: rental_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      # Checkout code
+      - uses: actions/checkout@v3
+
+      # Set up Python for backend
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      # Install backend dependencies
+      - name: Install backend deps
+        run: |
+          cd server
+          pip install -r requirements.txt
+
+      # Run backend tests
+      - name: Run backend tests
+        run: |
+          cd server
+          pytest
+
+      # Set up Node for frontend
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      # Install frontend dependencies
+      - name: Install frontend deps
+        run: |
+          cd client
+          npm install
+
+      # Run frontend build to check for errors
+      - name: Build frontend
+        run: |
+          cd client
+          npm run build
