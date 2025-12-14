@@ -5,12 +5,7 @@ import { Button } from "@mantine/core";
 import { TextInput } from "@mantine/core";
 
 function ApplicationsDetails({ property }: any) {
-  const images = [
-    { url: "/images/property-1.jpeg" },
-    { url: "/images/property-2.jpeg" },
-    { url: "/images/property-3.jpeg" },
-    { url: "/images/property-4.jpeg" },
-  ];
+  const images = [];
 
   return (
     <>

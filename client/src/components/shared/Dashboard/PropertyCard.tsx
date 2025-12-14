@@ -1,5 +1,4 @@
 import { Card, ActionIcon, Badge } from "@mantine/core";
-import { Link } from "react-router-dom";
 import formatAmount from "../../../utils/helpers";
 import { Button } from "@mantine/core";
 import { useUser } from "../../../context/UserContext";
@@ -19,6 +18,7 @@ import {
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { showNotification } from "../../../utils/helpers";
+import { useNavigate } from "react-router-dom";
 
 function PropertyCard({ propertyData }: { propertyData: Property }) {
   // Calculate annual rent based on payment structure
@@ -33,6 +33,7 @@ function PropertyCard({ propertyData }: { propertyData: Property }) {
   const [isLiked, setIsLiked] = useState(false);
   const [likeId, setLikeId] = useState<string | null>(null);
   const [loadingLike, setLoadingLike] = useState(false);
+  const navigate = useNavigate();
 
   const handleApply = async () => {
     try {
@@ -191,22 +192,22 @@ function PropertyCard({ propertyData }: { propertyData: Property }) {
               Furnished
             </Badge>
           )}
-          {propertyData.pets === "yes" && (
-            <Badge variant="light" color="teal" size="sm">
-              Pets Allowed
-            </Badge>
-          )}
         </div>
 
         {/* Action Buttons */}
         <div className="flex gap-2">
           <Button
-            to={`${user?.role === "tenant" ? "/properties/" : ""}${
-              propertyData.id
-            }`}
-            label="View Details"
+            onClick={() =>
+              navigate(
+                `${user?.role === "tenant" ? "/properties/" : ""}${
+                  propertyData.id
+                }`
+              )
+            }
             variant="outlined"
-          />
+          >
+            View Details
+          </Button>
           {user?.role === "tenant" && (
             <Button variant="filled" onClick={handleApply}>
               Apply Now

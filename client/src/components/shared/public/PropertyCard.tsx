@@ -267,11 +267,6 @@ const PropertyCard = ({ propertyData }: { propertyData: Property }) => {
               Furnished
             </span>
           )}
-          {propertyData.pets && propertyData.pets === "allowed" && (
-            <span className="px-3 py-1 bg-green-50 text-green-600 rounded-full text-xs font-medium">
-              Pets Allowed
-            </span>
-          )}
           {propertyData.parking_spaces > 0 && (
             <span className="px-3 py-1 bg-purple-50 text-purple-600 rounded-full text-xs font-medium">
               {propertyData.parking_spaces} Parking

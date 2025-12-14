@@ -3,12 +3,14 @@ import PropertyCard from "../../shared/Dashboard/PropertyCard";
 import { Card, Text, Group, Badge, Button } from "@mantine/core";
 import { IconArrowRight, IconHeart, IconMapPin } from "@tabler/icons-react";
 import { useLoading } from "../../../hooks/useLoading";
+import { useNavigate } from "react-router-dom";
 
 function AvailableForRent() {
   const [propertiesAvailable, setPropertiesAvailable] = useState<Property[]>(
     []
   );
   const { loading, withLoading } = useLoading();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -51,11 +53,12 @@ function AvailableForRent() {
           </Text>
         </div>
         <Button
-          label="View All"
           variant="filled"
-          iconRight={<IconArrowRight size={16} />}
-          to="/listings"
-        />
+          rightSection={<IconArrowRight size={16} />}
+          onClick={() => navigate("/listings")}
+        >
+          View All
+        </Button>
       </Group>
 
       {propertiesAvailable.length > 0 ? (

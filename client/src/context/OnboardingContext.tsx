@@ -42,7 +42,7 @@ interface OnboardingContextTypes {
     value: Preference[K]
   ) => void;
   submitPreferences: () => Promise<any>;
-  completeOnboarding: () => Promise<void>;
+  completeOnboarding: () => Promise<any>;
   isOnboardingComplete: boolean;
 }
 

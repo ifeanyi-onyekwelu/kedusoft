@@ -61,6 +61,7 @@ interface EnhancedProperty {
     move_in_date: string;
     lease_end_date: string;
   };
+  status: string;
 }
 
 const Th = ({
@@ -232,7 +233,7 @@ const EnhancedPropertyTable: React.FC<EnhancedPropertyTableProps> = ({
           <div className="space-y-2">
             <StatusBadge
               status={
-                property.status ||
+                (property.status as "available" | "rented") ||
                 (property.is_available ? "available" : "rented")
               }
               variant="lease"
@@ -401,7 +402,7 @@ const EnhancedPropertyTable: React.FC<EnhancedPropertyTableProps> = ({
                 </Link>
                 <StatusBadge
                   status={
-                    property.status ||
+                    (property.status as "available" | "rented") ||
                     (property.is_available ? "available" : "rented")
                   }
                   variant="lease"

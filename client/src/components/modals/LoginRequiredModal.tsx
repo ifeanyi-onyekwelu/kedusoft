@@ -2,6 +2,7 @@ import { IconExclamationMark, IconXboxX } from "@tabler/icons-react";
 import { Modal } from "@mantine/core";
 import { Button } from "@mantine/core";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface LoginRequiredModalProps {
   opened: boolean;
@@ -9,6 +10,8 @@ interface LoginRequiredModalProps {
 }
 
 function LoginRequiredModal({ opened, close }: LoginRequiredModalProps) {
+  const navigate = useNavigate();
+
   return (
     <Modal
       opened={opened}
@@ -28,11 +31,15 @@ function LoginRequiredModal({ opened, close }: LoginRequiredModalProps) {
         <p className="text-sm">Please signup on Homies to contact the owner</p>
         <div className="flex gap-2 items-center">
           <Button
-            label="Sign up"
-            to="/auth?authAction=register&role=tenant"
+            onClick={() => navigate("/auth?authAction=register&role=tenant")}
             variant="filled"
-          />
-          <Button component={Link} to="/auth?authType=login" variant="outline">
+          >
+            Sign up
+          </Button>
+          <Button
+            onClick={() => navigate("/auth?authType=login")}
+            variant="outline"
+          >
             Login
           </Button>
         </div>

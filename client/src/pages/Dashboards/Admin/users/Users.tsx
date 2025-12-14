@@ -4,6 +4,7 @@ import StatsCard from "../StatsCard";
 import UsersTab from "./UserTabs";
 import { getAllUsers } from "../../../../apis/adminApi";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface User {
   id: string;
@@ -46,6 +47,7 @@ function Users() {
     pendingLandlords: 0,
     notVerifiedLandlords: 0,
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAllUsers = async () => {
@@ -65,11 +67,9 @@ function Users() {
     <div className="space-y-5">
       <div className="flex space-x-5 items-center">
         <h3 className="font-semibold text-2xl text-black">Users</h3>
-        <Button
-          label="View Pending Users"
-          radius="md"
-          to="/admin/users/pending"
-        />
+        <Button radius="md" onClick={() => navigate("/admin/users/pending")}>
+          View Pending Users
+        </Button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <StatsCard title="Total Users">

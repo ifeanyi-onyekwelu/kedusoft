@@ -135,11 +135,12 @@ export const PropertyManagement = () => {
               while minimizing your workload
             </p>
             <Button
-              label="Get Started Today"
               variant="filled"
               className="bg-blue-600 hover:bg-blue-700"
               onClick={() => navigate("/auth/register?role=landlord")}
-            />
+            >
+              Get Started Today
+            </Button>
           </div>
         </div>
       </div>
@@ -280,7 +281,6 @@ export const PropertyManagement = () => {
                 </ul>
 
                 <Button
-                  label="Get Started"
                   variant={pkg.recommended ? "filled" : "outlined"}
                   className={`w-full justify-center ${
                     pkg.recommended
@@ -288,7 +288,9 @@ export const PropertyManagement = () => {
                       : "border-2 border-blue-600 text-blue-600 hover:bg-blue-50"
                   }`}
                   onClick={() => navigate("/auth/register?role=landlord")}
-                />
+                >
+                  Get Started
+                </Button>
               </div>
             ))}
           </div>
@@ -307,17 +309,19 @@ export const PropertyManagement = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
-              label="Schedule Consultation"
               variant="filled"
               className="bg-white text-blue-600 hover:bg-gray-100"
               onClick={() => navigate("/contact")}
-            />
+            >
+              Schedule Consultation
+            </Button>
             <Button
-              label="View All Services"
               variant="outlined"
               className="border-2 border-white text-white hover:bg-white/10"
               onClick={() => navigate("/services")}
-            />
+            >
+              View All Services
+            </Button>
           </div>
         </div>
       </div>

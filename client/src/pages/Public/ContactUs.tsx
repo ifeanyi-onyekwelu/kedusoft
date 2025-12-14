@@ -173,12 +173,13 @@ export const ContactUs = () => {
                   </div>
 
                   <Button
-                    label={isSubmitting ? "Sending..." : "Send Message"}
                     variant="filled"
                     className="w-full bg-blue-600 hover:bg-blue-700 justify-center"
                     type="submit"
                     disabled={isSubmitting}
-                  />
+                  >
+                    {isSubmitting ? "Sending..." : "Send Message"}
+                  </Button>
                 </form>
               </div>
             </div>

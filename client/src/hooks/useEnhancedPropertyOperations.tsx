@@ -37,6 +37,7 @@ export interface EnhancedProperty {
   avg_rating?: number;
   days_on_market?: number;
   last_maintenance_date?: string;
+  status: string;
   tenant_info?: {
     name: string;
     move_in_date: string;

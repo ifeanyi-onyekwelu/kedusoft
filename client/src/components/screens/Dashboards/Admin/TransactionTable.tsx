@@ -35,12 +35,9 @@ const TransactionsTable = ({ data, all }: { data: any[]; all?: boolean }) => {
             <h3 className="text-lg font-semibold">Property Listings</h3>
 
             <div className="flex items-center space-x-2">
-              <Button
-                label="Download"
-                icon={<IconDownload />}
-                to=""
-                radius="lg"
-              />
+              <Button leftSection={<IconDownload />} radius="lg">
+                Download
+              </Button>
               {all && (
                 <Link
                   to="/admin/transactions/all"

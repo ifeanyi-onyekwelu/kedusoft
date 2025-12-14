@@ -126,13 +126,13 @@ export const AgentsPage = () => {
               {/* Waitlist CTA */}
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <Button
-                  label="Join Waitlist"
                   variant="filled"
                   className="bg-white text-blue-600 hover:bg-blue-50 shadow-xl"
                   onClick={() => navigate("/auth/register?role=landlord")}
-                />
+                >
+                  Join Waitlist
+                </Button>
                 <Button
-                  label="Learn More"
                   variant="outlined"
                   className="border-2 border-white text-white hover:bg-white/10"
                   onClick={() => {
@@ -140,7 +140,9 @@ export const AgentsPage = () => {
                       .getElementById("benefits")
                       ?.scrollIntoView({ behavior: "smooth" });
                   }}
-                />
+                >
+                  Learn More
+                </Button>
               </div>
 
               {/* Launch Info */}
@@ -342,11 +344,12 @@ export const AgentsPage = () => {
               </p>
               <div className="space-y-4">
                 <Button
-                  label="Join Waitlist"
                   variant="filled"
                   className="w-full bg-blue-600 hover:bg-blue-700 justify-center"
                   onClick={() => navigate("/auth/register?role=landlord")}
-                />
+                >
+                  Join Waitlist
+                </Button>
                 <div className="bg-white rounded-lg p-4 border border-blue-100">
                   <div className="text-sm font-semibold text-gray-900 mb-2">
                     Early Access Benefits:

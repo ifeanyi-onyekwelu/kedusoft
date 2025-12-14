@@ -5,11 +5,13 @@ import { useState, useEffect } from "react";
 import { useLoading } from "../../../../hooks/useLoading";
 import { LoadingSpinner } from "../../../LoadingSpinner";
 import { ErrorState } from "../../../ErrorState";
+import { useNavigate } from "react-router-dom";
 
 const FeaturedListings = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const { loading, startLoading, stopLoading } = useLoading();
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const fetchProperties = async () => {
     startLoading();
@@ -69,15 +71,17 @@ const FeaturedListings = () => {
 
           <div className="flex gap-4 flex-wrap">
             <Button
-              label="View All Properties"
-              to="/listings?featured=true"
+              onClick={() => navigate("/listings?featured=true")}
               className="bg-white text-secondary px-8 py-4 rounded-full hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl text-base font-semibold"
-            />
+            >
+              View All Properties
+            </Button>
             <Button
-              label="For Rent"
-              to="/listings?listing_type=rent"
+              onClick={() => navigate("/listings?listing_type=rent")}
               className="border-2 border-white text-white px-8 py-4 rounded-full hover:bg-white hover:text-secondary transition-all text-base font-semibold"
-            />
+            >
+              For Rent
+            </Button>
           </div>
         </div>
 

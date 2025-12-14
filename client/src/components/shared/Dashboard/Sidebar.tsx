@@ -41,8 +41,8 @@ export type RoleLinks = {
 type SidebarProps = {
   role: keyof RoleLinks | undefined;
   opened: any;
-  collapsed: boolean;
-  setCollapsed: (value: boolean) => void;
+  collapsed?: boolean;
+  setCollapsed?: (value: boolean) => void;
 };
 
 const StyledIcon = ({ icon: Icon }: any) => {

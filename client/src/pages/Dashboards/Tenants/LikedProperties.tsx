@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import { getLikedProperties } from "../../../apis/tenantApi";
 import PropertyCard from "../../../components/shared/Dashboard/PropertyCard";
-import { Container, Title, Text } from "@mantine/core";
 import { useLoading } from "../../../hooks/useLoading";
 import { ErrorState } from "../../../components/ErrorState";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
 import EmptyState from "../../../components/EmptyState";
 import { Button } from "@mantine/core";
+import { useNavigate } from "react-router-dom";
 
 export default function LikedPropertiesPage() {
   const [likedProperties, setLikedProperties] = useState<Property[]>([]);
   const [error, setError] = useState<string | null>(null);
   const { loading, stopLoading, startLoading } = useLoading();
+
+  const navigate = useNavigate();
 
   const fetchLikedProperties = async () => {
     try {
@@ -54,10 +56,11 @@ export default function LikedPropertiesPage() {
             </p>
 
             <Button
-              label="Browse Properties"
-              to="/properties/search"
+              onClick={() => navigate("/properties/search")}
               variant="outlined"
-            />
+            >
+              Browse Properties
+            </Button>
           </div>
         </EmptyState>
       ) : (

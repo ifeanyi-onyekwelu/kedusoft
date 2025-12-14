@@ -402,7 +402,7 @@ function BioDataComponent() {
                         onChange={(value) =>
                           form.setFieldValue(
                             "date_of_birth",
-                            value ? value.toISOString() : ""
+                            value ? value?.toString() : ""
                           )
                         }
                         clearable

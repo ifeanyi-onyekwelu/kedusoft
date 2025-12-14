@@ -210,12 +210,10 @@ export const MessagingPage: React.FC = () => {
                   )}
                 </Group>
 
-                <ChatRoomsList
-                  chatRooms={chatRooms}
-                  selectedRoomId={selectedRoomId}
-                  onRoomSelect={handleRoomSelect}
+                {/* <ChatRoomsList
+                  onChatSelect={handleRoomSelect}
                   loading={loading}
-                />
+                /> */}
               </Stack>
             </Paper>
           </Grid.Col>

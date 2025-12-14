@@ -6,8 +6,11 @@ import PropertiesRentedChart from "./PropertiesRentedChart";
 import ApplicationsAnalysisChart from "./ApplicationAnalysisChart";
 import AdminRightSidebar from "./AdminRightSidebar";
 import AdminRecentListings from "./RecentListings";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
+  const navigate = useNavigate();
+
   return (
     <div className="flex md:flex-row flex-col">
       <div className="space-y-4 w-full md:w-[80%] h-screen overflow-y-auto p-4 scrollable">
@@ -112,11 +115,9 @@ function Dashboard() {
 
         <div className="flex space-x-5 items-center py-2">
           <h3 className="text-lg font-semibold">Recent Listings</h3>
-          <Button
-            label="View Pending Listings"
-            to="properties/pending"
-            radius="xl"
-          />
+          <Button onClick={() => navigate("properties/pending")} radius="xl">
+            View Pending Listings
+          </Button>
         </div>
 
         <AdminRecentListings />

@@ -357,11 +357,6 @@ export const HowItWorks = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
-              label={
-                activeTab === "tenants"
-                  ? "Find a Property"
-                  : "List Your Property"
-              }
               variant="filled"
               className="bg-blue-600 hover:bg-blue-700"
               onClick={() =>
@@ -371,13 +366,18 @@ export const HowItWorks = () => {
                     : "/auth/register?role=landlord"
                 )
               }
-            />
+            >
+              {activeTab === "tenants"
+                ? "Find a Property"
+                : "List Your Property"}
+            </Button>
             <Button
-              label="Contact Support"
               variant="outlined"
               className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50"
               onClick={() => navigate("/contact")}
-            />
+            >
+              Contact Support
+            </Button>
           </div>
         </div>
       </div>

@@ -527,14 +527,7 @@ function Applications() {
       </div>
 
       {/* Statistics Cards */}
-      <SimpleGrid
-        cols={4}
-        spacing="lg"
-        breakpoints={[
-          { maxWidth: "lg", cols: 2, spacing: "md" },
-          { maxWidth: "sm", cols: 1, spacing: "sm" },
-        ]}
-      >
+      <SimpleGrid cols={4} spacing="lg">
         {statistics.map((stat, index) => (
           <StatCard key={index} {...stat} />
         ))}

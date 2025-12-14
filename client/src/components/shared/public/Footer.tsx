@@ -111,14 +111,14 @@ const Footer = () => {
                 className="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-500"
               />
               <Button
-                label="Subscribe"
                 variant="filled"
                 className="bg-blue-600 hover:bg-blue-700 whitespace-nowrap"
                 onClick={(e) => {
                   e.preventDefault();
-                  // Handle newsletter subscription
                 }}
-              />
+              >
+                Subscribe
+              </Button>
             </div>
           </div>
         </div>

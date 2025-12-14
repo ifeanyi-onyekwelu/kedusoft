@@ -10,7 +10,6 @@ import {
   IconDotsVertical,
 } from "@tabler/icons-react";
 import { useLandlordOperations } from "../../../../apis/landlordApi";
-import Loader from "../../../../components/Loader";
 import { ErrorState } from "../../../../components/ErrorState";
 import formatAmount, { formatDate } from "../../../../utils/helpers";
 import { Menu, ActionIcon } from "@mantine/core";

@@ -233,17 +233,19 @@ export const HowToApplyPage = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
-              label="Browse Properties"
               variant="filled"
               className="bg-blue-600 hover:bg-blue-700"
               onClick={() => navigate("/listings")}
-            />
+            >
+              Browse Properties
+            </Button>
             <Button
-              label="Create Account"
               variant="outlined"
               className="border-blue-600 text-blue-600 hover:bg-blue-50"
               onClick={() => navigate("/auth/register?role=tenant")}
-            />
+            >
+              Create Account
+            </Button>
           </div>
         </div>
       </div>

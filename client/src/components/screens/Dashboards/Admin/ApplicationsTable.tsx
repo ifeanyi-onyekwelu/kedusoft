@@ -63,12 +63,9 @@ const ApplicationsTable = ({
             <h3 className="text-lg font-semibold">Applications List</h3>
 
             <div className="flex items-center space-x-2">
-              <Button
-                label="Download"
-                icon={<IconDownload />}
-                to=""
-                radius="lg"
-              />
+              <Button leftSection={<IconDownload />} radius="lg">
+                Download
+              </Button>
               {all && (
                 <Link
                   to="/admin/applications/all"

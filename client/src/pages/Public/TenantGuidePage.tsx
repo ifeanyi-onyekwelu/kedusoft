@@ -270,17 +270,19 @@ export const TenantGuidePage = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
-              label="Contact Support"
               variant="filled"
               className="bg-green-600 hover:bg-green-700"
               onClick={() => navigate("/contact")}
-            />
+            >
+              Contact Support
+            </Button>
             <Button
-              label="View FAQs"
               variant="outlined"
               className="border-green-600 text-green-600 hover:bg-green-50"
               onClick={() => navigate("/faqs")}
-            />
+            >
+              View FAQs
+            </Button>
           </div>
         </div>
       </div>

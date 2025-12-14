@@ -213,7 +213,7 @@ const Table: React.FC<ApplicationTableProps> = ({ applications }) => {
               {filteredApplications.length > 0 ? (
                 filteredApplications.map((application) => (
                   <tr
-                    key={application.id}
+                    key={application.application_id}
                     className="hover:bg-gray-50 border-b border-gray-100"
                   >
                     <Td>
@@ -261,7 +261,7 @@ const Table: React.FC<ApplicationTableProps> = ({ applications }) => {
                             <Menu.Item
                               leftSection={<IconEye size={14} />}
                               component={Link}
-                              to={`/property-owner/applications/${application.id}`}
+                              to={`/property-owner/applications/${application.application_id}`}
                             >
                               View Details
                             </Menu.Item>
@@ -304,7 +304,7 @@ const Table: React.FC<ApplicationTableProps> = ({ applications }) => {
           {filteredApplications.length > 0 ? (
             filteredApplications.map((application) => (
               <div
-                key={application.id}
+                key={application.application_id}
                 className="border rounded-lg p-4 hover:shadow-sm transition-shadow"
               >
                 <div className="flex justify-between items-start">
@@ -356,7 +356,7 @@ const Table: React.FC<ApplicationTableProps> = ({ applications }) => {
                         <Menu.Item
                           leftSection={<IconEye size={14} />}
                           component={Link}
-                          to={`/property-owner/applications/${application.id}`}
+                          to={`/property-owner/applications/${application.application_id}`}
                         >
                           View Details
                         </Menu.Item>

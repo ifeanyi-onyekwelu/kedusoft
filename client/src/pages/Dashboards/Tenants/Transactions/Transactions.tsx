@@ -1,10 +1,10 @@
-import AvailableForRent from "../../../../components/screens/Dashboards/AvailableForRent";
 import Statistics from "../Statistics";
 import Table from "./Table";
 import { getAllTransactions } from "../../../../apis/tenantApi";
 import { useEffect, useState } from "react";
 import EmptyState from "../../../../components/EmptyState";
 import { Button } from "@mantine/core";
+import { useNavigate } from "react-router-dom";
 
 type Transaction = {
   propertyName: string;
@@ -18,6 +18,7 @@ function Transactions() {
     Array<{ title: string; value: string }>
   >([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getTransactions = async () => {
@@ -61,10 +62,11 @@ function Transactions() {
               </p>
 
               <Button
-                label="Browse Properties"
-                to="/properties/search"
+                onClick={() => navigate("/properties/search")}
                 variant="outlined"
-              />
+              >
+                Browse Properties
+              </Button>
             </div>
           </EmptyState>
         )}

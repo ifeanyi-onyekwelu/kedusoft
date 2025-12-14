@@ -273,17 +273,19 @@ export const AboutUs = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
-              label="Browse Properties"
               variant="filled"
               className="bg-blue-600 hover:bg-blue-700"
               onClick={() => navigate("/properties")}
-            />
+            >
+              Browse Properties
+            </Button>
             <Button
-              label="List Your Property"
               variant="outlined"
               className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50"
               onClick={() => navigate("/auth/register?role=landlord")}
-            />
+            >
+              List Your Property
+            </Button>
           </div>
         </div>
       </div>
