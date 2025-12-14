@@ -12,4 +12,4 @@ def make_shell_context():
 
 if __name__ == "__main__":
     port = int(PORT)
-    socketio.run(app, host="0.0.0.0", port=port)
+    socketio.run(app, host="0.0.0.0", port=port, debug=True, allow_unsafe_werkzeug=True)
