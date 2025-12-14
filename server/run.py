@@ -1,6 +1,6 @@
 from app import create_app
 from app.models import db
-from .app.utils.variables import PORT
+from app.utils.variables import PORT
 
 app, socketio = create_app()
 
