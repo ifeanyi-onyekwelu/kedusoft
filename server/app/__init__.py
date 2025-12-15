@@ -35,7 +35,7 @@ from .models import db
 
 migrate = Migrate()  # Database migration handler
 Session = None  # Global SQLAlchemy scoped session (initialized in create_app)
-socketio = None  # Global Socket.IO instance
+socketio = SocketIO(cors_allowed_origins="*", async_mode="threading")
 
 
 def create_app():
@@ -71,9 +71,6 @@ def create_app():
     # CORS configuration (allows cross-origin requests)
     CORS(app, origins="*")
 
-    # Socket.IO setup
-    socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
-
     # --- Database Configuration MUST COME FIRST --- #
     app.config["SQLALCHEMY_DATABASE_URI"] = (
         f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@"
@@ -93,11 +90,10 @@ def create_app():
     # Initialize Flask-SQLAlchemy and Flask-Migrate
     db.init_app(app)  # Connect SQLAlchemy to Flask app
     migrate.init_app(app, db)  # Connect migrations to app and db
+    socketio.init_app(app)
 
     # --- Socket.IO Event Handlers --- #
     from .utils.messaging_socket import init_messaging_socket
-
-    init_messaging_socket(socketio)
 
     # --- Application Configuration --- #
     # Security and application settings
@@ -199,4 +195,4 @@ def create_app():
             return response(str(error), None, False)
         return error
 
-    return app, socketio
+    return app

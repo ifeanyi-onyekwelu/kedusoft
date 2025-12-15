@@ -1,15 +1,16 @@
-from app import create_app
-from app.models import db
+from app import create_app, socketio
 from app.utils.variables import PORT
+from app.utils.messaging_socket import init_messaging_socket
 
-app, socketio = create_app()
+app = create_app()
 
-
-@app.shell_context_processor
-def make_shell_context():
-    return {"db": db, "app": app, "socketio": socketio}
-
+init_messaging_socket(socketio)
 
 if __name__ == "__main__":
-    port = int(PORT)
-    socketio.run(app, host="0.0.0.0", port=port, debug=True, allow_unsafe_werkzeug=True)
+    socketio.run(
+        app,
+        host="0.0.0.0",
+        port=int(PORT),
+        debug=True,
+        allow_unsafe_werkzeug=True,
+    )
