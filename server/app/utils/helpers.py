@@ -101,11 +101,18 @@ def seed_categories(session):
 
 
 def seed_properties(session):
-    # The Landlord ID provided
-    landlord_id = "4c231de2-1f99-44e6-aa1c-bfd7caa04787"
+    # 1. Fetch all available landlords from the DB
+    landlords = session.query(User).filter_by(role="landlord", is_active=True).all()
+
+    if not landlords:
+        print("Error: No landlords found in the database. Please seed users first!")
+        return
+
+    landlord_ids = [l.id for l in landlords]
+    print(f"Found {len(landlord_ids)} landlords. Distributing properties...")
 
     property_templates = [
-        # --- LAGOS (South West) ---
+        # --- LAGOS ---
         {
             "name": "Eko Atlantic Sky-Villa",
             "cat_name": "Penthouse",
@@ -166,7 +173,7 @@ def seed_properties(session):
             "lng": 3.3582,
             "img": "https://images.unsplash.com/photo-1497366216548-37526070297c",
         },
-        # --- ABUJA (North) ---
+        # --- ABUJA ---
         {
             "name": "Maitama Heights Mansion",
             "cat_name": "Mansion",
@@ -227,7 +234,7 @@ def seed_properties(session):
             "lng": 7.4222,
             "img": "https://images.unsplash.com/photo-1493809842364-78817add7ffb",
         },
-        # --- PORT HARCOURT (South South) ---
+        # --- PORT HARCOURT ---
         {
             "name": "PH GRA Phase 2 Duplex",
             "cat_name": "Duplex",
@@ -258,7 +265,7 @@ def seed_properties(session):
             "lng": 7.0344,
             "img": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d",
         },
-        # --- ANAMBRA (South East) ---
+        # --- ANAMBRA ---
         {
             "name": "Awka Millennium City Villa",
             "cat_name": "Villa",
@@ -284,12 +291,12 @@ def seed_properties(session):
             "price": 1500000,
             "type": "rent",
             "beds": 0,
-            "landmark": "Onitsha River Niger Bridge",
+            "landmark": "Onitsha Bridge",
             "lat": 6.1452,
             "lng": 6.7751,
             "img": "https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0",
         },
-        # --- ENUGU (South East) ---
+        # --- ENUGU ---
         {
             "name": "Independence Layout Duplex",
             "cat_name": "Duplex",
@@ -412,7 +419,10 @@ def seed_properties(session):
         },
     ]
 
-    for p in property_templates:
+    for index, p in enumerate(property_templates):
+        # 2. Assign landlord in a round-robin fashion
+        assigned_landlord_id = landlord_ids[index % len(landlord_ids)]
+
         exists = (
             session.query(Property)
             .filter_by(name=p["name"], address=p["address"])
@@ -427,20 +437,16 @@ def seed_properties(session):
 
         new_prop = Property(
             name=p["name"],
-            description=f"Standard {p['name']} with modern amenities near {p['landmark']}.",
+            description=f"Modern {p['name']} with premium amenities near {p['landmark']}.",
             listing_type=p["type"],
             bedrooms=p["beds"],
             bathrooms=max(1, p["beds"]),
             toilets=p["beds"] + 1,
             kitchens=1 if p["beds"] > 0 else 0,
             floors_no=(
-                2
-                if "Duplex" in p["name"]
-                or "Villa" in p["name"]
-                or "Mansion" in p["name"]
-                else 1
+                2 if any(x in p["name"] for x in ["Duplex", "Villa", "Mansion"]) else 1
             ),
-            size_sqft=float(random.randint(1500, 5000)),
+            size_sqft=float(random.randint(1800, 5000)),
             year_built=2023,
             furnished="semi",
             water_source="borehole",
@@ -450,8 +456,8 @@ def seed_properties(session):
             city=p["city"],
             state=p["state"],
             zipcode=400102.0,
-            latitude=p["lat"],  # Added Latitude
-            longitude=p["lng"],  # Added Longitude
+            latitude=p["lat"],
+            longitude=p["lng"],
             closest_landmark=p["landmark"],
             payment_structure="yearly",
             rent_amount=p["price"],
@@ -461,7 +467,8 @@ def seed_properties(session):
             minimum_lease_duration="1 year",
             cover_image=p["img"],
             gallery=[p["img"]],
-            landlord_id=landlord_id,
+            # Use the dynamically assigned landlord ID
+            landlord_id=assigned_landlord_id,
             category_id=category.id,
             status="available",
             is_available=True,
@@ -471,7 +478,7 @@ def seed_properties(session):
     try:
         session.commit()
         print(
-            f"Successfully seeded {len(property_templates)} properties across Nigeria!"
+            f"Successfully distributed 20 properties among {len(landlord_ids)} landlords!"
         )
     except Exception as e:
         session.rollback()
