@@ -41,19 +41,6 @@ export const PropertyMapPage: React.FC<PropertyMapPageProps> = () => {
     };
   }, [searchParams]);
 
-  // ============================================================================
-  // DATA LOADING
-  // ============================================================================
-
-  /**
-   * Loads initial set of properties from the API
-   *
-   * This provides PropertyMapView with starting data before
-   * the user interacts with the map. The component will fetch
-   * more properties as the user pans/zooms.
-   *
-   * Fetches up to 100 properties based on URL filter parameters
-   */
   const loadInitialProperties = useCallback(async () => {
     try {
       // Clear any previous errors

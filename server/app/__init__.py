@@ -27,7 +27,7 @@ from .utils.variables import (
     POSTGRES_DB,
     POSTGRES_PORT,
 )
-from .utils.helpers import seed_categories
+from .utils.helpers import seed_categories, seed_properties
 from .utils.mailer import init_mail
 from flask_migrate import Migrate
 import sentry_sdk
@@ -132,6 +132,7 @@ def create_app():
         """Seeds initial data into the database."""
         with app.app_context():
             seed_categories(Session())
+            seed_properties(Session())
 
     @app.cli.command("test-email")
     @click.option(

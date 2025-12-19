@@ -52,7 +52,7 @@ function Hero() {
       <div
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-transform duration-[10s] hover:scale-110"
         style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1600607687940-c52af0463131?q=80&w=2070&auto=format&fit=crop')`,
+          backgroundImage: `url('/images/houses/luxury-1.jpg')`,
         }}
       />
       <div className="absolute inset-0 z-10 bg-gradient-to-b from-[#05110E]/60 via-[#05110E]/40 to-[#05110E]/90" />
@@ -108,7 +108,7 @@ function Hero() {
                 className="bg-white/10 backdrop-blur-md border border-white/10"
                 styles={{
                   root: { backgroundColor: "rgba(255, 255, 255, 0.1)" },
-                  indicator: { backgroundColor: "#10b981" }, // emerald-500
+                  indicator: { backgroundColor: "#fb7185" }, // emerald-500
                   label: { color: "white", fontWeight: 600 },
                 }}
               />
