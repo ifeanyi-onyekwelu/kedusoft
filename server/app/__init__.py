@@ -83,6 +83,9 @@ def create_app():
     migrate.init_app(app, db)  # Connect migrations to app and db
     socketio.init_app(app)
 
+    with app.app_context():
+        from . import models
+
     # --- Socket.IO Event Handlers --- #
     from .utils.messaging_socket import init_messaging_socket
 
