@@ -10,4 +10,4 @@ COPY . .
 
 ENV PYTHONUNBUFFERED=1
 
-CMD gunicorn -k eventlet -w 1 -b 0.0.0.0:$PORT run:app
+CMD ["./entrypoint.sh"]
