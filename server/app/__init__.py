@@ -23,7 +23,7 @@ from .utils.variables import (
     JWT_SECRET,
     DATABASE_URL,
 )
-from .utils.helpers import seed_categories, seed_properties
+from .utils.helpers import seed_categories, seed_properties, seed_users
 from .utils.mailer import init_mail
 from flask_migrate import Migrate
 import sentry_sdk
@@ -127,6 +127,7 @@ def create_app():
         with app.app_context():
             seed_categories(Session())
             seed_properties(Session())
+            seed_users(Session())
 
     @app.cli.command("test-email")
     @click.option(
