@@ -21,11 +21,7 @@ from .utils.variables import (
     APP_SECRET,
     MAIL_USERNAME,
     JWT_SECRET,
-    POSTGRES_HOST,
-    POSTGRES_USER,
-    POSTGRES_PASSWORD,
-    POSTGRES_DB,
-    POSTGRES_PORT,
+    DATABASE_URL,
 )
 from .utils.helpers import seed_categories, seed_properties
 from .utils.mailer import init_mail
@@ -71,12 +67,7 @@ def create_app():
     # CORS configuration (allows cross-origin requests)
     CORS(app, origins="*")
 
-    # --- Database Configuration MUST COME FIRST --- #
-    app.config["SQLALCHEMY_DATABASE_URI"] = (
-        f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@"
-        f"{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
-    )
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 
     # Initialize database engine and session
 
