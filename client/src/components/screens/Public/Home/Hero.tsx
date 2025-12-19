@@ -1,226 +1,194 @@
-import { Group, TextInput, Combobox, useCombobox, Button } from "@mantine/core";
-import { IconSearch, IconMapPin } from "@tabler/icons-react";
+import {
+  TextInput,
+  Select,
+  Button,
+  Text,
+  Container,
+  Group,
+  SegmentedControl,
+  Box,
+} from "@mantine/core";
+import {
+  IconSearch,
+  IconMapPin,
+  IconStars,
+  IconCash,
+  IconHome,
+} from "@tabler/icons-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
-
 import type { Variants } from "framer-motion";
-
-interface GeocodingResponse {
-  address: {
-    road?: string;
-    house_number?: string;
-    neighbourhood?: string;
-    suburb?: string;
-    city?: string;
-    state?: string;
-    county?: string;
-    postcode?: string;
-    country?: string;
-  };
-  display_name: string;
-}
 
 function Hero() {
   const [location, setLocation] = useState("");
-
-  const combobox = useCombobox({
-    onDropdownClose: () => combobox.resetSelectedOption(),
-  });
+  const [type, setType] = useState("rent"); // rent, sale, or shortlet
+  const [category, setCategory] = useState<string | null>(null);
+  const [budget, setBudget] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const containerVariants: Variants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3,
-      },
-    },
-  };
-
-  const itemVariants: Variants = {
-    hidden: { y: 50, opacity: 0 },
-    visible: {
       y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.8,
-        ease: [0.6, -0.05, 0.01, 0.99],
-      },
+      transition: { duration: 0.8, staggerChildren: 0.2 },
     },
-  };
-
-  const handleGetCurrentLocation = async () => {
-    combobox.closeDropdown();
-
-    if (!navigator.geolocation) {
-      toast.error("Geolocation is not supported by your browser");
-      return;
-    }
-
-    try {
-      // Get user's coordinates
-      const position: GeolocationPosition = await new Promise(
-        (resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0,
-          });
-        }
-      );
-
-      const { latitude, longitude } = position.coords;
-
-      // Reverse geocode to get full address
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`,
-        {
-          headers: {
-            "Accept-Language": "en",
-          },
-        }
-      );
-
-      const data: GeocodingResponse = await response.json();
-
-      // Extract address components
-      const address = data.address;
-      const addressParts = [
-        address.house_number,
-        address.road,
-        address.neighbourhood || address.suburb,
-      ].filter(Boolean);
-
-      const fullAddress = addressParts.join(" ");
-      const city = address.city || address.state || address.county || "";
-
-      // Build location string - prefer specific address or fall back to city/state
-      const locationString = fullAddress || city;
-
-      // UPDATE THE LOCATION STATE - THIS IS THE MISSING LINE
-      setLocation(locationString);
-
-      // Navigate to listings page with location and coordinates
-      const params = new URLSearchParams();
-      params.append("location", locationString);
-      params.append("lat", latitude.toString());
-      params.append("lng", longitude.toString());
-
-      // If you want to automatically navigate after getting location, uncomment:
-      // navigate(`/listings?${params.toString()}`);
-    } catch (error) {
-      console.error("Error getting location:", error);
-      toast.error(
-        "Unable to get your location. Please check your browser settings and try again."
-      );
-    }
   };
 
   const searchListings = () => {
     const params = new URLSearchParams();
     if (location) params.append("location", location);
+    if (type) params.append("type", type);
+    if (category) params.append("category", category.toLowerCase());
+    if (budget) params.append("budget", budget);
 
     navigate(`/listings?${params.toString()}`);
   };
 
   return (
-    <div className="relative bg-white">
-      {/* Background Image */}
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Background & Overlays */}
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-transform duration-[10s] hover:scale-110"
         style={{
-          backgroundImage: `url('/images/houses/nigeria.jpg')`,
+          backgroundImage: `url('https://images.unsplash.com/photo-1600607687940-c52af0463131?q=80&w=2070&auto=format&fit=crop')`,
         }}
       />
+      <div className="absolute inset-0 z-10 bg-gradient-to-b from-[#05110E]/60 via-[#05110E]/40 to-[#05110E]/90" />
+      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-emerald-500/20 blur-[100px] rounded-full z-10" />
 
-      {/* Subtle Overlay */}
-      <div className="absolute inset-0 bg-black/40" />
-
-      {/* Main Hero Section */}
-      <div className="relative min-h-[70vh] flex items-center">
-        <div className="absolute inset-0 bg-black/20" />
-
+      <Container size="lg" className="relative z-20 py-20">
         <motion.div
-          className="relative z-10 w-window mx-auto"
+          variants={containerVariants}
           initial="hidden"
           animate="visible"
-          variants={containerVariants}
+          className="text-center space-y-8"
         >
-          <div className="text-start space-y-12">
-            {/* Main Heading - Updated Caption */}
-            <motion.div variants={itemVariants} className="space-y-6">
-              <h1 className="text-white font-black text-4xl md:text-5xl lg:text-6xl leading-tight">
-                Find Your Next Home.
-                <br />
-                Simple. Fast. Stress-Free.
-              </h1>
-            </motion.div>
+          {/* Top Badge */}
+          <motion.div
+            variants={containerVariants}
+            className="flex justify-center"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-md">
+              <IconStars size={16} className="text-emerald-300" />
+              <span className="text-white text-xs font-semibold uppercase tracking-widest">
+                Premium Properties Only
+              </span>
+            </div>
+          </motion.div>
 
-            {/* Simple Search Bar - Zillow Style */}
-            <motion.div variants={itemVariants} className="max-w-2xl">
-              <div className="bg-white rounded-sm shadow-lg overflow-hidden">
-                <div className="flex items-stretch">
-                  <div className="flex-1">
-                    <Combobox store={combobox} withinPortal={false}>
-                      <Combobox.Target>
-                        <TextInput
-                          placeholder="Enter an address, neighborhood, city, or ZIP code"
-                          value={location}
-                          onChange={(e) => {
-                            setLocation(e.currentTarget.value);
-                            combobox.openDropdown();
-                          }}
-                          onClick={() => combobox.openDropdown()}
-                          onFocus={() => combobox.openDropdown()}
-                          size="xl"
-                          variant="unstyled"
-                          className="w-full"
-                          styles={{
-                            input: {
-                              fontSize: "18px",
-                              fontWeight: 400,
-                              padding: "20px 24px",
-                              border: "none",
-                              "&:focus": {
-                                outline: "none",
-                              },
-                            },
-                          }}
-                        />
-                      </Combobox.Target>
+          {/* Hero Text */}
+          <motion.div variants={containerVariants} className="space-y-6">
+            <h1 className="text-5xl md:text-8xl font-black text-white tracking-tighter leading-none">
+              DREAM DEEPER. <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-200">
+                LIVE BETTER.
+              </span>
+            </h1>
+          </motion.div>
 
-                      <Combobox.Dropdown>
-                        <Combobox.Options>
-                          <Combobox.Option
-                            value="current-location"
-                            onClick={handleGetCurrentLocation}
-                          >
-                            <Group gap={8}>
-                              <IconMapPin size={16} />
-                              <span>Use Current Location</span>
-                            </Group>
-                          </Combobox.Option>
-                        </Combobox.Options>
-                      </Combobox.Dropdown>
-                    </Combobox>
-                  </div>
+          {/* Floating Search Bar Container */}
+          <motion.div
+            variants={containerVariants}
+            className="w-full max-w-5xl mx-auto mt-12"
+          >
+            {/* Transaction Type Selector (Rent/Sale/Shortlet) */}
+            <Group justify="center" mb="lg">
+              <SegmentedControl
+                value={type}
+                onChange={setType}
+                data={[
+                  { label: "For Rent", value: "rent" },
+                  { label: "For Sale", value: "sale" },
+                  { label: "Shortlet", value: "shortlet" },
+                ]}
+                radius="xl"
+                size="md"
+                className="bg-white/10 backdrop-blur-md border border-white/10"
+                styles={{
+                  root: { backgroundColor: "rgba(255, 255, 255, 0.1)" },
+                  indicator: { backgroundColor: "#10b981" }, // emerald-500
+                  label: { color: "white", fontWeight: 600 },
+                }}
+              />
+            </Group>
 
-                  <button
-                    onClick={searchListings}
-                    className="bg-accent hover:bg-accent/80 font-bold transition-colors duration-300 cursor-pointer text-white border-0 rounded-l-none px-8"
-                  >
-                    Find
-                  </button>
-                </div>
+            <div className="bg-white/10 p-3 rounded-[3rem] border border-white/20 backdrop-blur-2xl shadow-2xl">
+              <div className="bg-white rounded-[2.5rem] p-2 md:p-3 flex flex-col lg:flex-row items-center gap-2">
+                {/* 1. Location Input */}
+                <TextInput
+                  placeholder="Location"
+                  variant="unstyled"
+                  leftSection={
+                    <IconMapPin size={20} className="text-emerald-600 ml-2" />
+                  }
+                  className="w-full lg:flex-1 px-4"
+                  styles={{
+                    input: {
+                      height: "50px",
+                      fontSize: "16px",
+                      fontWeight: 500,
+                    },
+                  }}
+                  value={location}
+                  onChange={(e) => setLocation(e.currentTarget.value)}
+                />
+
+                <div className="hidden lg:block w-[1px] h-8 bg-gray-200" />
+
+                {/* 2. Category Select (Apartment, Duplex, etc) */}
+                <Select
+                  placeholder="Category"
+                  variant="unstyled"
+                  leftSection={
+                    <IconHome size={20} className="text-emerald-600 ml-2" />
+                  }
+                  data={["Apartment", "Duplex", "Penthouse", "Studio", "Villa"]}
+                  className="w-full lg:w-44 px-4"
+                  styles={{ input: { height: "50px", fontWeight: 500 } }}
+                  value={category}
+                  onChange={setCategory}
+                  clearable
+                />
+
+                <div className="hidden lg:block w-[1px] h-8 bg-gray-200" />
+
+                {/* 3. Budget Select */}
+                <Select
+                  placeholder="Budget"
+                  variant="unstyled"
+                  leftSection={
+                    <IconCash size={20} className="text-emerald-600 ml-2" />
+                  }
+                  data={[
+                    { label: "Under ₦1M", value: "0-1000000" },
+                    { label: "₦1M - ₦5M", value: "1000000-5000000" },
+                    { label: "₦5M - ₦10M", value: "5000000-10000000" },
+                    { label: "₦10M+", value: "10000000-999999999" },
+                  ]}
+                  className="w-full lg:w-48 px-4"
+                  styles={{ input: { height: "50px", fontWeight: 500 } }}
+                  value={budget}
+                  onChange={setBudget}
+                  clearable
+                />
+
+                {/* Search Button */}
+                <Button
+                  size="xl"
+                  radius="xl"
+                  className="w-full lg:w-auto bg-[#05110E] hover:bg-emerald-800 text-white px-10 h-[56px] transition-all"
+                  leftSection={<IconSearch size={20} />}
+                  onClick={searchListings}
+                >
+                  Explore
+                </Button>
               </div>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
         </motion.div>
-      </div>
+      </Container>
     </div>
   );
 }

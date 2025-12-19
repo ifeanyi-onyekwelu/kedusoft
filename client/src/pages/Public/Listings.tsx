@@ -1,23 +1,3 @@
-/**
- * PropertyMapPage Component
- *
- * Main page for the map-based property listing view.
- * This is the entry point that:
- * - Fetches initial property data from the API
- * - Extracts filter parameters from URL (for shareable links)
- * - Handles navigation to property details
- * - Manages loading and error states
- * - Renders the PropertyMapView component with initial data
- *
- * URL Parameters Supported:
- * - city, area, location: Geographic filters
- * - min_price, max_price: Price range
- * - bedrooms: Number of bedrooms
- * - listing_type: rent, sale, lease, etc.
- * - property_type: apartment, duplex, etc.
- * - lat, lng: User's current location
- */
-
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { PropertyMapView } from "../../components/maps/PropertyMapView";
@@ -28,36 +8,33 @@ import { ErrorState } from "../../components/ErrorState";
 interface PropertyMapPageProps {}
 
 export const PropertyMapPage: React.FC<PropertyMapPageProps> = () => {
-  // ============================================================================
-  // HOOKS & STATE
-  // ============================================================================
-
-  // Navigation hook for routing to property details
   const navigate = useNavigate();
-
   const [searchParams] = useSearchParams();
-
   const { loading, withLoading } = useLoading();
-
   const { getAllProperties } = usePublicOperations();
-
   const [initialProperties, setInitialProperties] = useState<Property[]>([]);
-
   const [error, setError] = useState<string | null>(null);
 
   const getInitialFilters = useCallback(() => {
-    const propertyType = searchParams.get("property_type") || "";
+    const propertyType = searchParams.get("category") || "";
     const lat = searchParams.get("lat") || "";
     const lng = searchParams.get("lng") || "";
+
+    const budgetRaw = searchParams.get("budget") || ""; // "1000000-5000000"
+
+    // 2. Split it into two parts
+    const [minFromUrl, maxFromUrl] = budgetRaw
+      ? budgetRaw.split("-")
+      : ["", ""];
 
     return {
       city: searchParams.get("city") || "",
       area: searchParams.get("area") || "",
       location: searchParams.get("location") || "",
-      min_price: searchParams.get("min_price") || "",
-      max_price: searchParams.get("max_price") || "",
+      min_price: minFromUrl,
+      max_price: maxFromUrl,
       bedrooms: searchParams.get("bedrooms") || "",
-      listing_type: searchParams.get("listing_type") || "",
+      listing_type: searchParams.get("type") || "",
       category: propertyType,
       lat,
       lng,

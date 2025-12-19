@@ -50,7 +50,6 @@ def get_all_categories():
                 "category_id": category.id,
             },
         )
-        logger.info("Counts", property_count)
 
         categories_with_counts.append(
             {**serialize(category), "property_count": property_count}
