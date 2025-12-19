@@ -10,6 +10,8 @@ from ..models.db_utils import get_item_by_id, create_item
 from ..models import User, Category, Property
 import datetime
 import random
+import uuid
+from werkzeug.security import generate_password_hash
 
 
 def response(msg: str, data=None, success=True):
@@ -483,3 +485,83 @@ def seed_properties(session):
     except Exception as e:
         session.rollback()
         print(f"Error seeding properties: {e}")
+
+
+def seed_users(session):
+    users_to_seed = [
+        {
+            "firstName": "Chinedu",
+            "lastName": "Landlord",
+            "email": "landlord@kedusoft.com",
+            "role": "landlord",
+            "is_verified": True,
+            "is_email_verified": True,
+            "is_landlord_onboarded": True,
+            "landlord_verification_status": "approved",
+            "identity_documents": [
+                {
+                    "type": "national_id",
+                    "url": "http://example.com/id.jpg",
+                    "verified": True,
+                }
+            ],
+        },
+        {
+            "firstName": "Amaka",
+            "lastName": "Tenant",
+            "email": "tenant@kedusoft.com",
+            "role": "tenant",
+            "is_verified": True,
+            "is_email_verified": True,
+            "is_tenant_onboarded": True,
+            "tenant_verification_status": "approved",
+            "total_monthly_income": 1500000,
+            "identity_documents": [
+                {
+                    "type": "passport",
+                    "url": "http://example.com/pp.jpg",
+                    "verified": True,
+                }
+            ],
+        },
+    ]
+
+    for user_data in users_to_seed:
+        exists = session.query(User).filter_by(email=user_data["email"]).first()
+        if not exists:
+            new_user = User(
+                id=str(uuid.uuid4()),
+                firstName=user_data["firstName"],
+                lastName=user_data["lastName"],
+                email=user_data["email"],
+                role=user_data["role"],
+                password=generate_password_hash("password123"),  # Standard for seeding
+                is_active=True,
+                is_verified=user_data["is_verified"],
+                is_email_verified=user_data["is_email_verified"],
+                joined_at=datetime.datetime.utcnow(),
+            )
+
+            # Set Role Specific Flags
+            if user_data["role"] == "landlord":
+                new_user.is_landlord_onboarded = user_data["is_landlord_onboarded"]
+                new_user.landlord_verification_status = user_data[
+                    "landlord_verification_status"
+                ]
+            else:
+                new_user.is_tenant_onboarded = user_data["is_tenant_onboarded"]
+                new_user.tenant_verification_status = user_data[
+                    "tenant_verification_status"
+                ]
+                new_user.total_monthly_income = user_data["total_monthly_income"]
+
+            new_user.identity_documents = user_data["identity_documents"]
+
+            session.add(new_user)
+
+    try:
+        session.commit()
+        print("✅ Seeded Admin Landlord and Tenant successfully!")
+    except Exception as e:
+        session.rollback()
+        print(f"❌ Error seeding users: {e}")
