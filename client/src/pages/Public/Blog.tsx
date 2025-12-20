@@ -1,11 +1,21 @@
-/**
- * Blog Page Component
- *
- * Blog listing page with articles about renting, real estate tips, and platform updates.
- */
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Container,
+  Text,
+  Group,
+  Box,
+  Badge,
+  TextInput,
+  Button,
+} from "@mantine/core";
+import {
+  IconSearch,
+  IconArrowRight,
+  IconClock,
+  IconCalendar,
+} from "@tabler/icons-react";
+import { PageHero } from "@/components/shared/public/PageHero";
 
 export const Blog = () => {
   const navigate = useNavigate();
@@ -100,143 +110,169 @@ export const Blog = () => {
       : articles.filter((article) => article.category === selectedCategory);
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <div className="bg-blue-600 text-white py-16">
-        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-4">Our Blog</h1>
-          <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-            Tips, guides, and insights to help you navigate the rental market
-          </p>
+    <div className="min-h-screen bg-white font-inter">
+      <PageHero
+        badgeText="Knowledge Hub"
+        title="Insights for the"
+        highlightText="Modern Resident."
+        subtitle="Stay informed with expert real estate guides, market trends, and property management tips tailored for Nigeria."
+        bgImageUrl="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop"
+      >
+        {/* Search Bar passed as children */}
+        <div className="max-w-md bg-white p-2 rounded-2xl flex items-center shadow-2xl">
+          <div className="pl-4 text-gray-400">
+            <IconSearch size={20} />
+          </div>
+          <input
+            type="text"
+            placeholder="Search articles..."
+            className="flex-1 px-4 py-2 outline-none text-gray-900 font-medium"
+          />
+          <Button className="bg-primary rounded-xl px-6">Search</Button>
         </div>
-      </div>
+      </PageHero>
 
-      {/* Categories Filter */}
-      <div className="border-b border-gray-200 bg-white sticky top-0 z-10 shadow-sm">
-        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex gap-4 overflow-x-auto py-4">
+      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <Container size="lg">
+          <div className="flex items-center gap-2 overflow-x-auto py-6 no-scrollbar">
             {categories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
+                className={`px-6 py-2.5 rounded-2xl text-sm font-bold transition-all whitespace-nowrap border-2 ${
                   selectedCategory === category.id
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    ? "bg-primary border-primary text-white shadow-lg shadow-blue-900/20"
+                    : "bg-transparent border-transparent text-gray-500 hover:text-primary"
                 }`}
               >
                 {category.label}
               </button>
             ))}
           </div>
-        </div>
+        </Container>
       </div>
 
-      {/* Articles Grid */}
-      <div className="py-16">
-        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 3. Articles Grid */}
+      <section className="py-24">
+        <Container size="lg">
           {filteredArticles.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-16">
               {filteredArticles.map((article) => (
                 <article
                   key={article.id}
-                  className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-xl transition-shadow cursor-pointer"
+                  className="group cursor-pointer"
                   onClick={() => navigate(`/blog/${article.id}`)}
                 >
-                  {/* Article Image */}
-                  <div className="relative h-48 bg-gray-200 overflow-hidden">
+                  {/* Card Image */}
+                  <div className="relative aspect-[16/10] mb-6 overflow-hidden rounded-[2.5rem] bg-gray-100 shadow-sm border border-gray-50">
                     <img
                       src={article.image}
                       alt={article.title}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                     />
-                    <div className="absolute top-4 left-4">
-                      <span className="px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded-full">
-                        {
-                          categories.find((c) => c.id === article.category)
-                            ?.label
-                        }
-                      </span>
+                    <div className="absolute top-6 left-6">
+                      <Badge
+                        size="lg"
+                        className="bg-white/90 backdrop-blur text-primary rounded-xl font-bold border-none py-4 px-5 shadow-sm uppercase"
+                      >
+                        {article.category}
+                      </Badge>
                     </div>
                   </div>
 
-                  {/* Article Content */}
-                  <div className="p-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-3 hover:text-blue-600 transition-colors">
+                  {/* Card Details */}
+                  <div className="px-2">
+                    <Group
+                      gap="xs"
+                      className="mb-4 text-gray-400 font-bold text-[11px] uppercase tracking-widest"
+                    >
+                      <Group gap={4}>
+                        <IconCalendar size={14} /> {article.date}
+                      </Group>
+                      <span>•</span>
+                      <Group gap={4}>
+                        <IconClock size={14} /> {article.readTime}
+                      </Group>
+                    </Group>
+
+                    <h2 className="text-2xl font-montserrat font-extrabold text-primary mb-3 leading-snug group-hover:text-secondary transition-colors">
                       {article.title}
                     </h2>
-                    <p className="text-gray-600 mb-4 line-clamp-2">
+
+                    <p className="text-gray-500 leading-relaxed mb-6 line-clamp-2">
                       {article.excerpt}
                     </p>
 
-                    {/* Article Meta */}
-                    <div className="flex items-center justify-between text-sm text-gray-500">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                          <span className="text-xs font-medium">
-                            {article.author
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")}
-                          </span>
-                        </div>
-                        <span>{article.author}</span>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-primary font-bold text-xs">
+                        {article.author
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")}
                       </div>
-                      <div className="flex items-center gap-3">
-                        <span>{article.date}</span>
-                        <span>•</span>
-                        <span>{article.readTime}</span>
-                      </div>
+                      <span className="font-bold text-sm text-primary">
+                        {article.author}
+                      </span>
                     </div>
                   </div>
                 </article>
               ))}
             </div>
           ) : (
-            <div className="text-center py-16">
-              <div className="text-6xl mb-4">📝</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                No articles found
-              </h3>
-              <p className="text-gray-600">
-                Try selecting a different category
-              </p>
+            <div className="text-center py-20 bg-gray-50 rounded-[3rem]">
+              <Text size="xl" fw={700} color="dimmed">
+                No articles found in this category.
+              </Text>
+              <Button
+                variant="subtle"
+                mt="md"
+                onClick={() => setSelectedCategory("all")}
+              >
+                View all articles
+              </Button>
             </div>
           )}
-        </div>
-      </div>
+        </Container>
+      </section>
 
-      {/* Newsletter Signup */}
-      <div className="py-16 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-white rounded-2xl p-8 md:p-12 border border-gray-200">
-            <div className="text-5xl mb-4">📧</div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Stay Updated
-            </h2>
-            <p className="text-lg text-gray-600 mb-8">
-              Subscribe to our newsletter for the latest rental tips, market
-              insights, and platform updates
-            </p>
-            <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-              />
-              <button
-                type="submit"
-                className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Subscribe
-              </button>
-            </form>
-            <p className="text-sm text-gray-500 mt-4">
-              We respect your privacy. Unsubscribe at any time.
-            </p>
+      {/* 4. Captivating Newsletter Section */}
+      <section className="pb-24">
+        <Container size="lg">
+          <div className="relative bg-primary rounded-[3rem] p-8 md:p-20 overflow-hidden text-center shadow-2xl shadow-blue-900/30">
+            {/* Decorative Elements */}
+            <div className="absolute -top-24 -left-24 w-64 h-64 bg-secondary/10 rounded-full" />
+            <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-accent/10 rounded-full" />
+
+            <div className="relative z-10 max-w-2xl mx-auto">
+              <Text className="text-secondary font-bold uppercase tracking-[0.2em] mb-4 text-sm">
+                Newsletter
+              </Text>
+              <h2 className="text-4xl md:text-5xl font-montserrat font-extrabold text-white mb-6">
+                Stay ahead of the market.
+              </h2>
+              <p className="text-blue-100/70 text-lg mb-10">
+                Get weekly property insights and exclusive platform updates
+                delivered straight to your inbox.
+              </p>
+
+              <form className="flex flex-col sm:flex-row gap-4 p-2 bg-white/5 backdrop-blur-sm rounded-3xl border border-white/10">
+                <input
+                  type="email"
+                  placeholder="Enter your email address"
+                  className="flex-1 bg-transparent px-6 py-4 text-white outline-none placeholder:text-blue-200/50"
+                  required
+                />
+                <button className="bg-secondary hover:bg-white hover:text-primary text-white font-extrabold px-10 py-4 rounded-2xl transition-all">
+                  Subscribe
+                </button>
+              </form>
+              <Text size="xs" color="blue.2" mt="md" className="opacity-50">
+                No spam. Just value. Unsubscribe anytime.
+              </Text>
+            </div>
           </div>
-        </div>
-      </div>
+        </Container>
+      </section>
     </div>
   );
 };

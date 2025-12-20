@@ -80,7 +80,7 @@ function Hero() {
 
           {/* Hero Text */}
           <motion.div variants={containerVariants} className="space-y-6">
-            <h1 className="text-5xl md:text-8xl font-black text-white tracking-tighter leading-none">
+            <h1 className="text-5xl md:text-8xl font-black text-white tracking-tighter leading-none font-manrope">
               DREAM DEEPER. <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-200">
                 LIVE BETTER.
