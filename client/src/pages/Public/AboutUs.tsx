@@ -1,294 +1,191 @@
-/**
- * AboutUs Page Component
- *
- * Company information, mission, vision, and team.
- */
-
 import { useNavigate } from "react-router-dom";
-import { Button } from "@mantine/core";
+import {
+  Button,
+  Container,
+  Text,
+  SimpleGrid,
+  Card,
+  Group,
+  Box,
+} from "@mantine/core";
+import { IconTarget, IconBolt, IconShieldCheck } from "@tabler/icons-react";
 
 export const AboutUs = () => {
   const navigate = useNavigate();
 
   const values = [
     {
-      icon: "🎯",
-      title: "Trust & Transparency",
-      description: "We believe in honest, open communication with all parties.",
+      icon: <IconShieldCheck size={32} />,
+      title: "Verified Only",
+      description:
+        "Every property and landlord on GetMeLeased undergoes a strict verification process to eliminate scams.",
     },
     {
-      icon: "⚡",
-      title: "Speed & Efficiency",
-      description: "Quick responses and streamlined processes save your time.",
+      icon: <IconBolt size={32} />,
+      title: "Instant Booking",
+      description:
+        "No more waiting days for feedback. Our system connects you with landlords in real-time.",
     },
     {
-      icon: "🤝",
-      title: "Customer First",
-      description: "Your satisfaction and success drive everything we do.",
+      icon: <IconTarget size={32} />,
+      title: "Direct Access",
+      description:
+        "We cut out the middle-man stress, giving you a direct line to your next home.",
     },
-    {
-      icon: "🔒",
-      title: "Security & Safety",
-      description: "Verified listings and secure transactions protect you.",
-    },
-  ];
-
-  const stats = [
-    { number: "10,000+", label: "Properties Listed" },
-    { number: "50,000+", label: "Happy Tenants" },
-    { number: "5,000+", label: "Trusted Landlords" },
-    { number: "36", label: "States Covered" },
   ];
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <div
-        className="relative bg-cover bg-center text-white py-20"
+    <div className="min-h-screen bg-white font-inter">
+      {/* 1. Hero Section with Background Image */}
+      <section
+        className="relative py-28 text-white bg-cover bg-center"
         style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=2070&auto=format&fit=crop')`,
+          backgroundImage: `linear-gradient(to right, rgba(30, 58, 138, 0.9), rgba(30, 58, 138, 0.7)), url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=2070&auto=format&fit=crop')`,
         }}
       >
-        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">About Us</h1>
-            <p className="text-xl text-gray-200">
-              Making property rental simple, secure, and accessible for everyone
-              across Nigeria
+        <Container size="lg">
+          <div className="max-w-3xl">
+            <Text className="uppercase tracking-widest font-bold text-secondary mb-4">
+              Who we are
+            </Text>
+            <h1 className="text-5xl md:text-7xl font-montserrat font-bold leading-tight mb-6">
+              Simplifying <span className="text-secondary">Rent</span> for every
+              Nigerian.
+            </h1>
+            <p className="text-xl text-blue-100 leading-relaxed max-w-xl">
+              GetMeLeased is a technology-driven marketplace designed to make
+              finding and leasing properties fast, transparent, and secure.
             </p>
           </div>
-        </div>
-      </div>
+        </Container>
+      </section>
 
-      {/* Our Story */}
-      <div className="py-16 bg-gray-50">
-        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Story</h2>
-            <p className="text-lg text-gray-700 leading-relaxed mb-6">
-              Founded in 2024, GetMeLeased was born from a simple idea: finding
-              and renting a home in Nigeria should be easy, transparent, and
-              stress-free.
-            </p>
-            <p className="text-lg text-gray-700 leading-relaxed">
-              We noticed the challenges both tenants and landlords faced—endless
-              property searches, unreliable listings, complicated paperwork, and
-              lack of trust. So we built a platform that solves these problems,
-              bringing verified properties, genuine landlords, and serious
-              tenants together in one trusted marketplace.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Mission & Vision */}
-      <div className="py-16">
-        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div className="bg-blue-50 rounded-2xl p-8 border border-blue-200">
-              <div className="text-5xl mb-4">🎯</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                Our Mission
+      {/* 2. Our Story & Bento Stats */}
+      <section className="py-24 bg-white">
+        <Container size="lg">
+          <SimpleGrid cols={{ base: 1, md: 2 }} spacing={80}>
+            <Box>
+              <h2 className="text-3xl font-montserrat font-bold text-primary mb-6">
+                Our Story
+              </h2>
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">
+                Born out of frustration.
               </h3>
-              <p className="text-gray-700 leading-relaxed">
-                To simplify the rental process by providing a reliable,
-                transparent platform that connects landlords and tenants
-                efficiently. We're committed to making quality housing
-                accessible to everyone through technology and exceptional
-                service.
+              <p className="text-gray-600 text-lg mb-6 leading-relaxed">
+                In 2024, we realized that renting a house in Nigeria felt like a
+                full-time job. Between fake agents, inspection fees, and "ghost"
+                listings, the process was broken.
               </p>
-            </div>
-
-            <div className="bg-cyan-50 rounded-2xl p-8 border border-cyan-200">
-              <div className="text-5xl mb-4">🚀</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                Our Vision
-              </h3>
-              <p className="text-gray-700 leading-relaxed">
-                To become Nigeria's most trusted property rental platform,
-                transforming how people find homes by leveraging technology to
-                create seamless experiences. We envision a future where every
-                Nigerian can find their perfect home with confidence and ease.
+              <p className="text-gray-600 text-lg leading-relaxed">
+                We built GetMeLeased to bridge the gap between serious tenants
+                and genuine landlords, using technology to build the trust that
+                was missing.
               </p>
-            </div>
-          </div>
-        </div>
-      </div>
+            </Box>
 
-      {/* Core Values */}
-      <div className="py-16 bg-gray-50">
-        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Our Core Values
+            {/* Visual Stats Grid from Image */}
+            <div className="grid grid-cols-2 gap-4 p-4 rounded-3xl border-2 border-blue-100 bg-blue-50/30">
+              <div className="bg-white p-8 rounded-2xl shadow-sm border border-blue-50 text-center">
+                <Text className="text-4xl font-bold text-primary">10k+</Text>
+                <Text className="text-gray-500 text-sm font-medium">
+                  Listings
+                </Text>
+              </div>
+              <div className="bg-rose-50 p-8 rounded-2xl border border-rose-100 text-center">
+                <Text className="text-4xl font-bold text-accent">36</Text>
+                <Text className="text-gray-500 text-sm font-medium">
+                  States
+                </Text>
+              </div>
+              <div className="bg-blue-50 p-8 rounded-2xl border border-blue-100 text-center">
+                <Text className="text-4xl font-bold text-primary">50k+</Text>
+                <Text className="text-gray-500 text-sm font-medium">
+                  Active Users
+                </Text>
+              </div>
+              <div className="bg-sky-50 p-8 rounded-2xl border border-sky-100 text-center">
+                <Text className="text-4xl font-bold text-secondary">50k+</Text>
+                <Text className="text-gray-500 text-sm font-medium">
+                  Successful Leases
+                </Text>
+              </div>
+            </div>
+          </SimpleGrid>
+        </Container>
+      </section>
+
+      {/* 3. Why Choose Us (Cards) */}
+      <section className="py-24 bg-gray-50">
+        <Container size="lg">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-montserrat font-bold text-primary mb-4">
+              Why Choose Us?
             </h2>
-            <p className="text-lg text-gray-600">
-              The principles that guide everything we do
-            </p>
+            <div className="w-20 h-1 bg-secondary mx-auto rounded-full" />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((value, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow"
+          <SimpleGrid cols={{ base: 1, md: 3 }} spacing="xl">
+            {values.map((v, i) => (
+              <Card
+                key={i}
+                padding="xl"
+                radius="lg"
+                className="border-none shadow-sm hover:shadow-md transition-all bg-white"
               >
-                <div className="text-5xl mb-4">{value.icon}</div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {value.title}
-                </h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  {value.description}
-                </p>
-              </div>
+                <Box className="bg-blue-50 w-14 h-14 rounded-xl flex items-center justify-center text-primary mb-6">
+                  {v.icon}
+                </Box>
+                <Text className="text-xl font-bold mb-3 text-primary">
+                  {v.title}
+                </Text>
+                <Text className="text-gray-600 leading-relaxed">
+                  {v.description}
+                </Text>
+              </Card>
             ))}
-          </div>
-        </div>
-      </div>
+          </SimpleGrid>
+        </Container>
+      </section>
 
-      {/* Stats */}
-      <div className="py-16 bg-blue-600 text-white">
-        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Our Impact in Numbers</h2>
-            <p className="text-xl text-blue-100">
-              Growing stronger every day with your trust
-            </p>
-          </div>
+      {/* 4. CTA (Impactful Box) */}
+      <section className="py-24 bg-white">
+        <Container size="lg">
+          <div className="bg-primary p-12 md:p-16 rounded-[3rem] text-white relative overflow-hidden shadow-2xl">
+            {/* Background Decoration */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/10 rounded-full -mr-32 -mt-32" />
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-4xl md:text-5xl font-bold mb-2">
-                  {stat.number}
-                </div>
-                <div className="text-blue-100">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* What Makes Us Different */}
-      <div className="py-16">
-        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              What Makes Us Different
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              We're more than just a listing platform—we're your trusted partner
-              in finding the perfect home
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="w-8 h-8 text-blue-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                100% Verified Listings
-              </h3>
-              <p className="text-gray-600">
-                Every property is verified by our team. No fake listings, no
-                scams—just genuine homes ready for you.
+            <div className="relative z-10 text-center max-w-2xl mx-auto">
+              <h2 className="text-4xl md:text-5xl font-montserrat font-bold mb-6">
+                Ready to find your space?
+              </h2>
+              <p className="text-blue-100 mb-10 text-lg leading-relaxed">
+                Whether you're a landlord with properties or a tenant searching
+                for a home, we've got you covered with a secure, seamless
+                experience.
               </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="w-8 h-8 text-cyan-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+              <Group justify="center" gap="lg">
+                <Button
+                  size="xl"
+                  radius="md"
+                  className="bg-secondary hover:bg-sky-600 px-10 border-none transition-transform hover:scale-105"
+                  onClick={() => navigate("/properties")}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Fast & Simple Process
-              </h3>
-              <p className="text-gray-600">
-                From browsing to moving in, our streamlined process gets you
-                into your new home quickly and hassle-free.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="w-8 h-8 text-amber-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+                  Browse Properties
+                </Button>
+                <Button
+                  variant="outline"
+                  size="xl"
+                  radius="md"
+                  className="border-white text-white hover:bg-white hover:text-primary px-10 transition-all"
+                  onClick={() => navigate("/auth/register?role=landlord")}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                24/7 Customer Support
-              </h3>
-              <p className="text-gray-600">
-                Our dedicated support team is always here to help you with any
-                questions or concerns, any time of day.
-              </p>
+                  List Property
+                </Button>
+              </Group>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="py-16 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Ready to Find Your Next Home?
-          </h2>
-          <p className="text-lg text-gray-600 mb-8">
-            Join thousands of satisfied tenants and landlords who trust us for
-            their rental needs
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              variant="filled"
-              className="bg-blue-600 hover:bg-blue-700"
-              onClick={() => navigate("/properties")}
-            >
-              Browse Properties
-            </Button>
-            <Button
-              variant="outlined"
-              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50"
-              onClick={() => navigate("/auth/register?role=landlord")}
-            >
-              List Your Property
-            </Button>
-          </div>
-        </div>
-      </div>
+        </Container>
+      </section>
     </div>
   );
 };

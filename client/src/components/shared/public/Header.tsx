@@ -44,14 +44,6 @@ const AuthLinks = () => {
         >
           Sign Up
         </Button>
-
-        <Button
-          color="red"
-          onClick={() => navigate("/auth/register?role=landlord")}
-          size="sm"
-        >
-          List Property
-        </Button>
       </Group>
     );
   }

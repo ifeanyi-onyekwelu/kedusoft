@@ -36,14 +36,6 @@ p {
   line-height: 1.6;
 }
 
-span,
-small,
-label {
-  font-family: "Roboto", sans-serif;
-  font-weight: 400;
-  font-size: 0.9rem;
-}
-
 .scrollable::-webkit-scrollbar {
   display: none;
 }
