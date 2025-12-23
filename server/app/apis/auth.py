@@ -804,7 +804,7 @@ def google_signup():
     except ValueError:
         raise CustomRequestError("Invalid Google token", 401)
     except Exception as e:
-        logger.error(f"Google signup failed: {str(e)}")
+        logger.error(f"Google signup failed: {str(e)}", exc_info=True)
         raise CustomRequestError("Google registration failed", 500)
 
 
