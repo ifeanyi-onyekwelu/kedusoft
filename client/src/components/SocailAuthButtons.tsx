@@ -1,142 +1,82 @@
 import { Divider, Group } from "@mantine/core";
 import { GoogleButton } from "./buttons/GoogleButton";
 import { AppleButton } from "./buttons/AppleButton";
-import { gapi } from "gapi-script";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useGoogleLogin } from "@react-oauth/google";
 import { useAuthOperations } from "../apis/authApi";
 import { useUser } from "../context/UserContext";
+import { toast } from "react-hot-toast";
 
 interface SocialAuthButtonsProps {
   authType: "login" | "signup";
+  role?: string; // Optional role passed from the Signup page
 }
 
-export function SocialAuthButtons({ authType }: SocialAuthButtonsProps) {
+export function SocialAuthButtons({ authType, role }: SocialAuthButtonsProps) {
   const navigate = useNavigate();
-  const clientId =
-    "934996510684-hnpm51g4fl1mbpi0fpr43frfp8u1865n.apps.googleusercontent.com";
   const { login } = useUser();
-  const { googleLogin, googleSignup, appleLogin, appleSignup } =
-    useAuthOperations();
+  const { googleLogin, googleSignup } = useAuthOperations();
 
-  const initializeGoogleAuth = () => {
-    gapi.load("auth2", () => {
-      gapi.auth2.init({
-        client_id: clientId,
-        scope: "profile email",
-      });
-    });
-  };
-
-  useEffect(() => {
-    initializeGoogleAuth();
-  }, []);
-
-  const handleGoogleSuccess = async (googleUser: any) => {
-    try {
-      const token = googleUser.getAuthResponse().id_token;
-
-      let res;
-      if (authType === "login") {
-        res = await googleLogin(token);
-      } else {
-        res = await googleSignup(token);
-      }
-
-      login(res.accessToken, res.user.role);
-
-      // Redirect based on onboarding status if login
-      if (authType === "login") {
-        navigate(res.is_onboarded ? "/tenants" : "/onboarding/welcome");
-      } else {
-        navigate("/onboarding/welcome");
-      }
-    } catch (error: any) {
-      console.log("Error occurred during login!", error);
-    }
-  };
-
-  const handleGoogleFailure = (error: any) => {
-    console.log("Error occurred during login", error);
-  };
-
-  const handleAppleClick = async () => {
-    try {
-      // Apple Sign-In implementation using Apple's JS SDK
-      console.log("Initiating Apple Sign-In...");
-
-      // Check if Apple Sign-In is available
-      if (typeof window !== "undefined" && (window as any).AppleID) {
-        const appleAuthConfig = {
-          clientId: "your-apple-service-id", // Replace with your Apple Service ID
-          scope: "name email",
-          redirectURI: window.location.origin,
-          state: "apple-signin",
-          nonce: Math.random().toString(36).substring(2, 15),
-          usePopup: true,
-        };
-
-        const appleResponse = await (window as any).AppleID.auth.signIn(
-          appleAuthConfig
-        );
-        const token = appleResponse.authorization.id_token;
-
+  const handleGoogleLoginTrigger = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const token = tokenResponse.access_token;
         let res;
+
         if (authType === "login") {
-          res = await appleLogin(token);
+          res = await googleLogin(token);
+          toast.success("Logged in successfully");
         } else {
-          res = await appleSignup(token);
+          // Pass the role (tenant/landlord) to the backend for signup
+          res = await googleSignup(token, role || "tenant");
+          toast.success("Welcome to Letsten!");
         }
 
         login(res.accessToken, res.user.role);
 
-        // Redirect based on onboarding status if login
+        // Navigation logic
         if (authType === "login") {
           navigate(res.is_onboarded ? "/tenants" : "/onboarding/welcome");
         } else {
           navigate("/onboarding/welcome");
         }
-      } else {
-        console.log(
-          "Apple Sign-In SDK not loaded. Please include the Apple JS SDK."
-        );
-        // Fallback: Show message to user or redirect to manual signin
-        alert(
-          "Apple Sign-In is currently unavailable. Please use Google or email signup."
-        );
-      }
-    } catch (error: any) {
-      console.log("Error occurred during Apple login!", error);
-      // Handle specific Apple Sign-In errors
-      if (error.error === "popup_closed_by_user") {
-        console.log("User cancelled Apple Sign-In");
-      } else {
-        console.log("Apple Sign-In error:", error);
-      }
-    }
-  };
+      } catch (error: any) {
+        console.log("Full Error Object:", error); // Debugging
 
-  const handleGoogleClick = () => {
-    const auth2 = gapi.auth2.getAuthInstance();
+        // Axios usually puts the backend response in error.response
+        const status = error.response?.status;
 
-    auth2.signIn().then(
-      (googleUser: any) => handleGoogleSuccess(googleUser),
-      (error: any) => handleGoogleFailure(error)
-    );
-  };
+        // Try to find the message in different places depending on your API structure
+        const message =
+          error.response?.data?.message || error.message || "An error occurred";
+
+        if (status === 404) {
+          toast.error("Account not found. Redirecting to signup...");
+          setTimeout(() => navigate("/auth/register"), 2000); // Give user time to read toast
+        } else if (status === 409) {
+          toast.error("You already have an account. Please sign in.");
+          navigate("/auth/login");
+        } else {
+          toast.error(message);
+        }
+      }
+    },
+    onError: () => {
+      toast.error("Failed to connect to Google. Please try again.");
+    },
+  });
 
   return (
     <>
       <Group grow mb="md" mt="md">
-        <GoogleButton radius="xl" onClick={handleGoogleClick}>
+        <GoogleButton radius="xl" onClick={() => handleGoogleLoginTrigger()}>
           Google
         </GoogleButton>
-        <AppleButton radius="xl" onClick={handleAppleClick}>
+        <AppleButton radius="xl" onClick={() => {}}>
           Apple
         </AppleButton>
       </Group>
-
-      <Divider label={`Or continue with`} labelPosition="center" my="lg" />
+      <Divider label="Or continue with" labelPosition="center" my="lg" />
     </>
   );
 }

@@ -165,6 +165,11 @@ def create_app():
             print(f"❌ Email test failed: {e}")
             return f"Error: {e}"
 
+    @app.after_request
+    def add_header(response):
+        response.headers["Cross-Origin-Opener-Policy"] = "same-origin-allow-popups"
+        return response
+
     # --- Routes --- #
     @app.get("/")
     def home():

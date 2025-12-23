@@ -37,7 +37,7 @@ class User(BaseModel):
     profile_picture = Column(String(255))
 
     # ===== IDENTITY DOCUMENTS (For ALL users) =====
-    identity_documents = Column(JSON)  # Array of identity document objects
+    identity_documents = Column(JSON)
     # Example structure:
     # [
     #   {"type": "national_id", "url": "url1", "verified": true},

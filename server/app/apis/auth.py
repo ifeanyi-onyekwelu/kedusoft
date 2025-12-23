@@ -6,16 +6,16 @@ import re
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from marshmallow import Schema, fields, validate, ValidationError
+import logging
+import random
+import requests as py_requests
+import secrets
 from ..utils.helpers import response, dict_except, generate_tokens, serialize
 from ..utils.errors import CustomRequestError, catch_exception
 from ..utils.variables import APP_URL, JWT_SECRET, GOOGLE_CLIENT_ID
 from ..utils.mailer import send_email
 from ..models.user import User
 from ..models.db_utils import create_item, get_item_by_filter, update_item
-import logging
-import random
-from google.oauth2 import id_token
-from google.auth.transport import requests as google_requests
 
 # Configure logging with more detail
 logging.basicConfig(
@@ -133,6 +133,7 @@ class GoogleAuthSchema(Schema):
     token = fields.Str(
         required=True, error_messages={"required": "Google token is required"}
     )
+    role = fields.Str(required=True, error_messages={"required": "Role is required"})
 
 
 class VerificationSchema(Schema):
@@ -631,20 +632,19 @@ def handle_signup_page():
         raise CustomRequestError("Registration failed. Please try again.", 500)
 
 
+import requests as py_requests
+from datetime import datetime, timedelta
+
+
 @auth.post("/google-login")
 @catch_exception
 @login_limiter
 def google_login():
-    """
-    Enhanced Google OAuth authentication
-    Rate limited: 5 attempts per minute
-    """
     try:
-        # Validate request data
+        # 1. Validate request data
         schema = GoogleAuthSchema()
         data = schema.load(request.get_json() or {})
         token = data["token"]
-
     except ValidationError as err:
         log_security_event(
             "GOOGLE_LOGIN_VALIDATION_ERROR", details={"errors": err.messages}
@@ -652,63 +652,46 @@ def google_login():
         raise CustomRequestError("Validation error", 400, {"errors": err.messages})
 
     try:
-        # Verify Google token with enhanced validation
-        id_info = id_token.verify_oauth2_token(
-            token,
-            google_requests.Request(),
-            GOOGLE_CLIENT_ID,
-            clock_skew_in_seconds=10,  # Allow for small clock differences
-        )
+        # 2. Verify Access Token with Google
+        user_info_url = "https://www.googleapis.com/oauth2/v3/userinfo"
+        google_resp = py_requests.get(user_info_url, params={"access_token": token})
 
-        # Enhanced issuer validation
-        valid_issuers = ["accounts.google.com", "https://accounts.google.com"]
-        if id_info["iss"] not in valid_issuers:
-            log_security_event(
-                "GOOGLE_LOGIN_INVALID_ISSUER", details={"issuer": id_info["iss"]}
-            )
-            raise ValueError("Invalid token issuer")
+        if not google_resp.ok:
+            logger.warning(f"Google Token Verification Failed: {google_resp.text}")
+            raise ValueError("Invalid Google token")
 
-        # Extract user information
+        id_info = google_resp.json()
         email = id_info["email"].lower().strip()
         google_id = id_info["sub"]
 
-        # Verify email is verified by Google
-        if not id_info.get("email_verified", False):
-            log_security_event("GOOGLE_LOGIN_UNVERIFIED_EMAIL", email)
-            raise CustomRequestError("Google email not verified", 400)
-
-        # Find existing user
+        # 3. Check if user exists in your database
         user = get_item_by_filter(g.session, User, {"email": email})
+
         if not user:
             log_security_event("GOOGLE_LOGIN_NO_ACCOUNT", email)
+            # For an MVP, we usually tell them to sign up or we auto-create an account
             raise CustomRequestError(
-                "No account found with this Google email. Please sign up first.", 404
+                "No account found. Please join the waitlist first.", 404
             )
 
-        # Enhanced account status checks
-        try:
-            check_account_status(user)
-        except CustomRequestError:
-            raise
+        # 4. Check account status (banned, suspended, etc.)
+        check_account_status(user)
 
-        # Update user's Google ID if not set
-        if not hasattr(user, "google_id") or not user.google_id:
-            try:
-                update_item(g.session, User, user.id, {"google_id": google_id})
-            except Exception as e:
-                logger.error(f"Failed to update Google ID for user {email}: {str(e)}")
+        # 5. Update google_id if it's their first time using Google for this account
+        if not getattr(user, "google_id", None):
+            update_item(g.session, User, user.id, {"google_id": google_id})
 
-        # Generate secure tokens
+        # 6. Generate YOUR app's tokens
         access_token, refresh_token = generate_tokens(user.to_dict())
 
-        # Create response
+        # 7. Prepare Response
         user_data = dict_except(serialize(user), "password")
-        # Determine onboarding status based on user role
         is_onboarded = (
             user.is_landlord_onboarded
             if user.role == "landlord"
             else user.is_tenant_onboarded
         )
+
         resp = make_response(
             response(
                 "Google login successful",
@@ -716,56 +699,30 @@ def google_login():
                     "accessToken": access_token,
                     "refreshToken": refresh_token,
                     "user": user_data,
-                    "is_email_verified": user.is_email_verified,
                     "is_onboarded": is_onboarded,
                 },
             )
         )
 
-        # Set secure cookie
+        # 8. Set Secure Refresh Cookie
         resp.set_cookie(
             "refresh_token",
             refresh_token,
             httponly=True,
             secure=True,
             samesite="Strict",
-            max_age=timedelta(days=7).total_seconds(),
+            max_age=604800,  # 7 days
         )
 
-        # Log successful login and send notification
-        login_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
-        ip_address = request.remote_addr
-        user_agent = request.headers.get("User-Agent", "Unknown")
-
-        log_security_event(
-            "GOOGLE_LOGIN_SUCCESS",
-            email,
-            {"ip": ip_address, "user_agent": user_agent, "google_id": google_id},
-        )
-
-        # Send login notification (non-blocking)
-        try:
-            content = {
-                "email": user.email,
-                "name": f"{user.firstName} {user.lastName}",
-                "IP": ip_address,
-                "login_time": login_time,
-                "user_agent": user_agent,
-                "method": "Google",
-            }
-            send_email(
-                "Recent Login Notification", [user.email], "login_notification", content
-            )
-        except Exception as e:
-            logger.error(f"Failed to send Google login notification: {str(e)}")
-
+        log_security_event("GOOGLE_LOGIN_SUCCESS", email, {"ip": request.remote_addr})
         return resp
 
     except ValueError as e:
-        log_security_event("GOOGLE_LOGIN_INVALID_TOKEN", details={"error": str(e)})
-        raise CustomRequestError("Invalid Google token", 401)
+        raise CustomRequestError(str(e), 401)
+    except CustomRequestError:
+        raise
     except Exception as e:
-        logger.error(f"Google login failed: {str(e)}")
+        logger.error(f"Google login system error: {str(e)}")
         raise CustomRequestError("Google authentication failed", 500)
 
 
@@ -773,118 +730,78 @@ def google_login():
 @catch_exception
 @signup_limiter
 def google_signup():
-    """
-    Enhanced Google OAuth user registration
-    Rate limited: 10 accounts per hour
-    """
     try:
-        # Validate request data
         schema = GoogleAuthSchema()
         data = schema.load(request.get_json() or {})
         token = data["token"]
-
+        role = request.get_json().get("role", "tenant")
     except ValidationError as err:
-        log_security_event(
-            "GOOGLE_SIGNUP_VALIDATION_ERROR", details={"errors": err.messages}
-        )
-        raise CustomRequestError("Validation error", 400, {"errors": err.messages})
+        logging.debug("Validation error in Google signup", err)
+        raise CustomRequestError("Validation error", 400)
 
     try:
-        # Verify Google token
-        id_info = id_token.verify_oauth2_token(
-            token, google_requests.Request(), GOOGLE_CLIENT_ID, clock_skew_in_seconds=10
-        )
+        # 1. Verify Access Token and get User Info
+        user_info_url = "https://www.googleapis.com/oauth2/v3/userinfo"
+        google_resp = py_requests.get(user_info_url, params={"access_token": token})
 
-        logger.info(f"Google signup attempt for: {id_info.get('email')}")
+        if not google_resp.ok:
+            raise ValueError("Invalid Google token")
 
-        # Enhanced issuer validation
-        valid_issuers = ["accounts.google.com", "https://accounts.google.com"]
-        if id_info["iss"] not in valid_issuers:
-            log_security_event(
-                "GOOGLE_SIGNUP_INVALID_ISSUER", details={"issuer": id_info["iss"]}
-            )
-            raise ValueError("Invalid token issuer")
-
-        # Extract and validate user information
+        id_info = google_resp.json()
         email = id_info["email"].lower().strip()
-        first_name = id_info.get("given_name", "").strip()
-        last_name = id_info.get("family_name", "").strip()
+        first_name = id_info.get("given_name", "User")
+        last_name = id_info.get("family_name", "")
         google_id = id_info["sub"]
         profile_picture = id_info.get("picture", "")
 
-        # Verify email is verified by Google
-        if not id_info.get("email_verified", False):
-            log_security_event("GOOGLE_SIGNUP_UNVERIFIED_EMAIL", email)
-            raise CustomRequestError("Google email not verified", 400)
-
-        # Check if user already exists
+        # 2. Check if user already exists
         existing_user = get_item_by_filter(g.session, User, {"email": email})
         if existing_user:
-            log_security_event("GOOGLE_SIGNUP_EMAIL_EXISTS", email)
-            raise CustomRequestError("An account with this email already exists", 409)
+            raise CustomRequestError(
+                "An account with this email already exists. Please log in.", 409
+            )
 
-        # Create new user with Google data
+        # 3. Create new user
         user_data = {
             "email": email,
             "firstName": first_name,
             "lastName": last_name,
+            "role": role,
             "is_email_verified": True,
-            "google_id": google_id,
             "profile_picture": profile_picture,
-            "auth_provider": "google",
-            "created_at": datetime.utcnow(),
+            "password": secrets.token_urlsafe(32),
         }
 
         new_user = create_item(g.session, User, user_data)
-        logger.info(f"New Google user created: {email}")
 
-        # Generate secure tokens
+        # 4. Generate tokens
         access_token, refresh_token = generate_tokens(new_user.to_dict())
 
-        # Create response
-        user_data = dict_except(new_user.to_dict(), "password")
+        # 5. Response
+        user_dict = dict_except(serialize(new_user), "password")
         resp = make_response(
             response(
                 "Google registration successful",
                 {
                     "accessToken": access_token,
-                    "user": user_data,
+                    "user": user_dict,
+                    "is_onboarded": False,
                 },
             )
         )
 
-        # Set secure cookie
         resp.set_cookie(
             "refresh_token",
             refresh_token,
             httponly=True,
             secure=True,
             samesite="Strict",
-            max_age=timedelta(days=7).total_seconds(),
+            max_age=604800,
         )
 
-        # Send welcome email (non-blocking)
-        try:
-            content = {
-                "email": email,
-                "name": f"{first_name} {last_name}",
-                "method": "Google",
-            }
-            send_email(
-                "Welcome to our platform!",
-                [email],
-                "welcome_google_user",
-                content,
-            )
-            logger.info(f"Welcome email sent to new Google user: {email}")
-        except Exception as e:
-            logger.error(f"Failed to send welcome email to Google user: {str(e)}")
-
-        log_security_event("GOOGLE_SIGNUP_SUCCESS", email, {"google_id": google_id})
         return resp
 
-    except ValueError as e:
-        log_security_event("GOOGLE_SIGNUP_INVALID_TOKEN", details={"error": str(e)})
+    except ValueError:
         raise CustomRequestError("Invalid Google token", 401)
     except Exception as e:
         logger.error(f"Google signup failed: {str(e)}")

@@ -14,8 +14,11 @@ export const authApi = {
     return response.data;
   },
 
-  async googleSignup(token: string) {
-    const response = await axiosInstance.post("/auth/google-signup", { token });
+  async googleSignup(token: string, role: string) {
+    const response = await axiosInstance.post("/auth/google-signup", {
+      token,
+      role,
+    });
     return response.data;
   },
 
@@ -122,8 +125,8 @@ export const useAuthOperations = () => {
   );
 
   const googleSignup = useCallback(
-    async (token: string) => {
-      return executeOperation(() => authApi.googleSignup(token), {
+    async (token: string, role: string) => {
+      return executeOperation(() => authApi.googleSignup(token, role), {
         customErrorMessage: "Google signup failed",
         onSuccess: (data) => {
           console.log("Google signup successful");
