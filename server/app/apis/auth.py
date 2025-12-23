@@ -754,6 +754,8 @@ def google_signup():
         google_id = id_info["sub"]
         profile_picture = id_info.get("picture", "")
 
+        logger.info(f"Google signup attempt for email: {email}")
+
         # 2. Check if user already exists
         existing_user = get_item_by_filter(g.session, User, {"email": email})
         if existing_user:
@@ -772,6 +774,7 @@ def google_signup():
             "password": secrets.token_urlsafe(32),
         }
 
+        logger.info(f"Creating user with data: {user_data}")
         new_user = create_item(g.session, User, user_data)
 
         # 4. Generate tokens
@@ -801,10 +804,14 @@ def google_signup():
 
         return resp
 
-    except ValueError:
+    except ValueError as ve:
+        logger.error(f"ValueError in google_signup: {str(ve)}", exc_info=True)
         raise CustomRequestError("Invalid Google token", 401)
+    except CustomRequestError:
+        raise
     except Exception as e:
         logger.error(f"Google signup failed: {str(e)}", exc_info=True)
+        logger.error(f"Exception type: {type(e).__name__}")
         raise CustomRequestError("Google registration failed", 500)
 
 
