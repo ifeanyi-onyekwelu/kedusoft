@@ -1,4 +1,4 @@
-import { Divider, Group } from "@mantine/core";
+import { Divider, Group, Alert } from "@mantine/core";
 import { GoogleButton } from "./buttons/GoogleButton";
 import { AppleButton } from "./buttons/AppleButton";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +6,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { useAuthOperations } from "../apis/authApi";
 import { useUser } from "../context/UserContext";
 import { toast } from "react-hot-toast";
+import { IconAlertCircle } from "@tabler/icons-react";
 
 interface SocialAuthButtonsProps {
   authType: "login" | "signup";
@@ -16,6 +17,12 @@ export function SocialAuthButtons({ authType, role }: SocialAuthButtonsProps) {
   const navigate = useNavigate();
   const { login } = useUser();
   const { googleLogin, googleSignup } = useAuthOperations();
+
+  // Check if Google Client ID is available
+  const googleClientIdAvailable = !!(
+    import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID ||
+    (window as any).__GOOGLE_CLIENT_ID__
+  );
 
   const handleGoogleLoginTrigger = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -61,10 +68,25 @@ export function SocialAuthButtons({ authType, role }: SocialAuthButtonsProps) {
         }
       }
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Google Login Error:", error);
       toast.error("Failed to connect to Google. Please try again.");
     },
   });
+
+  if (!googleClientIdAvailable) {
+    return (
+      <Alert
+        icon={<IconAlertCircle size={16} />}
+        title="Social Login Unavailable"
+        color="yellow"
+        mb="md"
+      >
+        Google authentication is not configured. Please use email and password
+        to sign {authType === "login" ? "in" : "up"}.
+      </Alert>
+    );
+  }
 
   return (
     <>
