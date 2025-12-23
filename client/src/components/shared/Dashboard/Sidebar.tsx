@@ -14,6 +14,11 @@ import {
   IconChevronRight,
   IconBrain,
   IconUser,
+  IconFileText,
+  IconShieldCheck,
+  IconHeart,
+  IconChartBar,
+  IconTrendingUp,
 } from "@tabler/icons-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Tooltip, Collapse } from "@mantine/core";
@@ -124,6 +129,26 @@ const Sidebar: React.FC<SidebarProps> = ({
         icon: <StyledIcon icon={IconCreditCard} />,
       },
       {
+        name: "Liked Properties",
+        path: "/tenants/liked",
+        icon: <StyledIcon icon={IconHeart} />,
+      },
+      {
+        name: "Screenings",
+        path: "/tenants/screenings",
+        icon: <StyledIcon icon={IconShieldCheck} />,
+      },
+      {
+        name: "Leases",
+        path: "/tenants/leases",
+        icon: <StyledIcon icon={IconFileText} />,
+      },
+      {
+        name: "Payment Center",
+        path: "/tenants/payment",
+        icon: <StyledIcon icon={IconCreditCard} />,
+      },
+      {
         name: "Messages",
         path: "/tenants/messages",
         icon: <StyledIcon icon={IconMessage} />,
@@ -141,6 +166,13 @@ const Sidebar: React.FC<SidebarProps> = ({
         icon: <StyledIcon icon={IconFilePlus} />,
         badge:
           pendingApplications > 0 ? String(pendingApplications) : undefined,
+        subItems: [
+          { name: "Applications", path: "/property-owner/applications" },
+          {
+            name: "Applicants",
+            path: "/property-owner/applications/applicants",
+          },
+        ],
       },
       {
         name: "Tenants",
@@ -157,6 +189,16 @@ const Sidebar: React.FC<SidebarProps> = ({
         ],
       },
       {
+        name: "Screenings",
+        path: "/property-owner/screenings",
+        icon: <StyledIcon icon={IconShieldCheck} />,
+      },
+      {
+        name: "Leases",
+        path: "/property-owner/leases",
+        icon: <StyledIcon icon={IconFileText} />,
+      },
+      {
         name: "Maintenance",
         path: "/property-owner/maintenance",
         icon: <StyledIcon icon={IconBed} />,
@@ -170,6 +212,18 @@ const Sidebar: React.FC<SidebarProps> = ({
         name: "Inspections",
         path: "/property-owner/inspections",
         icon: <StyledIcon icon={IconUser} />,
+      },
+      {
+        name: "Analytics",
+        path: "/property-owner/analytics",
+        icon: <StyledIcon icon={IconChartBar} />,
+        subItems: [
+          { name: "Property Views", path: "/property-owner/analytics/views" },
+          {
+            name: "Transactions",
+            path: "/property-owner/analytics/transactions",
+          },
+        ],
       },
       {
         name: "Messages",

@@ -1,13 +1,28 @@
-import StatisticsCard from "../../../components/shared/Dashboard/StatisticsCard";
+import UniversalStatCard from "../../../components/shared/Dashboard/UniversalStatCard";
 
-function Statistics({ statistics }: any) {
+interface StatisticItem {
+  title: string;
+  value: number | string;
+  icon: React.ReactNode;
+  color: string;
+  trend?: number;
+  subtitle?: string;
+  onClick?: () => void;
+}
+
+function Statistics({ statistics }: { statistics: StatisticItem[] }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 w-full">
-      {statistics.map((stat: any, index: any) => (
-        <StatisticsCard
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+      {statistics.map((stat, index) => (
+        <UniversalStatCard
           key={index}
-          {...stat}
-          yearOptions={["2021", "2022", "2023", "2024", "2025"]}
+          title={stat.title}
+          value={stat.value}
+          icon={stat.icon}
+          color={stat.color}
+          trend={stat.trend}
+          subtitle={stat.subtitle}
+          onClick={stat.onClick}
         />
       ))}
     </div>
