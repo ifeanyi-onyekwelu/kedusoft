@@ -649,7 +649,7 @@ def google_login():
         log_security_event(
             "GOOGLE_LOGIN_VALIDATION_ERROR", details={"errors": err.messages}
         )
-        raise CustomRequestError("Validation error", 400, {"errors": err.messages})
+        raise CustomRequestError("Validation error", 400)
 
     try:
         # 2. Verify Access Token with Google
