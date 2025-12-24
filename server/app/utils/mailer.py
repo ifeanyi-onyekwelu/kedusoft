@@ -92,7 +92,7 @@ def send_email(
                 msg.attach(part)
 
         # Send email using direct SMTP
-        server = smtplib.SMTP(mail_server, mail_port)
+        server = smtplib.SMTP(mail_server, mail_port, timeout=10)
         server.starttls()  # Enable encryption
         server.login(mail_username, mail_password)
         server.send_message(msg)
@@ -110,6 +110,12 @@ def send_email(
     except smtplib.SMTPConnectError as e:
         logger.error(f"SMTP Connection failed: {e}")
         logger.error("Please check your SMTP server settings and network connection")
+        return False
+    except socket.timeout as e:
+        logger.error(f"SMTP connection timeout: {e}")
+        logger.error(
+            "Railway may be blocking SMTP. Consider using SendGrid or Mailgun instead"
+        )
         return False
     except smtplib.SMTPException as e:
         logger.error(f"SMTP error occurred: {e}")

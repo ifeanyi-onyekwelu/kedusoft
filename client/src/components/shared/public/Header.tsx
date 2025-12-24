@@ -114,12 +114,15 @@ function Header() {
     useDisclosure(false);
   const navigate = useNavigate();
 
-  // Simple nav links - MVP focus
+  // MVP Navigation Links
   const navLinks = [
-    { label: "Rent", path: "/listings?type=rent" },
-    { label: "Buy", path: "/listings?type=sale" },
+    { label: "Sellers", path: "/listings?type=sale" },
+    { label: "Listings", path: "/listings?type=rent" },
     { label: "Shortlet", path: "/listings?type=shortlet" },
-    { label: "List Property", path: "/auth/register?role=landlord" },
+    { label: "Services", path: "/services" },
+    { label: "How It Works", path: "/how-it-works" },
+    { label: "About", path: "/about-us" },
+    { label: "Contact", path: "/contact-us" },
   ];
 
   return (
@@ -140,11 +143,11 @@ function Header() {
 
           {/* Desktop Navigation - SIMPLE */}
           <Group gap="md" visibleFrom="md">
-            {navLinks.slice(0, 3).map((link) => (
+            {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className="text-sm font-medium text-gray-700 hover:text-blue-600 px-3 py-2"
+                className="text-sm font-medium text-gray-700 hover:text-blue-600 px-3 py-2 transition-colors"
               >
                 {link.label}
               </Link>

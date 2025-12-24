@@ -66,7 +66,7 @@ const Footer = () => {
                 className="flex items-center"
               >
                 <motion.img
-                  src="/images/brand/logo_cropped.png"
+                  src="/images/brand/logo.png"
                   alt="PropConnect Logo"
                   className="h-14 w-auto object-contain"
                 />
