@@ -393,10 +393,10 @@ export const AgentsPage = () => {
               <div className="text-2xl mb-2">📧</div>
               <div className="text-sm text-gray-600 mb-1">Email us at</div>
               <a
-                href="mailto:agents@getmeleased.com"
+                href="mailto:agents@letsten.com"
                 className="text-blue-600 hover:text-blue-700 font-medium"
               >
-                agents@getmeleased.com
+                agents@letsten.com
               </a>
             </div>
             <div className="bg-white rounded-lg p-6 border border-gray-200 text-left">

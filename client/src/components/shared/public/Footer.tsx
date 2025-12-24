@@ -26,7 +26,7 @@ const Footer = () => {
     ],
     forLandlords: [
       { label: "List Your Property", path: "/auth/register?role=landlord" },
-      { label: "Pricing Plans", path: "#" },
+      { label: "Compare Properties", path: "/compare-properties" },
       { label: "Property Management", path: "/property-management" },
       { label: "Resources", path: "/resources" },
     ],
@@ -225,8 +225,8 @@ const Footer = () => {
         <div className="pt-8 border-t border-gray-700">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm text-gray-400 text-center md:text-left">
-              © {currentYear} GetMeLeased. All rights reserved. Built with ❤️
-              for renters and landlords.
+              © {currentYear} letsten. All rights reserved. Built with ❤️ for
+              renters and landlords.
             </div>
             <div className="flex flex-wrap justify-center gap-4 text-xs text-gray-500">
               <span>🇳🇬 Nigeria</span>

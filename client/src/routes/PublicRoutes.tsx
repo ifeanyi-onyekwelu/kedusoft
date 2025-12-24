@@ -24,6 +24,7 @@ import HowItWorks from "@/pages/Public/HowItWorks";
 import Resources from "@/pages/Public/Resources";
 import PropertyManagement from "@/pages/Public/PropertyManagement";
 import ContactUs from "@/pages/Public/ContactUs";
+import PropertyComparison from "@/pages/Public/PropertyComparison";
 
 function PublicRoutes() {
   return (
@@ -40,6 +41,7 @@ function PublicRoutes() {
         <Route path="how-it-works" element={<HowItWorks />} />
         <Route path="resources" element={<Resources />} />
         <Route path="property-management" element={<PropertyManagement />} />
+        <Route path="compare-properties" element={<PropertyComparison />} />
         <Route path="contact-us" element={<ContactUs />} />
 
         <Route path="how-to-apply" element={<HowToApplyPage />} />

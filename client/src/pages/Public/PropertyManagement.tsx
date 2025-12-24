@@ -1,331 +1,434 @@
-/**
- * PropertyManagement Page Component
- *
- * Information about property management services for landlords.
- */
-
 import { useNavigate } from "react-router-dom";
-import { Button } from "@mantine/core";
+import {
+  Button,
+  Container,
+  Text,
+  Title,
+  SimpleGrid,
+  Card,
+  ThemeIcon,
+  List,
+  Badge,
+  Paper,
+  Stack,
+  Group,
+  Divider,
+  Box,
+} from "@mantine/core";
+import {
+  IconUsers,
+  IconReceipt2,
+  IconTools,
+  IconFileText,
+  IconChartBar,
+  IconScale,
+  IconCheck,
+  IconArrowRight,
+} from "@tabler/icons-react";
 
 export const PropertyManagement = () => {
   const navigate = useNavigate();
 
   const services = [
     {
-      icon: "🏠",
+      icon: IconUsers,
       title: "Tenant Screening",
       description:
-        "Comprehensive background checks, credit reports, and reference verification to find reliable tenants.",
+        "Rigorous background checks and credit verification to secure reliable, long-term tenants.",
     },
     {
-      icon: "💰",
+      icon: IconReceipt2,
       title: "Rent Collection",
       description:
-        "Automated rent collection, payment tracking, and late payment reminders to ensure steady cash flow.",
+        "Automated systems ensuring timely payments and professional handling of late accounts.",
     },
     {
-      icon: "🔧",
-      title: "Maintenance Coordination",
+      icon: IconTools,
+      title: "Maintenance",
       description:
-        "24/7 maintenance request handling with trusted contractors and repair tracking.",
+        "Round-the-clock maintenance management with a network of vetted, licensed contractors.",
     },
     {
-      icon: "📄",
+      icon: IconFileText,
       title: "Lease Management",
       description:
-        "Digital lease creation, signing, renewals, and secure document storage.",
+        "End-to-end digital documentation including drafting, signing, and compliance renewals.",
     },
     {
-      icon: "📊",
-      title: "Financial Reporting",
+      icon: IconChartBar,
+      title: "Financial Analytics",
       description:
-        "Detailed monthly reports on income, expenses, and property performance analytics.",
+        "Transparent, real-time reporting on property performance, expenses, and cash flow.",
     },
     {
-      icon: "⚖️",
+      icon: IconScale,
       title: "Legal Compliance",
       description:
-        "Ensure your properties meet all legal requirements and housing regulations.",
-    },
-  ];
-
-  const benefits = [
-    {
-      title: "Save Time",
-      description:
-        "Let us handle the day-to-day management while you focus on growing your portfolio.",
-    },
-    {
-      title: "Maximize Income",
-      description:
-        "Professional pricing strategies and tenant retention improve your ROI.",
-    },
-    {
-      title: "Reduce Stress",
-      description:
-        "No more late-night tenant calls or maintenance emergencies to handle.",
-    },
-    {
-      title: "Professional Service",
-      description:
-        "Experienced team ensures your properties are well-maintained and profitable.",
+        "Mitigate risk with expert oversight on local housing laws and safety regulations.",
     },
   ];
 
   const packages = [
     {
-      name: "Basic",
+      name: "Standard",
       price: "5%",
-      period: "of monthly rent",
+      period: "monthly revenue",
       features: [
         "Tenant screening",
         "Rent collection",
-        "Basic maintenance coordination",
-        "Monthly financial reports",
-        "Online tenant portal",
+        "Basic maintenance",
+        "Financial reports",
+        "Online portal",
       ],
       recommended: false,
     },
     {
       name: "Professional",
       price: "8%",
-      period: "of monthly rent",
+      period: "monthly revenue",
       features: [
-        "Everything in Basic",
-        "Priority maintenance response",
-        "Lease creation & management",
-        "Annual property inspections",
-        "Legal compliance support",
-        "24/7 tenant support",
+        "Everything in Standard",
+        "Priority response",
+        "Lease drafting",
+        "Annual inspections",
+        "Legal support",
+        "24/7 support",
       ],
       recommended: true,
     },
     {
-      name: "Premium",
+      name: "Elite",
       price: "10%",
-      period: "of monthly rent",
+      period: "monthly revenue",
       features: [
         "Everything in Professional",
-        "Marketing & listing optimization",
-        "Property improvement consulting",
-        "Tax preparation assistance",
-        "Dedicated account manager",
-        "Vacancy guarantee program",
+        "Marketing optimization",
+        "Value-add consulting",
+        "Tax assistance",
+        "Account manager",
+        "Vacancy protection",
       ],
       recommended: false,
     },
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <Box
+      component="main"
+      style={{
+        backgroundColor: "var(--color-gray-50)",
+        fontFamily: "var(--font-manrope)",
+      }}
+    >
       {/* Hero Section */}
-      <div
-        className="relative bg-cover bg-center text-white py-20"
+      <Box
+        py={120}
         style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=2070&auto=format&fit=crop')`,
+          backgroundColor: "var(--color-primary)",
+          backgroundImage: `linear-gradient(rgba(30, 58, 138, 0.9), rgba(30, 58, 138, 0.9)), url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          borderBottom: "4px solid var(--color-secondary)",
         }}
       >
-        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              Property Management Services
-            </h1>
-            <p className="text-xl text-gray-200 mb-8">
-              Professional property management that maximizes your investment
-              while minimizing your workload
-            </p>
-            <Button
-              variant="filled"
-              className="bg-blue-600 hover:bg-blue-700"
-              onClick={() => navigate("/auth/register?role=landlord")}
+        <Container size="xl">
+          <Stack gap="xl">
+            <Badge
+              variant="outline"
+              color="var(--color-secondary)"
+              size="lg"
+              radius="sm"
+              style={{
+                fontFamily: "var(--font-urbanist)",
+                border: "1px solid var(--color-secondary)",
+                color: "white",
+              }}
             >
-              Get Started Today
-            </Button>
-          </div>
-        </div>
-      </div>
+              Institutional Management
+            </Badge>
+            <Box style={{ maxWidth: 800 }}>
+              <Title
+                order={1}
+                className="text-white tracking-tighter"
+                style={{
+                  fontFamily: "var(--font-syne)",
+                  fontSize: "clamp(2.5rem, 5vw, 4.5rem)",
+                  lineHeight: 1.1,
+                }}
+              >
+                High-Performance <br />
+                <span style={{ color: "var(--color-secondary)" }}>
+                  Property Operations.
+                </span>
+              </Title>
+              <Text
+                size="xl"
+                mt="xl"
+                style={{ color: "var(--color-gray-200)", maxWidth: 600 }}
+              >
+                Maximizing asset value through rigorous tenant vetting,
+                proactive maintenance, and transparent financial reporting.
+              </Text>
+            </Box>
+            <Group mt="lg">
+              <Button
+                size="xl"
+                radius="0"
+                style={{
+                  backgroundColor: "var(--color-secondary)",
+                  fontFamily: "var(--font-urbanist)",
+                }}
+                onClick={() => navigate("/auth/register?role=landlord")}
+              >
+                Partner With Us
+              </Button>
+              <Button
+                size="xl"
+                radius="0"
+                variant="outline"
+                style={{
+                  color: "white",
+                  borderColor: "white",
+                  fontFamily: "var(--font-urbanist)",
+                }}
+              >
+                Our Process
+              </Button>
+            </Group>
+          </Stack>
+        </Container>
+      </Box>
 
       {/* Services Section */}
-      <div className="py-16">
-        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Our Services
-            </h2>
-            <p className="text-lg text-gray-600">
-              Comprehensive property management solutions for landlords
-            </p>
-          </div>
+      <Container size="xl" py={100}>
+        <Group justify="space-between" align="flex-end" mb={60}>
+          <Box>
+            <Text
+              fw={700}
+              style={{
+                color: "var(--color-secondary)",
+                fontFamily: "var(--font-urbanist)",
+                letterSpacing: 2,
+              }}
+            >
+              CORE CAPABILITIES
+            </Text>
+            <Title
+              order={2}
+              mt="sm"
+              style={{
+                fontFamily: "var(--font-syne)",
+                fontSize: "2.5rem",
+                color: "var(--color-gray-900)",
+              }}
+            >
+              Full-Suite Management
+            </Title>
+          </Box>
+          <Text c="dimmed" style={{ maxWidth: 400 }}>
+            We handle the complexities of property ownership so you can focus on
+            expanding your portfolio.
+          </Text>
+        </Group>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((service, index) => (
-              <div
-                key={index}
-                className="bg-gray-50 rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow"
+        <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing={30}>
+          {services.map((service, index) => (
+            <Card
+              key={index}
+              p={40}
+              radius="0"
+              style={{
+                border: "1px solid var(--color-gray-200)",
+                backgroundColor: "white",
+                transition: "transform 0.2s ease",
+              }}
+            >
+              <ThemeIcon
+                size={50}
+                radius="0"
+                style={{ backgroundColor: "var(--color-primary)" }}
+                mb="xl"
               >
-                <div className="text-5xl mb-4">{service.icon}</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {service.title}
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {service.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Benefits Section */}
-      <div className="py-16 bg-gray-50">
-        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Why Choose Our Property Management
-            </h2>
-            <p className="text-lg text-gray-600">
-              Benefits of professional property management
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {benefits.map((benefit, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-xl p-6 border border-gray-200 text-center"
+                <service.icon size={26} stroke={1.5} />
+              </ThemeIcon>
+              <Title
+                order={4}
+                mb="md"
+                style={{
+                  fontFamily: "var(--font-sora)",
+                  color: "var(--color-primary)",
+                }}
               >
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg
-                    className="w-6 h-6 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {benefit.title}
-                </h3>
-                <p className="text-gray-600 text-sm">{benefit.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+                {service.title}
+              </Title>
+              <Text c="dimmed" size="sm" style={{ lineHeight: 1.7 }}>
+                {service.description}
+              </Text>
+            </Card>
+          ))}
+        </SimpleGrid>
+      </Container>
 
-      {/* Pricing Packages */}
-      <div className="py-16">
-        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Management Packages
-            </h2>
-            <p className="text-lg text-gray-600">
-              Choose the plan that fits your needs
-            </p>
-          </div>
+      {/* Pricing Section */}
+      <Box style={{ backgroundColor: "var(--color-gray-100)" }} py={100}>
+        <Container size="xl">
+          <Stack align="center" mb={60}>
+            <Title
+              order={2}
+              style={{ fontFamily: "var(--font-syne)", fontSize: "2.5rem" }}
+            >
+              Management Tiers
+            </Title>
+            <Divider w={80} size="xl" color="var(--color-accent)" />
+          </Stack>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <SimpleGrid
+            cols={{ base: 1, md: 3 }}
+            spacing={0}
+            style={{ border: "1px solid var(--color-gray-200)" }}
+          >
             {packages.map((pkg, index) => (
-              <div
+              <Paper
                 key={index}
-                className={`bg-white rounded-xl p-8 border-2 ${
-                  pkg.recommended
-                    ? "border-blue-600 shadow-xl"
-                    : "border-gray-200"
-                } relative`}
+                p={50}
+                radius="0"
+                style={{
+                  backgroundColor: pkg.recommended ? "white" : "transparent",
+                  border: pkg.recommended
+                    ? "2px solid var(--color-primary)"
+                    : "none",
+                  zIndex: pkg.recommended ? 2 : 1,
+                  position: "relative",
+                }}
               >
                 {pkg.recommended && (
-                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                    <span className="px-4 py-1 bg-blue-600 text-white text-sm font-semibold rounded-full">
-                      Most Popular
-                    </span>
-                  </div>
+                  <Badge
+                    style={{
+                      backgroundColor: "var(--color-accent)",
+                      position: "absolute",
+                      top: 20,
+                      right: 20,
+                    }}
+                    radius="0"
+                  >
+                    Most Popular
+                  </Badge>
                 )}
 
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                    {pkg.name}
-                  </h3>
-                  <div className="text-4xl font-bold text-blue-600 mb-1">
+                <Text
+                  fw={800}
+                  tt="uppercase"
+                  lts={1}
+                  c="dimmed"
+                  size="xs"
+                  mb="sm"
+                  style={{ fontFamily: "var(--font-urbanist)" }}
+                >
+                  {pkg.name}
+                </Text>
+                <Group align="flex-end" gap={5} mb="xl">
+                  <Text
+                    style={{
+                      fontSize: "4rem",
+                      fontWeight: 900,
+                      color: "var(--color-primary)",
+                      fontFamily: "var(--font-oswald)",
+                      lineHeight: 1,
+                    }}
+                  >
                     {pkg.price}
-                  </div>
-                  <p className="text-gray-600">{pkg.period}</p>
-                </div>
+                  </Text>
+                  <Text c="dimmed" mb={10} fw={600}>
+                    {pkg.period}
+                  </Text>
+                </Group>
 
-                <ul className="space-y-3 mb-8">
-                  {pkg.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <svg
-                        className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span className="text-gray-700">{feature}</span>
-                    </li>
+                <Divider mb="xl" color="var(--color-gray-200)" />
+
+                <List
+                  spacing="md"
+                  size="sm"
+                  mb={40}
+                  icon={
+                    <ThemeIcon
+                      color="var(--color-success)"
+                      size={18}
+                      radius="xl"
+                    >
+                      <IconCheck size={12} stroke={4} />
+                    </ThemeIcon>
+                  }
+                >
+                  {pkg.features.map((f, i) => (
+                    <List.Item
+                      key={i}
+                      style={{
+                        color: "var(--color-gray-900)",
+                        fontWeight: 500,
+                      }}
+                    >
+                      {f}
+                    </List.Item>
                   ))}
-                </ul>
+                </List>
 
                 <Button
-                  variant={pkg.recommended ? "filled" : "outlined"}
-                  className={`w-full justify-center ${
-                    pkg.recommended
-                      ? "bg-blue-600 hover:bg-blue-700"
-                      : "border-2 border-blue-600 text-blue-600 hover:bg-blue-50"
-                  }`}
+                  fullWidth
+                  size="lg"
+                  radius="0"
+                  variant={pkg.recommended ? "filled" : "outline"}
+                  style={{
+                    backgroundColor: pkg.recommended
+                      ? "var(--color-primary)"
+                      : "transparent",
+                    borderColor: "var(--color-primary)",
+                    color: pkg.recommended ? "white" : "var(--color-primary)",
+                    fontFamily: "var(--font-urbanist)",
+                  }}
+                  rightSection={<IconArrowRight size={16} />}
                   onClick={() => navigate("/auth/register?role=landlord")}
                 >
-                  Get Started
+                  Select Plan
                 </Button>
-              </div>
+              </Paper>
             ))}
-          </div>
-        </div>
-      </div>
+          </SimpleGrid>
+        </Container>
+      </Box>
 
       {/* CTA Section */}
-      <div className="py-16 bg-blue-600 text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-4">
-            Ready to Simplify Your Property Management?
-          </h2>
-          <p className="text-xl text-blue-100 mb-8">
-            Let our experienced team handle your properties while you enjoy the
-            benefits
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              variant="filled"
-              className="bg-white text-blue-600 hover:bg-gray-100"
-              onClick={() => navigate("/contact")}
+      <Box py={80} style={{ borderTop: "1px solid var(--color-gray-200)" }}>
+        <Container size="md">
+          <Stack align="center" style={{ textAlign: "center" }}>
+            <Title
+              order={2}
+              style={{
+                fontFamily: "var(--font-syne)",
+                color: "var(--color-primary)",
+              }}
             >
-              Schedule Consultation
-            </Button>
-            <Button
-              variant="outlined"
-              className="border-2 border-white text-white hover:bg-white/10"
-              onClick={() => navigate("/services")}
-            >
-              View All Services
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
+              Ready for Worry-Free Ownership?
+            </Title>
+            <Text size="lg" c="dimmed" mb="xl">
+              Contact our specialist team today to receive a custom proposal for
+              your portfolio.
+            </Text>
+            <Group>
+              <Button
+                size="xl"
+                radius="0"
+                style={{
+                  backgroundColor: "var(--color-accent)",
+                  fontFamily: "var(--font-urbanist)",
+                }}
+              >
+                Schedule Consultation
+              </Button>
+            </Group>
+          </Stack>
+        </Container>
+      </Box>
+    </Box>
   );
 };
 

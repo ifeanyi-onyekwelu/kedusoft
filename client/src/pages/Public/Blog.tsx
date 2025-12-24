@@ -72,7 +72,7 @@ export const Blog = () => {
       excerpt:
         "Explore properties from anywhere with our new 360° virtual tour feature.",
       category: "news",
-      author: "GetMeLeased Team",
+      author: "LetsTenTeam",
       date: "Dec 8, 2024",
       readTime: "3 min read",
       image:

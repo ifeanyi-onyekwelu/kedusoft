@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   IconX,
   IconPlus,
@@ -15,9 +15,10 @@ import {
   IconDroplet,
   IconBolt,
   IconCheck,
-  IconMinus,
   IconHeart,
   IconShare,
+  IconLayoutColumns,
+  IconSearch,
 } from "@tabler/icons-react";
 import {
   Button,
@@ -25,7 +26,6 @@ import {
   Group,
   Text,
   Badge,
-  Divider,
   Table,
   ActionIcon,
   Tooltip,
@@ -33,8 +33,13 @@ import {
   Grid,
   Image,
   Stack,
+  Box,
+  Paper,
+  Divider,
+  Title,
 } from "@mantine/core";
 
+// Interface and Sample Data (unchanged for logic)
 interface Property {
   id: string;
   title: string;
@@ -45,7 +50,6 @@ interface Property {
   area: number;
   parking: number;
   images: string[];
-  amenities: string[];
   type: string;
   yearBuilt: number;
   furnishing: string;
@@ -65,7 +69,6 @@ const PropertyComparison = () => {
   const [selectedProperties, setSelectedProperties] = useState<Property[]>([]);
   const [searchMode, setSearchMode] = useState(false);
 
-  // Sample properties for demonstration
   const sampleProperties: Property[] = [
     {
       id: "1",
@@ -76,8 +79,9 @@ const PropertyComparison = () => {
       bathrooms: 2,
       area: 120,
       parking: 2,
-      images: ["/images/property-1.jpeg"],
-      amenities: ["Swimming Pool", "Gym", "Security", "Generator"],
+      images: [
+        "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800",
+      ],
       type: "Apartment",
       yearBuilt: 2020,
       furnishing: "Fully Furnished",
@@ -101,8 +105,9 @@ const PropertyComparison = () => {
       bathrooms: 3,
       area: 200,
       parking: 3,
-      images: ["/images/property-2.jpeg"],
-      amenities: ["Garden", "Security", "Generator", "Parking"],
+      images: [
+        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800",
+      ],
       type: "Duplex",
       yearBuilt: 2019,
       furnishing: "Semi-Furnished",
@@ -126,8 +131,9 @@ const PropertyComparison = () => {
       bathrooms: 2,
       area: 85,
       parking: 1,
-      images: ["/images/property-3.jpeg"],
-      amenities: ["Security", "Parking", "Generator"],
+      images: [
+        "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800",
+      ],
       type: "Apartment",
       yearBuilt: 2018,
       furnishing: "Unfurnished",
@@ -166,7 +172,7 @@ const PropertyComparison = () => {
     feature: string;
     available: boolean;
   }) => {
-    const icons = {
+    const icons: Record<string, any> = {
       security: IconShield,
       wifi: IconWifi,
       generator: IconFlame,
@@ -176,324 +182,374 @@ const PropertyComparison = () => {
       garden: IconCheck,
       balcony: IconCheck,
     };
-
-    const Icon = icons[feature as keyof typeof icons] || IconCheck;
+    const Icon = icons[feature] || IconCheck;
 
     return (
-      <Tooltip label={feature.charAt(0).toUpperCase() + feature.slice(1)}>
-        <div
-          className={`p-2 rounded-full ${
+      <Tooltip
+        label={feature.charAt(0).toUpperCase() + feature.slice(1)}
+        withArrow
+      >
+        <Box
+          className={`flex items-center justify-center p-2 rounded-sm border transition-all ${
             available
-              ? "bg-green-100 text-green-600"
-              : "bg-gray-100 text-gray-400"
+              ? "bg-white border-blue-200 text-blue-700 shadow-sm"
+              : "bg-gray-50 border-gray-100 text-gray-300"
           }`}
         >
-          <Icon size={16} />
-        </div>
+          <Icon size={16} stroke={1.5} />
+        </Box>
       </Tooltip>
     );
   };
 
   return (
-    <Container size="xl" py="xl">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Compare Properties
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Compare up to 3 properties side by side to make an informed decision
-          </p>
-        </div>
-
-        {/* Selected Properties Count */}
-        <Card className="mb-8 p-6">
-          <Group justify="space-between">
-            <div>
-              <Text size="lg" fw={600}>
-                Selected Properties: {selectedProperties.length}/3
+    <Box
+      component="main"
+      style={{
+        backgroundColor: "var(--color-gray-50)",
+        minHeight: "100vh",
+        fontFamily: "var(--font-manrope)",
+      }}
+    >
+      <Container size="xl" py={60}>
+        {/* Header - No Gradients, Clean Typography */}
+        <Box mb={50}>
+          <Group justify="space-between" align="flex-end">
+            <Box>
+              <Text
+                fw={800}
+                tt="uppercase"
+                lts={2}
+                size="xs"
+                style={{ color: "var(--color-secondary)" }}
+              >
+                Market Insight
               </Text>
-              <Text size="sm" c="dimmed">
-                {3 - selectedProperties.length} more properties can be added
+              <Title
+                order={1}
+                style={{
+                  fontFamily: "var(--font-syne)",
+                  fontSize: "3rem",
+                  color: "var(--color-primary)",
+                }}
+              >
+                Compare Properties
+              </Title>
+              <Text size="lg" c="dimmed" mt="xs" style={{ maxWidth: 500 }}>
+                Side-by-side technical analysis of your shortlisted real estate
+                assets.
               </Text>
-            </div>
+            </Box>
             <Button
-              variant="outline"
+              size="lg"
+              radius="0"
+              style={{ backgroundColor: "var(--color-primary)" }}
+              leftSection={
+                searchMode ? <IconX size={20} /> : <IconSearch size={20} />
+              }
               onClick={() => setSearchMode(!searchMode)}
-              disabled={selectedProperties.length >= 3}
+              disabled={!searchMode && selectedProperties.length >= 3}
             >
-              <IconPlus size={16} className="mr-2" />
-              Add Property
+              {searchMode ? "Close Inventory" : "Browse Inventory"}
             </Button>
           </Group>
-        </Card>
+          <Divider mt="xl" color="var(--color-gray-200)" />
+        </Box>
 
-        {/* Property Selection */}
-        {searchMode && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="mb-8"
-          >
-            <Card className="p-6">
-              <Text size="lg" fw={600} mb="md">
-                Available Properties
-              </Text>
-              <Grid>
+        {/* Browser Inventory Grid */}
+        <AnimatePresence>
+          {searchMode && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="mb-12"
+            >
+              <Grid gutter="xl">
                 {sampleProperties
                   .filter(
                     (p) => !selectedProperties.find((sp) => sp.id === p.id)
                   )
                   .map((property) => (
                     <Grid.Col key={property.id} span={{ base: 12, md: 4 }}>
-                      <Card className="h-full">
+                      <Card
+                        radius="0"
+                        withBorder
+                        padding="0"
+                        className="bg-white hover:border-blue-400 transition-colors"
+                      >
                         <Image
                           src={property.images[0]}
+                          height={200}
                           alt={property.title}
-                          height={150}
-                          className="rounded-md mb-3"
                         />
-                        <Text fw={600} size="sm" mb="xs">
-                          {property.title}
-                        </Text>
-                        <Text size="xs" c="dimmed" mb="xs">
-                          <IconMapPin size={12} className="inline mr-1" />
-                          {property.location}
-                        </Text>
-                        <Text fw={700} c="blue" mb="md">
-                          {property.price}
-                        </Text>
-                        <Button
-                          fullWidth
-                          size="xs"
-                          onClick={() => addProperty(property)}
-                        >
-                          Add to Compare
-                        </Button>
+                        <Box p="md">
+                          <Text
+                            fw={700}
+                            style={{ fontFamily: "var(--font-sora)" }}
+                          >
+                            {property.title}
+                          </Text>
+                          <Text size="xs" c="dimmed" mb="md">
+                            {property.location}
+                          </Text>
+                          <Group justify="space-between">
+                            <Text
+                              fw={800}
+                              size="lg"
+                              style={{ color: "var(--color-primary)" }}
+                            >
+                              {property.price}
+                            </Text>
+                            <Button
+                              radius="0"
+                              size="xs"
+                              variant="outline"
+                              color="var(--color-primary)"
+                              onClick={() => addProperty(property)}
+                            >
+                              Add to Compare
+                            </Button>
+                          </Group>
+                        </Box>
                       </Card>
                     </Grid.Col>
                   ))}
               </Grid>
-            </Card>
-          </motion.div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* Comparison Table */}
+        {/* Comparison Table - The Professional Tool */}
         {selectedProperties.length > 0 ? (
-          <Card className="overflow-hidden">
-            <div className="overflow-x-auto">
-              <Table>
-                <Table.Thead>
-                  <Table.Tr>
-                    <Table.Th className="w-48">Features</Table.Th>
-                    {selectedProperties.map((property) => (
-                      <Table.Th
-                        key={property.id}
-                        className="text-center min-w-64"
-                      >
-                        <div className="relative">
-                          <ActionIcon
-                            variant="subtle"
-                            color="red"
-                            size="sm"
-                            className="absolute -top-2 -right-2"
-                            onClick={() => removeProperty(property.id)}
-                          >
-                            <IconX size={16} />
-                          </ActionIcon>
-                          <Image
-                            src={property.images[0]}
-                            alt={property.title}
-                            height={120}
-                            className="rounded-md mb-3"
-                          />
-                          <Text fw={600} size="sm" mb="xs">
-                            {property.title}
-                          </Text>
-                          <Text size="xs" c="dimmed">
-                            {property.location}
-                          </Text>
-                        </div>
+          <motion.div layout>
+            <Paper
+              radius="0"
+              withBorder
+              style={{
+                backgroundColor: "white",
+                boxShadow: "0 20px 40px rgba(0,0,0,0.03)",
+              }}
+            >
+              <div className="overflow-x-auto">
+                <Table
+                  verticalSpacing="xl"
+                  horizontalSpacing="xl"
+                  withColumnBorders
+                >
+                  <Table.Thead className="bg-gray-50">
+                    <Table.Tr>
+                      <Table.Th style={{ width: 250 }}>
+                        <Text
+                          fw={800}
+                          size="xs"
+                          tt="uppercase"
+                          lts={1}
+                          c="dimmed"
+                        >
+                          Technical Specs
+                        </Text>
                       </Table.Th>
+                      {selectedProperties.map((property) => (
+                        <Table.Th key={property.id} className="min-w-[300px]">
+                          <Box className="relative">
+                            <ActionIcon
+                              variant="subtle"
+                              color="red"
+                              radius="0"
+                              size="md"
+                              className="absolute top-0 right-0"
+                              onClick={() => removeProperty(property.id)}
+                            >
+                              <IconX size={18} />
+                            </ActionIcon>
+                            <Image
+                              src={property.images[0]}
+                              height={140}
+                              radius="0"
+                              mb="md"
+                            />
+                            <Text
+                              fw={800}
+                              size="md"
+                              style={{
+                                fontFamily: "var(--font-sora)",
+                                color: "var(--color-primary)",
+                              }}
+                            >
+                              {property.title}
+                            </Text>
+                            <Text size="xs" c="dimmed">
+                              {property.location}
+                            </Text>
+                          </Box>
+                        </Table.Th>
+                      ))}
+                    </Table.Tr>
+                  </Table.Thead>
+
+                  <Table.Tbody>
+                    {/* Rows with High Precision Labels */}
+                    {[
+                      {
+                        label: "Financial / Mo",
+                        key: "price",
+                        highlight: true,
+                      },
+                      { label: "Asset Type", key: "type", badge: true },
+                      {
+                        label: "Sleep Quarters",
+                        key: "bedrooms",
+                        icon: <IconBed size={16} />,
+                      },
+                      {
+                        label: "Sanitary Areas",
+                        key: "bathrooms",
+                        icon: <IconBath size={16} />,
+                      },
+                      {
+                        label: "Surface Area",
+                        key: "area",
+                        suffix: " sqm",
+                        icon: <IconRuler size={16} />,
+                      },
+                      { label: "Construction", key: "yearBuilt" },
+                      { label: "Status", key: "furnishing" },
+                    ].map((row) => (
+                      <Table.Tr key={row.label}>
+                        <Table.Td>
+                          <Group gap="xs">
+                            {row.icon && <Box c="dimmed">{row.icon}</Box>}
+                            <Text fw={600} size="sm" c="gray.7">
+                              {row.label}
+                            </Text>
+                          </Group>
+                        </Table.Td>
+                        {selectedProperties.map((p) => (
+                          <Table.Td key={p.id}>
+                            {row.highlight ? (
+                              <Text
+                                fw={900}
+                                size="xl"
+                                style={{
+                                  color: "var(--color-primary)",
+                                  fontFamily: "var(--font-oswald)",
+                                }}
+                              >
+                                {(p as any)[row.key as string]}
+                              </Text>
+                            ) : row.badge ? (
+                              <Badge radius="0" variant="light" color="blue">
+                                {(p as any)[row.key as string]}
+                              </Badge>
+                            ) : (
+                              <Text fw={600} size="sm" c="gray.8">
+                                {(p as any)[row.key as string]}
+                                {row.suffix}
+                              </Text>
+                            )}
+                          </Table.Td>
+                        ))}
+                      </Table.Tr>
                     ))}
-                  </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>
-                  {/* Price */}
-                  <Table.Tr>
-                    <Table.Td className="font-medium">Price</Table.Td>
-                    {selectedProperties.map((property) => (
-                      <Table.Td key={property.id} className="text-center">
-                        <Text fw={700} c="blue" size="lg">
-                          {property.price}
+
+                    {/* Features Row */}
+                    <Table.Tr>
+                      <Table.Td className="align-top pt-8">
+                        <Text fw={600} size="sm" c="gray.7">
+                          Building Utilities
                         </Text>
                       </Table.Td>
-                    ))}
-                  </Table.Tr>
+                      {selectedProperties.map((p) => (
+                        <Table.Td key={p.id} className="pt-8">
+                          <div className="grid grid-cols-4 gap-2">
+                            {Object.entries(p.features).map(
+                              ([feature, val]) => (
+                                <FeatureIcon
+                                  key={feature}
+                                  feature={feature}
+                                  available={val}
+                                />
+                              )
+                            )}
+                          </div>
+                        </Table.Td>
+                      ))}
+                    </Table.Tr>
 
-                  {/* Basic Info */}
-                  <Table.Tr>
-                    <Table.Td className="font-medium">Property Type</Table.Td>
-                    {selectedProperties.map((property) => (
-                      <Table.Td key={property.id} className="text-center">
-                        <Badge color="blue" variant="light">
-                          {property.type}
-                        </Badge>
-                      </Table.Td>
-                    ))}
-                  </Table.Tr>
-
-                  <Table.Tr>
-                    <Table.Td className="font-medium">Bedrooms</Table.Td>
-                    {selectedProperties.map((property) => (
-                      <Table.Td key={property.id} className="text-center">
-                        <Group gap="xs" justify="center">
-                          <IconBed size={16} />
-                          <Text>{property.bedrooms}</Text>
-                        </Group>
-                      </Table.Td>
-                    ))}
-                  </Table.Tr>
-
-                  <Table.Tr>
-                    <Table.Td className="font-medium">Bathrooms</Table.Td>
-                    {selectedProperties.map((property) => (
-                      <Table.Td key={property.id} className="text-center">
-                        <Group gap="xs" justify="center">
-                          <IconBath size={16} />
-                          <Text>{property.bathrooms}</Text>
-                        </Group>
-                      </Table.Td>
-                    ))}
-                  </Table.Tr>
-
-                  <Table.Tr>
-                    <Table.Td className="font-medium">Area (sqm)</Table.Td>
-                    {selectedProperties.map((property) => (
-                      <Table.Td key={property.id} className="text-center">
-                        <Group gap="xs" justify="center">
-                          <IconRuler size={16} />
-                          <Text>{property.area}</Text>
-                        </Group>
-                      </Table.Td>
-                    ))}
-                  </Table.Tr>
-
-                  <Table.Tr>
-                    <Table.Td className="font-medium">Parking</Table.Td>
-                    {selectedProperties.map((property) => (
-                      <Table.Td key={property.id} className="text-center">
-                        <Group gap="xs" justify="center">
-                          <IconCar size={16} />
-                          <Text>{property.parking}</Text>
-                        </Group>
-                      </Table.Td>
-                    ))}
-                  </Table.Tr>
-
-                  <Table.Tr>
-                    <Table.Td className="font-medium">Year Built</Table.Td>
-                    {selectedProperties.map((property) => (
-                      <Table.Td key={property.id} className="text-center">
-                        {property.yearBuilt}
-                      </Table.Td>
-                    ))}
-                  </Table.Tr>
-
-                  <Table.Tr>
-                    <Table.Td className="font-medium">Furnishing</Table.Td>
-                    {selectedProperties.map((property) => (
-                      <Table.Td key={property.id} className="text-center">
-                        <Badge
-                          color={
-                            property.furnishing === "Fully Furnished"
-                              ? "green"
-                              : property.furnishing === "Semi-Furnished"
-                              ? "yellow"
-                              : "gray"
-                          }
-                          variant="light"
-                        >
-                          {property.furnishing}
-                        </Badge>
-                      </Table.Td>
-                    ))}
-                  </Table.Tr>
-
-                  {/* Features */}
-                  <Table.Tr>
-                    <Table.Td className="font-medium">Features</Table.Td>
-                    {selectedProperties.map((property) => (
-                      <Table.Td key={property.id} className="text-center">
-                        <div className="grid grid-cols-4 gap-2">
-                          {Object.entries(property.features).map(
-                            ([feature, available]) => (
-                              <FeatureIcon
-                                key={feature}
-                                feature={feature}
-                                available={available}
-                              />
-                            )
-                          )}
-                        </div>
-                      </Table.Td>
-                    ))}
-                  </Table.Tr>
-
-                  {/* Actions */}
-                  <Table.Tr>
-                    <Table.Td className="font-medium">Actions</Table.Td>
-                    {selectedProperties.map((property) => (
-                      <Table.Td key={property.id} className="text-center">
-                        <Stack gap="xs">
-                          <Button
-                            size="xs"
-                            fullWidth
-                            component={Link}
-                            to={`/listings/${property.id}`}
-                          >
-                            View Details
-                          </Button>
-                          <Group gap="xs" justify="center">
-                            <ActionIcon variant="light" color="red">
-                              <IconHeart size={16} />
-                            </ActionIcon>
-                            <ActionIcon variant="light" color="blue">
-                              <IconShare size={16} />
-                            </ActionIcon>
-                          </Group>
-                        </Stack>
-                      </Table.Td>
-                    ))}
-                  </Table.Tr>
-                </Table.Tbody>
-              </Table>
-            </div>
-          </Card>
+                    {/* Footer Actions */}
+                    <Table.Tr>
+                      <Table.Td />
+                      {selectedProperties.map((p) => (
+                        <Table.Td key={p.id} className="pb-8">
+                          <Stack gap="xs">
+                            <Button
+                              component={Link}
+                              to={`/listings/${p.id}`}
+                              radius="0"
+                              fullWidth
+                              style={{
+                                backgroundColor: "var(--color-primary)",
+                              }}
+                            >
+                              Final Review
+                            </Button>
+                            <Group grow gap="xs">
+                              <Button variant="outline" radius="0" color="gray">
+                                <IconHeart size={16} />
+                              </Button>
+                              <Button variant="outline" radius="0" color="gray">
+                                <IconShare size={16} />
+                              </Button>
+                            </Group>
+                          </Stack>
+                        </Table.Td>
+                      ))}
+                    </Table.Tr>
+                  </Table.Tbody>
+                </Table>
+              </div>
+            </Paper>
+          </motion.div>
         ) : (
-          <Card className="p-12 text-center">
-            <div className="text-gray-400 mb-4">
-              <IconPlus size={64} className="mx-auto" />
-            </div>
-            <Text size="lg" fw={600} mb="xs">
-              No Properties Selected
-            </Text>
-            <Text c="dimmed" mb="md">
-              Add properties to start comparing their features and prices
-            </Text>
-            <Button onClick={() => setSearchMode(true)}>
-              Add Your First Property
-            </Button>
-          </Card>
+          /* Empty State - Minimalist */
+          <Paper
+            radius="0"
+            p={100}
+            withBorder
+            style={{ borderStyle: "dashed", backgroundColor: "white" }}
+          >
+            <Stack align="center" gap="md">
+              <IconLayoutColumns
+                size={48}
+                stroke={1}
+                color="var(--color-gray-500)"
+              />
+              <Text
+                fw={700}
+                size="xl"
+                style={{ color: "var(--color-primary)" }}
+              >
+                No Assets Selected
+              </Text>
+              <Text c="dimmed" style={{ maxWidth: 300, textAlign: "center" }}>
+                Select up to three properties from the inventory to generate a
+                technical comparison report.
+              </Text>
+              <Button
+                variant="outline"
+                radius="0"
+                size="lg"
+                color="var(--color-primary)"
+                onClick={() => setSearchMode(true)}
+              >
+                Browse Inventory
+              </Button>
+            </Stack>
+          </Paper>
         )}
-      </motion.div>
-    </Container>
+      </Container>
+    </Box>
   );
 };
 

@@ -1,386 +1,218 @@
-/**
- * FairHousingPage Component
- *
- * Information about fair housing practices and anti-discrimination policies.
- * Fair Housing laws prohibit discrimination in housing based on protected characteristics.
- */
+import React from "react";
+import {
+  ShieldCheck,
+  Scale,
+  AlertCircle,
+  Info,
+  Mail,
+  Phone,
+  FileText,
+  UserCheck,
+} from "lucide-react";
 
+/**
+ * Professional Fair Housing Page - MVP Version
+ * Focus: High Trust, Clean UI, No Gradients.
+ */
 export const FairHousingPage = () => {
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <div className="bg-blue-900 text-white py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="text-5xl mb-4">🏠</div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+    <div className="min-h-screen bg-slate-50">
+      {/* Official Header Section */}
+      <header className="bg-white border-b border-gray-200 py-12">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="inline-flex items-center justify-center p-2 bg-blue-50 rounded-lg mb-4">
+            <ShieldCheck className="w-6 h-6 text-blue-700" />
+          </div>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">
             Fair Housing Policy
           </h1>
-          <p className="text-xl text-blue-100">
-            Equal Housing Opportunity for All
+          <p className="mt-4 text-lg text-gray-600 max-w-2xl">
+            Our commitment to ensuring a rental marketplace free from
+            discrimination, aligned with international standards and the
+            Constitution of the Federal Republic of Nigeria.
           </p>
         </div>
-      </div>
+      </header>
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="prose prose-lg max-w-none">
-          {/* Our Commitment */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Our Commitment to Fair Housing
-            </h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              GetMeLeased is committed to promoting equal housing opportunities
-              and preventing discrimination in all housing transactions. We
-              comply with fair housing laws and actively work to ensure that
-              everyone has access to housing without facing discrimination.
-            </p>
-            <p className="text-gray-700 leading-relaxed">
-              We believe that everyone deserves a safe, decent, and affordable
-              place to live, regardless of their background or personal
-              characteristics.
-            </p>
-          </section>
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          {/* Main Content Column */}
+          <div className="lg:col-span-2 space-y-12">
+            {/* Section: Core Policy */}
+            <section>
+              <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2 mb-4">
+                <Scale className="w-5 h-5 text-gray-500" />
+                The Core Policy
+              </h2>
+              <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                <p className="text-gray-700 leading-7">
+                  LetsTenoperates on a zero-tolerance policy regarding housing
+                  discrimination. Every person seeking a safe place to live
+                  deserves to be evaluated based on
+                  <strong> factual eligibility criteria</strong>—such as
+                  creditworthiness and rental history—rather than personal
+                  identity or background.
+                </p>
+              </div>
+            </section>
 
-          {/* Protected Characteristics */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Protected Characteristics
-            </h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              It is illegal to discriminate in housing based on the following
-              protected characteristics:
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                { icon: "👥", text: "Race or Color" },
-                { icon: "🌍", text: "National Origin or Ethnicity" },
-                { icon: "⛪", text: "Religion" },
-                { icon: "⚧️", text: "Gender or Sex" },
-                { icon: "♿", text: "Disability or Handicap" },
-                { icon: "👨‍👩‍👧", text: "Familial Status (having children)" },
-                { icon: "💑", text: "Sexual Orientation" },
-                { icon: "💍", text: "Marital Status" },
-              ].map((item, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-3 bg-gray-50 rounded-lg p-4 border border-gray-200"
+            {/* Section: Protected Classes */}
+            <section>
+              <h2 className="text-xl font-bold text-gray-900 mb-6">
+                Non-Discrimination Standards
+              </h2>
+              <p className="text-gray-600 mb-6">
+                It is strictly prohibited to discriminate, harass, or provide
+                differential service based on:
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  "Race, Color or Ethnicity",
+                  "National Origin",
+                  "Religious Beliefs",
+                  "Gender or Sex",
+                  "Disability (Physical or Mental)",
+                  "Familial Status (Children)",
+                  "Marital Status",
+                  "Source of Income",
+                ].map((text) => (
+                  <div
+                    key={text}
+                    className="flex items-center p-3 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700"
+                  >
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-600 mr-3" />
+                    {text}
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Section: Prohibited Actions */}
+            <section className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+              <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                <h2 className="text-lg font-bold text-gray-900">
+                  Prohibited Actions
+                </h2>
+              </div>
+              <div className="p-6">
+                <ul className="space-y-4">
+                  {[
+                    {
+                      title: "Refusal to Deal",
+                      desc: "Refusing to rent, sell, or negotiate with any person.",
+                    },
+                    {
+                      title: "Differential Terms",
+                      desc: "Applying different lease terms or security deposits.",
+                    },
+                    {
+                      title: "Discriminatory Advertising",
+                      desc: "Using language that indicates preference or exclusion.",
+                    },
+                    {
+                      title: "Reasonable Accommodation",
+                      desc: "Refusing to allow modifications for persons with disabilities.",
+                    },
+                  ].map((item, i) => (
+                    <li key={i} className="flex gap-4">
+                      <span className="text-blue-600 font-bold text-sm leading-6 uppercase">
+                        0{i + 1}
+                      </span>
+                      <div>
+                        <h4 className="font-bold text-gray-900 text-sm tracking-wide uppercase">
+                          {item.title}
+                        </h4>
+                        <p className="text-gray-600 text-sm mt-1 leading-6">
+                          {item.desc}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          </div>
+
+          {/* Sidebar Column */}
+          <div className="space-y-6">
+            {/* Card: Reporting */}
+            <div className="bg-slate-900 text-white rounded-xl p-6 shadow-lg">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <AlertCircle className="w-5 h-5 text-red-400" />
+                Report a Violation
+              </h3>
+              <p className="text-slate-300 text-sm leading-relaxed mb-6">
+                If you believe a listing or landlord on our platform is in
+                violation of these policies, report it immediately.
+              </p>
+              <div className="space-y-4">
+                <a
+                  href="mailto:fairhousing@letsten.com"
+                  className="flex items-center gap-3 text-sm hover:text-blue-400 transition-colors"
                 >
-                  <span className="text-3xl">{item.icon}</span>
-                  <span className="text-gray-700 font-medium">{item.text}</span>
+                  <Mail className="w-4 h-4 text-slate-400" />
+                  fairhousing@letsten.com
+                </a>
+                <div className="flex items-center gap-3 text-sm">
+                  <Phone className="w-4 h-4 text-slate-400" />
+                  +234 812 345 6789
                 </div>
-              ))}
+              </div>
+              <button className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg text-sm transition-all">
+                Submit Formal Report
+              </button>
             </div>
-          </section>
 
-          {/* Prohibited Actions */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Prohibited Discriminatory Practices
-            </h2>
-            <p className="text-gray-700 mb-4">
-              Landlords, property managers, and agents are prohibited from:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700">
-              <li>
-                Refusing to rent or show a property based on protected
-                characteristics
-              </li>
-              <li>
-                Setting different terms, conditions, or privileges based on
-                protected characteristics
-              </li>
-              <li>
-                Falsely claiming a property is not available when it actually is
-              </li>
-              <li>
-                Advertising in a manner that indicates preference or limitation
-                based on protected characteristics
-              </li>
-              <li>
-                Refusing to make reasonable accommodations for persons with
-                disabilities
-              </li>
-              <li>Harassing tenants based on protected characteristics</li>
-              <li>
-                Retaliating against anyone who exercises their fair housing
-                rights
-              </li>
-              <li>
-                Intimidating, threatening, or interfering with anyone's fair
-                housing rights
-              </li>
-            </ul>
-          </section>
-
-          {/* Tenant Rights */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Your Rights as a Tenant
-            </h2>
-            <div className="space-y-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                  You have the right to:
-                </h3>
-                <ul className="space-y-2 text-gray-700">
-                  <li className="flex items-start gap-2">
-                    <svg
-                      className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+            {/* Card: Official Resources */}
+            <div className="bg-white border border-gray-200 rounded-xl p-6">
+              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">
+                Legal Resources
+              </h3>
+              <ul className="space-y-3">
+                {[
+                  "National Human Rights Commission",
+                  "Federal Ministry of Housing",
+                  "Lagos State Rental Laws",
+                  "Legal Aid Council Nigeria",
+                ].map((item) => (
+                  <li key={item}>
+                    <a
+                      href="#"
+                      className="flex items-center justify-between text-sm text-gray-700 hover:text-blue-600 group font-medium"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span>Be treated equally when searching for housing</span>
+                      {item}
+                      <FileText className="w-4 h-4 text-gray-300 group-hover:text-blue-600" />
+                    </a>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <svg
-                      className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span>Have the same access to housing as anyone else</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <svg
-                      className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span>
-                      Request reasonable accommodations for disabilities
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <svg
-                      className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span>
-                      File a complaint if you experience discrimination
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <svg
-                      className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span>
-                      Be protected from retaliation for asserting your rights
-                    </span>
-                  </li>
-                </ul>
-              </div>
+                ))}
+              </ul>
             </div>
-          </section>
 
-          {/* Landlord Responsibilities */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Landlord Responsibilities
-            </h2>
-            <p className="text-gray-700 mb-4">
-              As a landlord or property manager, you must:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700">
-              <li>Treat all applicants fairly and consistently</li>
-              <li>
-                Use objective, non-discriminatory criteria for tenant selection
-              </li>
-              <li>
-                Make reasonable accommodations for tenants with disabilities
-              </li>
-              <li>
-                Ensure your property listings and advertisements are
-                non-discriminatory
-              </li>
-              <li>
-                Maintain properties in compliance with health and safety
-                standards
-              </li>
-              <li>Respond to tenant concerns and repair requests promptly</li>
-              <li>Provide equal services and amenities to all tenants</li>
-              <li>Train your staff on fair housing laws and practices</li>
-            </ul>
-          </section>
-
-          {/* Reasonable Accommodations */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Reasonable Accommodations for Disabilities
-            </h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              Landlords must make reasonable accommodations and modifications
-              for tenants with disabilities, unless doing so would cause undue
-              financial or administrative burden.
-            </p>
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Examples of Reasonable Accommodations:
-                </h3>
-                <ul className="list-disc list-inside space-y-1 text-gray-700">
-                  <li>Allowing service animals or emotional support animals</li>
-                  <li>Providing accessible parking spaces</li>
-                  <li>Modifying policies to accommodate disabilities</li>
-                  <li>
-                    Installing ramps or grab bars (tenant may pay for
-                    modifications)
-                  </li>
-                  <li>Providing documents in alternative formats</li>
-                </ul>
-              </div>
+            {/* Card: Landlord Badge */}
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-6">
+              <UserCheck className="w-8 h-8 text-blue-600 mb-3" />
+              <h3 className="font-bold text-blue-900 text-sm">
+                Are you a Landlord?
+              </h3>
+              <p className="text-blue-800 text-xs mt-2 leading-relaxed">
+                Ensure your listings are compliant. Non-compliant listings are
+                automatically flagged and removed by our system.
+              </p>
             </div>
-          </section>
-
-          {/* Platform Enforcement */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              How We Enforce Fair Housing
-            </h2>
-            <p className="text-gray-700 mb-4">
-              GetMeLeased takes fair housing seriously and enforces these
-              principles through:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700">
-              <li>Prohibiting discriminatory language in property listings</li>
-              <li>Requiring all users to agree to our fair housing policy</li>
-              <li>Investigating reports of discrimination</li>
-              <li>Removing listings that violate fair housing laws</li>
-              <li>
-                Suspending or banning users who engage in discriminatory
-                practices
-              </li>
-              <li>Providing education and resources on fair housing</li>
-              <li>
-                Cooperating with authorities investigating discrimination claims
-              </li>
-            </ul>
-          </section>
-
-          {/* Reporting Discrimination */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              How to Report Discrimination
-            </h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              If you believe you have experienced housing discrimination:
-            </p>
-
-            <div className="space-y-6">
-              <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                  1. Report to GetMeLeased
-                </h3>
-                <p className="text-gray-700 mb-3">
-                  Contact our support team immediately:
-                </p>
-                <ul className="list-none space-y-2 text-gray-700">
-                  <li>📧 Email: fairhousing@getmeleased.com</li>
-                  <li>📞 Phone: +234 812 345 6789</li>
-                  <li>💬 Use the "Report" button on property listings</li>
-                </ul>
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                  2. File a Government Complaint
-                </h3>
-                <p className="text-gray-700 mb-3">
-                  You can also file a complaint with relevant housing
-                  authorities or human rights commissions in Nigeria. Complaints
-                  should be filed within the time limits specified by law.
-                </p>
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                  3. Seek Legal Assistance
-                </h3>
-                <p className="text-gray-700">
-                  Consider consulting with a lawyer who specializes in housing
-                  discrimination cases. You may be entitled to remedies
-                  including damages and legal fees.
-                </p>
-              </div>
-            </div>
-          </section>
-
-          {/* Resources */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Additional Resources
-            </h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              For more information about fair housing rights and
-              responsibilities:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700">
-              <li>Nigerian National Human Rights Commission</li>
-              <li>Federal Ministry of Housing and Urban Development</li>
-              <li>State housing regulatory agencies</li>
-              <li>Legal aid organizations specializing in housing rights</li>
-            </ul>
-          </section>
-
-          {/* Contact */}
-          <section className="mb-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Questions About Fair Housing?
-            </h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              If you have questions about fair housing laws or our policies,
-              we're here to help:
-            </p>
-            <ul className="list-none space-y-2 text-gray-700">
-              <li>📧 Email: fairhousing@getmeleased.com</li>
-              <li>📞 Phone: +234 812 345 6789</li>
-              <li>🌐 Visit our Help Center for more resources</li>
-            </ul>
-          </section>
+          </div>
         </div>
-      </div>
+      </main>
+
+      {/* Footer Disclaimer */}
+      <footer className="bg-gray-100 py-8 border-t border-gray-200">
+        <div className="max-w-5xl mx-auto px-4 text-center">
+          <p className="text-xs text-gray-500 max-w-2xl mx-auto">
+            Disclaimer: This policy is for informational purposes and does not
+            constitute legal advice. LetsTenis not a government agency. For
+            legal protection, consult with a qualified legal practitioner.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };

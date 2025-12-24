@@ -40,9 +40,7 @@ export default function SignupRoleSelector() {
   return (
     <div className="w-full">
       <div className="mb-6 text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Join GetMeLeased
-        </h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Join letsten</h2>
         <p className="text-gray-600 text-sm">Choose your account type</p>
       </div>
 

@@ -1,305 +1,195 @@
-/**
- * Resources Page Component
- *
- * Hub for guides, tools, and helpful resources for tenants and landlords.
- */
-
 import { useNavigate } from "react-router-dom";
+import {
+  BookOpen,
+  ClipboardCheck,
+  HelpCircle,
+  Settings,
+  Search,
+  Umbrella,
+  MapPin,
+  Building2,
+  ExternalLink,
+  ChevronRight,
+  ArrowRight,
+} from "lucide-react";
 
-export const Resources = () => {
+const Resources = () => {
   const navigate = useNavigate();
 
   const guides = [
     {
-      title: "Tenant Guide",
-      description: "Complete guide for renting a property in Nigeria",
-      icon: "📖",
+      title: "Tenant Handbook",
+      desc: "Expert rental advice.",
       link: "/tenant-guide",
+      icon: <BookOpen />,
+      color: "bg-blue-50 text-blue-600",
     },
     {
-      title: "How to Apply",
-      description: "Step-by-step rental application process",
-      icon: "✅",
+      title: "Application Guide",
+      desc: "Master the process.",
       link: "/how-to-apply",
+      icon: <ClipboardCheck />,
+      color: "bg-indigo-50 text-indigo-600",
     },
     {
-      title: "FAQs",
-      description: "Answers to frequently asked questions",
-      icon: "❓",
+      title: "Platform FAQs",
+      desc: "Quick solutions.",
       link: "/faqs",
+      icon: <HelpCircle />,
+      color: "bg-cyan-50 text-cyan-600",
     },
     {
       title: "How It Works",
-      description: "Learn how our platform works",
-      icon: "⚙️",
+      desc: "Full platform tour.",
       link: "/how-it-works",
-    },
-  ];
-
-  const tools = [
-    {
-      title: "Property Search",
-      description: "Find your perfect home with advanced filters",
-      icon: "🔍",
-      link: "/listings",
-    },
-    {
-      title: "Shortlets",
-      description: "Browse short-term rental properties",
-      icon: "🏖️",
-      link: "/shortlet",
-    },
-    {
-      title: "Browse by Location",
-      description: "Explore properties by city or area",
-      icon: "�",
-      link: "/browse-locations",
-    },
-    {
-      title: "Property Management",
-      description: "Learn about our management services",
-      icon: "🏢",
-      link: "/property-management",
-    },
-  ];
-
-  const legalResources = [
-    {
-      title: "Terms of Service",
-      description: "Platform terms and conditions",
-      link: "/terms-of-service",
-    },
-    {
-      title: "Privacy Policy",
-      description: "How we protect your data",
-      link: "/privacy-policy",
-    },
-    {
-      title: "Cookie Policy",
-      description: "How we use cookies",
-      link: "/cookie-policy",
-    },
-    {
-      title: "Fair Housing",
-      description: "Equal housing opportunity information",
-      link: "/fair-housing",
-    },
-  ];
-
-  const quickLinks = [
-    {
-      category: "For Tenants",
-      links: [
-        { label: "Browse Properties", url: "/listings" },
-        { label: "Shortlets", url: "/shortlet" },
-        { label: "How to Apply", url: "/how-to-apply" },
-        { label: "Tenant Guide", url: "/tenant-guide" },
-        { label: "FAQs", url: "/faqs" },
-      ],
-    },
-    {
-      category: "For Landlords",
-      links: [
-        { label: "List Property", url: "/auth/register?role=landlord" },
-        { label: "Property Management", url: "/property-management" },
-        { label: "For Agents", url: "/agents" },
-        { label: "Services", url: "/services" },
-      ],
-    },
-    {
-      category: "Company",
-      links: [
-        { label: "About Us", url: "/about-us" },
-        { label: "How It Works", url: "/how-it-works" },
-        { label: "Blog", url: "/blog" },
-        { label: "Contact Us", url: "/contact-us" },
-      ],
+      icon: <Settings />,
+      color: "bg-slate-50 text-slate-600",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <div className="bg-blue-600 text-white py-16">
-        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-4">Resources</h1>
-          <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-            Everything you need to know about renting—guides, tools, and support
+    <div className="min-h-screen bg-gray-50">
+      {/* Minimal Header */}
+      <div className="bg-white border-b border-gray-200 py-16">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h1 className="text-4xl md:text-6xl font-black text-[#0f172a] tracking-tight mb-4">
+            Knowledge <span className="text-blue-600">Hub</span>
+          </h1>
+          <p className="text-lg text-gray-500 max-w-xl mx-auto">
+            Your centralized portal for rental guides, legal tools, and property
+            management resources.
           </p>
         </div>
       </div>
 
-      {/* Guides Section */}
-      <div className="py-16">
-        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              Helpful Guides
-            </h2>
-            <p className="text-lg text-gray-600">
-              Comprehensive guides to help you through the rental process
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {guides.map((guide, index) => (
-              <button
-                key={index}
-                onClick={() => navigate(guide.link)}
-                className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-xl hover:border-blue-200 transition-all text-left"
-              >
-                <div className="text-5xl mb-4">{guide.icon}</div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {guide.title}
-                </h3>
-                <p className="text-gray-600 text-sm">{guide.description}</p>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Tools Section */}
-      <div className="py-16 bg-gray-50">
-        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              Useful Tools
-            </h2>
-            <p className="text-lg text-gray-600">
-              Calculators and tools to make informed decisions
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {tools.map((tool, index) => (
-              <button
-                key={index}
-                onClick={() => navigate(tool.link)}
-                className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-xl hover:border-cyan-200 transition-all text-left"
-              >
-                <div className="text-5xl mb-4">{tool.icon}</div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {tool.title}
-                </h3>
-                <p className="text-gray-600 text-sm">{tool.description}</p>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Quick Links Section */}
-      <div className="py-16">
-        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              Quick Links
-            </h2>
-            <p className="text-lg text-gray-600">
-              Fast access to important pages
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {quickLinks.map((section, index) => (
+      <div className="max-w-6xl mx-auto px-6 py-16">
+        {/* Featured Bento Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
+          {guides.map((guide, i) => (
+            <button
+              key={i}
+              onClick={() => navigate(guide.link)}
+              className="bg-white p-8 rounded-[2rem] border border-gray-100 hover:border-blue-600 transition-all text-left shadow-sm group relative overflow-hidden"
+            >
               <div
-                key={index}
-                className="bg-gray-50 rounded-xl p-6 border border-gray-200"
+                className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110 ${guide.color}`}
               >
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  {section.category}
-                </h3>
-                <ul className="space-y-3">
-                  {section.links.map((link, idx) => (
-                    <li key={idx}>
-                      <button
-                        onClick={() => navigate(link.url)}
-                        className="text-blue-600 hover:text-blue-700 hover:underline text-left"
-                      >
-                        {link.label}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
+                {guide.icon}
               </div>
-            ))}
-          </div>
+              <h3 className="text-xl font-bold text-[#0f172a] mb-2">
+                {guide.title}
+              </h3>
+              <p className="text-gray-500 text-sm">{guide.desc}</p>
+              <ChevronRight className="absolute bottom-8 right-8 text-gray-300 group-hover:text-blue-600 transition-colors" />
+            </button>
+          ))}
         </div>
-      </div>
 
-      {/* Legal Resources */}
-      <div className="py-16 bg-gray-50">
-        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              Legal & Policies
-            </h2>
-            <p className="text-lg text-gray-600">
-              Important legal information and policies
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {legalResources.map((resource, index) => (
+        {/* Tools & Links Section */}
+        <div className="grid lg:grid-cols-3 gap-12">
+          {/* Column 1: Tenant Tools */}
+          <div className="space-y-6">
+            <h4 className="text-xs font-black uppercase tracking-widest text-blue-600 mb-8 flex items-center gap-2">
+              <span className="w-8 h-px bg-blue-600"></span>
+              For Tenants
+            </h4>
+            {[
+              {
+                label: "HD Property Search",
+                url: "/listings",
+                icon: <Search className="w-4 h-4" />,
+              },
+              {
+                label: "Vacation Shortlets",
+                url: "/shortlet",
+                icon: <Umbrella className="w-4 h-4" />,
+              },
+              {
+                label: "Neighborhood Directory",
+                url: "/browse-locations",
+                icon: <MapPin className="w-4 h-4" />,
+              },
+            ].map((link, i) => (
               <button
-                key={index}
-                onClick={() => navigate(resource.link)}
-                className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg hover:border-gray-300 transition-all text-left"
+                key={i}
+                onClick={() => navigate(link.url)}
+                className="flex items-center justify-between w-full p-5 bg-white rounded-2xl border border-gray-100 hover:shadow-md transition-all group"
               >
-                <div className="flex items-start gap-3">
-                  <svg
-                    className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">
-                      {resource.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm">
-                      {resource.description}
-                    </p>
-                  </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-blue-600">{link.icon}</span>
+                  <span className="font-bold text-[#0f172a]">{link.label}</span>
                 </div>
+                <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-blue-600" />
               </button>
             ))}
           </div>
-        </div>
-      </div>
 
-      {/* Support Section */}
-      <div className="py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-blue-50 rounded-2xl p-8 md:p-12 border border-blue-200 text-center">
-            <div className="text-5xl mb-4">💬</div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Need More Help?
-            </h2>
-            <p className="text-lg text-gray-600 mb-8">
-              Can't find what you're looking for? Our support team is here to
-              assist you
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          {/* Column 2: Landlord Tools */}
+          <div className="space-y-6">
+            <h4 className="text-xs font-black uppercase tracking-widest text-indigo-600 mb-8 flex items-center gap-2">
+              <span className="w-8 h-px bg-indigo-600"></span>
+              For Landlords
+            </h4>
+            {[
+              {
+                label: "Listing Portal",
+                url: "/auth/register?role=landlord",
+                icon: <Building2 className="w-4 h-4" />,
+              },
+              {
+                label: "Agent Services",
+                url: "/agents",
+                icon: <ExternalLink className="w-4 h-4" />,
+              },
+              {
+                label: "Management Tools",
+                url: "/property-management",
+                icon: <Settings className="w-4 h-4" />,
+              },
+            ].map((link, i) => (
+              <button
+                key={i}
+                onClick={() => navigate(link.url)}
+                className="flex items-center justify-between w-full p-5 bg-white rounded-2xl border border-gray-100 hover:shadow-md transition-all group"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-indigo-600">{link.icon}</span>
+                  <span className="font-bold text-[#0f172a]">{link.label}</span>
+                </div>
+                <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-indigo-600" />
+              </button>
+            ))}
+          </div>
+
+          {/* Column 3: Legal & Support */}
+          <div className="bg-[#0f172a] rounded-[3rem] p-10 text-white flex flex-col justify-between">
+            <div>
+              <h4 className="text-xl font-bold mb-6">Need Legal Help?</h4>
+              <ul className="space-y-4">
+                {[
+                  "Terms of Service",
+                  "Privacy Policy",
+                  "Fair Housing Info",
+                ].map((txt, i) => (
+                  <li key={i}>
+                    <button className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-sm">
+                      <ChevronRight className="w-3 h-3 text-blue-500" />
+                      {txt}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="mt-12 pt-12 border-t border-gray-800">
+              <p className="text-sm text-gray-400 mb-6 italic">
+                “The rental process should be transparent for everyone.”
+              </p>
               <button
                 onClick={() => navigate("/contact-us")}
-                className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                className="w-full py-4 bg-blue-600 rounded-xl font-bold hover:bg-blue-700 transition-colors"
               >
                 Contact Support
-              </button>
-              <button
-                onClick={() => navigate("/faqs")}
-                className="px-6 py-3 border-2 border-blue-600 text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors"
-              >
-                View FAQs
               </button>
             </div>
           </div>

@@ -18,7 +18,7 @@ export const AboutUs = () => {
       icon: <IconShieldCheck size={32} />,
       title: "Verified Only",
       description:
-        "Every property and landlord on GetMeLeased undergoes a strict verification process to eliminate scams.",
+        "Every property and landlord on LetsTenundergoes a strict verification process to eliminate scams.",
     },
     {
       icon: <IconBolt size={32} />,
@@ -53,8 +53,8 @@ export const AboutUs = () => {
               Nigerian.
             </h1>
             <p className="text-xl text-blue-100 leading-relaxed max-w-xl">
-              GetMeLeased is a technology-driven marketplace designed to make
-              finding and leasing properties fast, transparent, and secure.
+              LetsTenis a technology-driven marketplace designed to make finding
+              and leasing properties fast, transparent, and secure.
             </p>
           </div>
         </Container>
@@ -77,9 +77,9 @@ export const AboutUs = () => {
                 listings, the process was broken.
               </p>
               <p className="text-gray-600 text-lg leading-relaxed">
-                We built GetMeLeased to bridge the gap between serious tenants
-                and genuine landlords, using technology to build the trust that
-                was missing.
+                We built LetsTento bridge the gap between serious tenants and
+                genuine landlords, using technology to build the trust that was
+                missing.
               </p>
             </Box>
 

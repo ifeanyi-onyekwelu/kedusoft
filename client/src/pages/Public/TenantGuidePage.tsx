@@ -1,194 +1,74 @@
-/**
- * TenantGuidePage Component
- *
- * Comprehensive guide for tenants on renting properties.
- */
-
 import { useNavigate } from "react-router-dom";
-import { Button } from "@mantine/core";
+import {
+  CheckCircle2,
+  Info,
+  MapPin,
+  ShieldCheck,
+  FileText,
+  Key,
+  Home,
+} from "lucide-react";
 
-export const TenantGuidePage = () => {
+const TenantGuidePage = () => {
   const navigate = useNavigate();
 
   const sections = [
     {
-      title: "Before You Start",
-      icon: "📋",
+      title: "1. Financial Readiness",
+      icon: <ShieldCheck className="w-8 h-8 text-blue-600" />,
       content: [
         {
-          subtitle: "Determine Your Budget",
+          subtitle: "The 40% Rule & Hidden Costs",
           points: [
-            "Calculate your monthly income and expenses",
-            "Rule of thumb: Rent should not exceed 30% of your monthly income",
-            "Factor in additional costs (utilities, internet, transportation)",
-            "Save for upfront costs (deposit, agreement fee, caution fee)",
-          ],
-        },
-        {
-          subtitle: "Know What You Want",
-          points: [
-            "Location preferences (proximity to work, schools, amenities)",
-            "Number of bedrooms and bathrooms needed",
-            "Essential amenities (parking, security, generator, etc.)",
-            "Preferred lease duration",
+            "Aim for rent to be 30-40% of your net income.",
+            "Account for 'Service Charges' (Security, waste, water).",
+            "Budget for the 'Caution Fee' (usually 10% of rent) for damages.",
+            "Verify if the legal/agency fees are within standard limits.",
           ],
         },
       ],
     },
     {
-      title: "Searching for Properties",
-      icon: "🔍",
+      title: "2. The Search Strategy",
+      icon: <MapPin className="w-8 h-8 text-blue-600" />,
       content: [
         {
-          subtitle: "Use Search Filters",
+          subtitle: "Neighborhood Vetting",
           points: [
-            "Filter by location, price range, and property type",
-            "Use the map view to explore neighborhoods",
-            "Save properties to your favorites",
-            "Set up alerts for new listings matching your criteria",
-          ],
-        },
-        {
-          subtitle: "Research the Area",
-          points: [
-            "Check proximity to work, schools, and essential services",
-            "Research neighborhood safety and security",
-            "Investigate public transportation options",
-            "Visit the area at different times of day",
+            "Check for flood history in the specific street.",
+            "Visit the area at 8:00 PM to assess noise and security.",
+            "Test mobile signal strength inside the specific room.",
+            "Verify proximity to reliable power grids or transformer health.",
           ],
         },
       ],
     },
     {
-      title: "Property Viewing",
-      icon: "👀",
+      title: "3. Inspection Master-List",
+      icon: <Info className="w-8 h-8 text-blue-600" />,
       content: [
         {
-          subtitle: "Schedule Viewings",
+          subtitle: "What Landlords Don't Tell You",
           points: [
-            "Contact landlords through the platform",
-            "Schedule viewings at convenient times",
-            "Ask to see the property during daylight hours",
-            "Bring a friend or family member if possible",
-          ],
-        },
-        {
-          subtitle: "What to Check",
-          points: [
-            "Water supply and pressure",
-            "Electrical outlets and switches",
-            "Plumbing and drainage systems",
-            "Windows, doors, and locks",
-            "Wall and ceiling condition",
-            "Appliances and fixtures (if furnished)",
-            "Cell phone signal strength",
-            "Noise levels from neighbors",
+            "Flush all toilets and run all taps simultaneously.",
+            "Check for 'fresh paint' smells that might hide dampness/mold.",
+            "Inspect the roof/ceiling for water stain rings.",
+            "Ask about the previous tenant's reason for leaving.",
           ],
         },
       ],
     },
     {
-      title: "Application Process",
-      icon: "📝",
+      title: "4. Legal & Documentation",
+      icon: <FileText className="w-8 h-8 text-blue-600" />,
       content: [
         {
-          subtitle: "Required Documents",
+          subtitle: "Signing Safely",
           points: [
-            "Valid government-issued ID",
-            "Proof of income (pay slips, bank statements)",
-            "Employment verification letter",
-            "Previous landlord reference (if applicable)",
-            "Guarantor information",
-          ],
-        },
-        {
-          subtitle: "Application Tips",
-          points: [
-            "Fill out applications completely and honestly",
-            "Respond to landlord queries promptly",
-            "Be professional in all communications",
-            "Keep copies of all submitted documents",
-          ],
-        },
-      ],
-    },
-    {
-      title: "Understanding Your Lease",
-      icon: "📄",
-      content: [
-        {
-          subtitle: "Key Lease Terms",
-          points: [
-            "Lease duration (start and end dates)",
-            "Monthly rent amount and payment schedule",
-            "Security deposit and caution fee amounts",
-            "What utilities are included vs. tenant responsibility",
-            "Maintenance responsibilities",
-            "Rules about pets, guests, and subletting",
-            "Notice period for termination",
-          ],
-        },
-        {
-          subtitle: "Before Signing",
-          points: [
-            "Read the entire lease agreement carefully",
-            "Ask questions about anything unclear",
-            "Negotiate terms if necessary",
-            "Get everything in writing",
-            "Keep a copy of the signed lease",
-          ],
-        },
-      ],
-    },
-    {
-      title: "Move-In Checklist",
-      icon: "✅",
-      content: [
-        {
-          subtitle: "Before Moving In",
-          points: [
-            "Document property condition with photos/videos",
-            "Test all appliances and utilities",
-            "Check for existing damages and report them",
-            "Confirm all agreed repairs are completed",
-            "Get keys and access codes",
-          ],
-        },
-        {
-          subtitle: "After Moving In",
-          points: [
-            "Update your address with relevant institutions",
-            "Set up utilities in your name (if required)",
-            "Install renter's insurance (recommended)",
-            "Introduce yourself to neighbors",
-            "Keep landlord's contact information handy",
-          ],
-        },
-      ],
-    },
-    {
-      title: "During Your Tenancy",
-      icon: "🏠",
-      content: [
-        {
-          subtitle: "Your Responsibilities",
-          points: [
-            "Pay rent on time every month",
-            "Report maintenance issues promptly",
-            "Keep the property clean and well-maintained",
-            "Respect neighbors and property rules",
-            "Don't make unauthorized alterations",
-            "Give proper notice before moving out",
-          ],
-        },
-        {
-          subtitle: "Your Rights",
-          points: [
-            "Right to a habitable living space",
-            "Right to privacy (with proper notice for landlord visits)",
-            "Right to have repairs done in a timely manner",
-            "Protection from unlawful eviction",
-            "Return of security deposit (minus legitimate deductions)",
+            "Ensure the agreement includes a 'Right to Quiet Enjoyment'.",
+            "Verify the landlord's proof of ownership before paying.",
+            "Confirm the notice period for both parties (standard is 6 months).",
+            "Take time-stamped photos of every room before moving in.",
           ],
         },
       ],
@@ -196,93 +76,88 @@ export const TenantGuidePage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <div className="bg-green-600 text-white py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Tenant's Guide
+    <div className="min-h-screen bg-gray-50">
+      {/* Professional Navy Hero */}
+      <div className="bg-[#0f172a] py-24 border-b border-gray-800">
+        <div className="max-w-5xl mx-auto px-6 text-center">
+          <span className="text-blue-500 font-mono text-sm uppercase tracking-widest mb-4 block">
+            Resource Center
+          </span>
+          <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6">
+            The Ultimate Tenant Handbook
           </h1>
-          <p className="text-xl text-green-50">
-            Everything you need to know about renting a property
+          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+            Everything you need to know about navigating the Nigerian rental
+            market with confidence and legal protection.
           </p>
         </div>
       </div>
 
-      {/* Content Sections */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="space-y-16">
+      <div className="max-w-5xl mx-auto px-6 py-16">
+        <div className="grid grid-cols-1 gap-12">
           {sections.map((section, index) => (
-            <div key={index} className="scroll-mt-20">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="text-4xl">{section.icon}</div>
-                <h2 className="text-3xl font-bold text-gray-900">
-                  {section.title}
-                </h2>
-              </div>
-
-              <div className="space-y-8">
-                {section.content.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-gray-50 rounded-xl p-6 border border-gray-200"
-                  >
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                      {item.subtitle}
-                    </h3>
-                    <ul className="space-y-2">
-                      {item.points.map((point, pointIdx) => (
-                        <li key={pointIdx} className="flex items-start gap-3">
-                          <svg
-                            className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <span className="text-gray-700">{point}</span>
-                        </li>
-                      ))}
-                    </ul>
+            <div
+              key={index}
+              className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden"
+            >
+              <div className="p-8 md:p-12">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="p-3 bg-blue-50 rounded-xl">
+                    {section.icon}
                   </div>
-                ))}
+                  <h2 className="text-3xl font-bold text-[#0f172a]">
+                    {section.title}
+                  </h2>
+                </div>
+
+                <div className="grid md:grid-cols-1 gap-8">
+                  {section.content.map((item, idx) => (
+                    <div key={idx}>
+                      <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                        <span className="w-8 h-px bg-blue-600"></span>
+                        {item.subtitle}
+                      </h3>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        {item.points.map((point, pIdx) => (
+                          <div
+                            key={pIdx}
+                            className="flex gap-3 p-4 bg-gray-50 rounded-lg border border-gray-100"
+                          >
+                            <CheckCircle2 className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                            <span className="text-gray-700 text-sm leading-relaxed">
+                              {point}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Help Section */}
-      <div className="bg-gray-50 py-16">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Need More Help?
+      {/* CTA Section */}
+      <div className="bg-white border-t border-gray-200 py-20">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold text-[#0f172a] mb-6">
+            Ready to find your next home?
           </h2>
-          <p className="text-lg text-gray-600 mb-8">
-            Our support team is here to assist you throughout your rental
-            journey
-          </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              variant="filled"
-              className="bg-green-600 hover:bg-green-700"
+            <button
+              onClick={() => navigate("/properties")}
+              className="px-8 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
+            >
+              Browse Verified Listings
+            </button>
+            <button
               onClick={() => navigate("/contact")}
+              className="px-8 py-4 bg-transparent border-2 border-[#0f172a] text-[#0f172a] font-bold rounded-xl hover:bg-gray-50 transition-all"
             >
-              Contact Support
-            </Button>
-            <Button
-              variant="outlined"
-              className="border-green-600 text-green-600 hover:bg-green-50"
-              onClick={() => navigate("/faqs")}
-            >
-              View FAQs
-            </Button>
+              Talk to a Rental Expert
+            </button>
           </div>
         </div>
       </div>

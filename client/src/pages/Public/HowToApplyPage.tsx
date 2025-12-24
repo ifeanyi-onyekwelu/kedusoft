@@ -1,251 +1,166 @@
-/**
- * HowToApplyPage Component
- *
- * Step-by-step guide for tenants on how to apply for rental properties.
- */
-
 import { useNavigate } from "react-router-dom";
-import { Button } from "@mantine/core";
+import {
+  UserPlus,
+  Search,
+  FileText,
+  Send,
+  Clock,
+  PenTool,
+  CheckCircle2,
+  AlertCircle,
+  FileStack,
+  ShieldCheck,
+} from "lucide-react";
 
-export const HowToApplyPage = () => {
+const HowToApplyPage = () => {
   const navigate = useNavigate();
 
   const steps = [
     {
-      number: "1",
-      title: "Create Your Account",
+      id: "01",
+      title: "Digital Profile Setup",
       description:
-        "Sign up as a tenant and complete your profile with accurate information.",
+        "Landlords prioritize complete profiles. We help you build a 'Tenant Resume'.",
       details: [
-        "Provide your full name, email, and phone number",
-        "Upload a profile photo (optional but recommended)",
-        "Verify your email address",
+        "Complete KYC verification",
+        "Upload professional profile photo",
+        "Verify work email for trust",
       ],
+      icon: <UserPlus className="w-6 h-6" />,
     },
     {
-      number: "2",
-      title: "Browse Properties",
-      description: "Search and filter properties that match your preferences.",
-      details: [
-        "Use filters for location, price, bedrooms, and amenities",
-        "Save properties to your favorites for later",
-        "View property details, photos, and virtual tours",
-      ],
-    },
-    {
-      number: "3",
-      title: "Prepare Your Documents",
+      id: "02",
+      title: "Targeted Search",
       description:
-        "Gather required documents before applying to speed up the process.",
+        "Use our 'Smart Match' filters to find properties that fit your specific lifestyle.",
       details: [
-        "Valid government-issued ID (National ID, Driver's License, or Passport)",
-        "Proof of income (Pay slips, bank statements, or employment letter)",
-        "References (Previous landlord contact or character references)",
-        "Guarantor information (if required)",
+        "Filter by power hours/security level",
+        "Save searches for instant alerts",
+        "Compare neighborhood stats",
       ],
+      icon: <Search className="w-6 h-6" />,
     },
     {
-      number: "4",
-      title: "Submit Application",
+      id: "03",
+      title: "Document Preparation",
       description:
-        "Complete and submit your rental application through the platform.",
+        "Have your 'Rental Vault' ready to move faster than other applicants.",
       details: [
-        "Click 'Apply Now' on your chosen property",
-        "Fill out the application form completely",
-        "Upload all required documents",
-        "Review and submit your application",
+        "Digital ID (NIN/Passport)",
+        "6-month verified bank statements",
+        "Valid Guarantor commitment",
       ],
+      icon: <FileStack className="w-6 h-6" />,
     },
     {
-      number: "5",
-      title: "Application Review",
+      id: "04",
+      title: "One-Click Application",
       description:
-        "The landlord will review your application and may request additional information.",
+        "Submit a comprehensive application package instantly through the portal.",
       details: [
-        "Respond promptly to any landlord inquiries",
-        "Check your dashboard for application status updates",
-        "Be available for property viewing appointments",
+        "Automated cover letter generation",
+        "Direct document attachment",
+        "Timestamped submission",
       ],
+      icon: <Send className="w-6 h-6" />,
     },
-    {
-      number: "6",
-      title: "Sign Lease Agreement",
-      description:
-        "Once approved, review and sign your lease agreement digitally.",
-      details: [
-        "Review lease terms carefully",
-        "Ask questions about anything unclear",
-        "Sign the lease electronically",
-        "Pay required deposits and fees",
-      ],
-    },
-  ];
-
-  const requirements = [
-    {
-      icon: "📄",
-      title: "Valid ID",
-      description: "Government-issued identification document",
-    },
-    {
-      icon: "💰",
-      title: "Proof of Income",
-      description: "Recent pay slips or bank statements",
-    },
-    {
-      icon: "👤",
-      title: "References",
-      description: "Contact information for references",
-    },
-    {
-      icon: "🤝",
-      title: "Guarantor",
-      description: "May be required for some properties",
-    },
-  ];
-
-  const tips = [
-    "Complete your profile fully to increase your chances of approval",
-    "Be honest and accurate in all information provided",
-    "Respond to landlord messages within 24 hours",
-    "Have all documents ready before starting your application",
-    "Read property descriptions and lease terms carefully",
-    "Ask questions if anything is unclear",
-    "Be professional in all communications",
-    "Keep copies of all submitted documents",
   ];
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <div className="bg-blue-600 text-white py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            How to Apply for a Property
+      {/* Professional Navy Hero */}
+      <div className="bg-[#0f172a] py-24 text-white relative overflow-hidden">
+        <div className="max-w-5xl mx-auto px-6 relative z-10">
+          <h1 className="text-5xl md:text-7xl font-bold mb-6">
+            Apply <span className="text-blue-500 text-shadow-sm">Fast.</span>
           </h1>
-          <p className="text-xl text-blue-50">
-            Follow these simple steps to submit your rental application
+          <p className="text-xl text-gray-400 max-w-2xl leading-relaxed">
+            In a competitive market, speed is everything. Follow our verified
+            pipeline to secure your new home before anyone else.
           </p>
         </div>
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-blue-600/10 blur-[120px] rounded-full" />
       </div>
 
-      {/* Steps Section */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="space-y-12">
-          {steps.map((step, index) => (
-            <div key={index} className="flex gap-6">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold">
-                  {step.number}
+      <div className="max-w-6xl mx-auto px-6 py-20">
+        <div className="grid lg:grid-cols-12 gap-16">
+          {/* Left: The Stepper */}
+          <div className="lg:col-span-8 space-y-12">
+            {steps.map((step, index) => (
+              <div key={index} className="flex gap-8 relative group">
+                {/* Connecting Line */}
+                {index !== steps.length - 1 && (
+                  <div className="absolute top-16 left-8 w-px h-[calc(100%+48px)] bg-gray-100 group-hover:bg-blue-200 transition-colors" />
+                )}
+
+                <div className="flex-shrink-0 w-16 h-16 bg-white border-2 border-gray-100 rounded-2xl flex items-center justify-center text-[#0f172a] group-hover:border-blue-600 group-hover:text-blue-600 transition-all shadow-sm">
+                  {step.icon}
                 </div>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  {step.title}
-                </h3>
-                <p className="text-gray-600 mb-4">{step.description}</p>
-                <ul className="space-y-2">
-                  {step.details.map((detail, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <svg
-                        className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                      <span className="text-gray-700">{detail}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Requirements Section */}
-      <div className="bg-gray-50 py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
-            What You'll Need
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {requirements.map((req, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-lg p-6 border border-gray-200 text-center"
-              >
-                <div className="text-4xl mb-3">{req.icon}</div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {req.title}
-                </h3>
-                <p className="text-sm text-gray-600">{req.description}</p>
+                <div className="pt-2">
+                  <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-tighter">
+                    Step {step.id}
+                  </span>
+                  <h3 className="text-2xl font-bold text-[#0f172a] mb-3">
+                    {step.title}
+                  </h3>
+                  <p className="text-gray-600 mb-6 max-w-xl">
+                    {step.description}
+                  </p>
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {step.details.map((detail, dIdx) => (
+                      <div
+                        key={dIdx}
+                        className="flex items-center gap-2 text-sm text-gray-500"
+                      >
+                        <CheckCircle2 className="w-4 h-4 text-blue-500" />
+                        {detail}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             ))}
           </div>
-        </div>
-      </div>
 
-      {/* Tips Section */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-3xl font-bold text-gray-900 mb-8">
-          Application Tips
-        </h2>
-        <div className="bg-blue-50 rounded-xl p-8 border border-blue-200">
-          <ul className="space-y-3">
-            {tips.map((tip, index) => (
-              <li key={index} className="flex items-start gap-3">
-                <svg
-                  className="w-6 h-6 text-blue-600 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-                <span className="text-gray-700">{tip}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+          {/* Right: Sidebar Requirements */}
+          <div className="lg:col-span-4">
+            <div className="sticky top-8 space-y-6">
+              <div className="bg-gray-50 rounded-3xl p-8 border border-gray-100">
+                <h4 className="text-xl font-bold text-[#0f172a] mb-6 flex items-center gap-2">
+                  <ShieldCheck className="w-6 h-6 text-blue-600" />
+                  The Essentials
+                </h4>
+                <div className="space-y-4">
+                  {[
+                    { t: "Valid ID", d: "Digital copy of NIN or Passport" },
+                    { t: "Income Proof", d: "Last 3-6 months bank statements" },
+                    { t: "Employment", d: "Signed offer letter or ID card" },
+                    { t: "Guarantor", d: "Verified contact and ID" },
+                  ].map((item, i) => (
+                    <div
+                      key={i}
+                      className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm"
+                    >
+                      <p className="font-bold text-sm text-[#0f172a]">
+                        {item.t}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">{item.d}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-      {/* CTA Section */}
-      <div className="bg-gray-50 py-16">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Ready to Find Your New Home?
-          </h2>
-          <p className="text-lg text-gray-600 mb-8">
-            Browse thousands of verified properties and apply in minutes
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              variant="filled"
-              className="bg-blue-600 hover:bg-blue-700"
-              onClick={() => navigate("/listings")}
-            >
-              Browse Properties
-            </Button>
-            <Button
-              variant="outlined"
-              className="border-blue-600 text-blue-600 hover:bg-blue-50"
-              onClick={() => navigate("/auth/register?role=tenant")}
-            >
-              Create Account
-            </Button>
+              <div className="bg-[#0f172a] text-white rounded-3xl p-8 shadow-xl">
+                <AlertCircle className="w-8 h-8 text-blue-500 mb-4" />
+                <h4 className="text-lg font-bold mb-2">Pro Tip</h4>
+                <p className="text-sm text-gray-400 leading-relaxed">
+                  Apply within the first 24 hours of a listing going live.
+                  Verified profiles are 4x more likely to be contacted by
+                  landlords.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -217,7 +217,7 @@ export const ContactUs = () => {
                         Email Support
                       </Text>
                       <Text size="sm" color="dimmed">
-                        support@getmeleased.com
+                        support@letsten.com
                       </Text>
                     </div>
                   </Group>

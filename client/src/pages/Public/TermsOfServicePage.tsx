@@ -1,266 +1,229 @@
 /**
  * TermsOfServicePage Component
- *
- * Terms and conditions for using the platform.
+ * Updated with comprehensive legal clauses and professional "Legal Paper" UI.
  */
 
 export const TermsOfServicePage = () => {
   const lastUpdated = "January 1, 2025";
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <div className="bg-gray-900 text-white py-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold mb-2">Terms of Service</h1>
-          <p className="text-gray-400">Last updated: {lastUpdated}</p>
+    <div className="min-h-screen bg-gray-50 font-sans">
+      {/* Header - Solid Navy */}
+      <div className="bg-[#0f172a] py-16">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
+            Terms of Service
+          </h1>
+          <div className="mt-4 flex items-center justify-center space-x-2">
+            <span className="h-px w-8 bg-blue-500"></span>
+            <p className="text-gray-400 text-sm uppercase tracking-widest">
+              Effective Date: {lastUpdated}
+            </p>
+            <span className="h-px w-8 bg-blue-500"></span>
+          </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="prose prose-lg max-w-none">
-          {/* Introduction */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              1. Introduction
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 pb-20">
+        <div className="bg-white shadow-xl rounded-xl border border-gray-200 overflow-hidden">
+          {/* Agreement Notice */}
+          <div className="p-8 md:p-12 border-b border-gray-100 bg-blue-50/30">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 underline decoration-blue-500 underline-offset-8">
+              User Agreement
             </h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              Welcome to GetMeLeased. These Terms of Service ("Terms") govern
-              your access to and use of our platform, website, and services. By
-              accessing or using our services, you agree to be bound by these
-              Terms.
+            <p className="text-gray-600 leading-relaxed italic text-sm">
+              Please read these terms carefully. LetsTen("the Platform")
+              provides a digital marketplace connecting landlords and tenants.
+              By creating an account or accessing our services, you enter into a
+              legally binding agreement. If you do not agree to these terms, you
+              must immediately cease all use of the Platform.
             </p>
-            <p className="text-gray-700 leading-relaxed">
-              If you do not agree to these Terms, please do not use our
-              services. We reserve the right to update these Terms at any time,
-              and your continued use of the platform constitutes acceptance of
-              any changes.
-            </p>
-          </section>
+          </div>
 
-          {/* Account Registration */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              2. Account Registration
-            </h2>
-            <ul className="list-disc list-inside space-y-2 text-gray-700">
-              <li>You must be at least 18 years old to create an account</li>
-              <li>
-                You must provide accurate and complete information during
-                registration
-              </li>
-              <li>
-                You are responsible for maintaining the security of your account
-                credentials
-              </li>
-              <li>
-                You must notify us immediately of any unauthorized access to
-                your account
-              </li>
-              <li>One person or entity may not maintain multiple accounts</li>
-              <li>
-                We reserve the right to suspend or terminate accounts that
-                violate these Terms
-              </li>
-            </ul>
-          </section>
+          <div className="p-8 md:p-12 space-y-12">
+            {/* Section 01: Platform Role */}
+            <section>
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <span className="bg-gray-100 text-gray-600 w-8 h-8 rounded flex items-center justify-center text-sm mr-3 font-mono">
+                  01
+                </span>
+                Nature of Service
+              </h2>
+              <p className="text-gray-600 text-sm leading-relaxed pl-11">
+                LetsTenacts solely as a neutral venue. We are{" "}
+                <strong>not</strong> a real estate agent, landlord, or property
+                manager. We do not own, inspect, or manage the properties
+                listed. Any lease agreement formed is strictly between the User
+                (Tenant) and the Property Provider (Landlord). We are not a
+                party to any rental contract.
+              </p>
+            </section>
 
-          {/* User Responsibilities */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              3. User Responsibilities
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  For Tenants:
-                </h3>
-                <ul className="list-disc list-inside space-y-2 text-gray-700">
-                  <li>Provide truthful information in rental applications</li>
-                  <li>Honor lease agreements once signed</li>
-                  <li>Communicate respectfully with landlords</li>
-                  <li>Report issues or violations through proper channels</li>
-                </ul>
+            {/* Section 02: User Eligibility */}
+            <section>
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <span className="bg-gray-100 text-gray-600 w-8 h-8 rounded flex items-center justify-center text-sm mr-3 font-mono">
+                  02
+                </span>
+                Eligibility & Registration
+              </h2>
+              <p className="text-gray-600 text-sm leading-relaxed pl-11">
+                You must be at least 18 years old to use this Platform. You
+                agree to provide accurate, current, and complete information
+                during registration. You are responsible for maintaining the
+                confidentiality of your account credentials and for all
+                activities that occur under your account.
+              </p>
+            </section>
+
+            {/* Section 03: Prohibited Conduct */}
+            <section>
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <span className="bg-gray-100 text-gray-600 w-8 h-8 rounded flex items-center justify-center text-sm mr-3 font-mono">
+                  03
+                </span>
+                Acceptable Use Policy
+              </h2>
+              <div className="pl-11 space-y-4">
+                <p className="text-gray-600 text-sm">
+                  Users are strictly prohibited from:
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {[
+                    "Posting fraudulent or bait-and-switch listings",
+                    "Discriminating based on race, religion, or gender",
+                    "Scraping or data-mining platform content",
+                    "Circumventing platform fees via offline payments",
+                    "Impersonating legal property owners",
+                    "Harassing other users or staff",
+                  ].map((item, i) => (
+                    <div
+                      key={i}
+                      className="text-[10px] font-bold text-red-700 bg-red-50 p-2 rounded border border-red-100 uppercase tracking-tight"
+                    >
+                      • {item}
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  For Landlords:
-                </h3>
-                <ul className="list-disc list-inside space-y-2 text-gray-700">
-                  <li>Provide accurate property information and photos</li>
-                  <li>
-                    Comply with all applicable housing laws and regulations
-                  </li>
-                  <li>Respond to tenant inquiries in a timely manner</li>
-                  <li>Maintain properties in habitable condition</li>
-                  <li>Not discriminate based on protected characteristics</li>
-                </ul>
+            </section>
+
+            {/* Section 04: Fees and Payments */}
+            <section>
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <span className="bg-gray-100 text-gray-600 w-8 h-8 rounded flex items-center justify-center text-sm mr-3 font-mono">
+                  04
+                </span>
+                Financial Transactions
+              </h2>
+              <p className="text-gray-600 text-sm leading-relaxed pl-11">
+                Access to certain features or listings may require payment of a
+                service fee. All fees paid to LetsTenare{" "}
+                <strong>non-refundable</strong> unless otherwise specified in
+                writing. We use third-party processors (e.g., Paystack/Stripe);
+                we do not store full credit card details on our servers.
+              </p>
+            </section>
+
+            {/* Section 05: Disclaimer of Warranties */}
+            <section className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+              <h2 className="text-lg font-bold text-gray-900 mb-3 flex items-center">
+                <svg
+                  className="w-5 h-5 mr-2 text-amber-500"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                5. Limitation of Liability
+              </h2>
+              <p className="text-gray-600 text-[11px] leading-relaxed uppercase font-bold tracking-tight">
+                THE PLATFORM IS PROVIDED "AS IS" WITHOUT WARRANTIES OF ANY KIND.
+                LetsTenDISCLAIMS ALL LIABILITY FOR PROPERTY DAMAGE, PERSONAL
+                INJURY, OR FINANCIAL LOSS ARISING FROM LISTINGS POSTED BY THIRD
+                PARTIES. WE DO NOT GUARANTEE THAT A LISTING IS CURRENT,
+                ACCURATE, OR AUTHORIZED BY THE OWNER. USERS PROCEED AT THEIR OWN
+                RISK.
+              </p>
+            </section>
+
+            {/* Section 06: Intellectual Property */}
+            <section>
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <span className="bg-gray-100 text-gray-600 w-8 h-8 rounded flex items-center justify-center text-sm mr-3 font-mono">
+                  06
+                </span>
+                Intellectual Property
+              </h2>
+              <p className="text-gray-600 text-sm leading-relaxed pl-11">
+                By uploading photos or descriptions, you grant LetsTena
+                perpetual, royalty-free license to use, reproduce, and display
+                that content for marketing and operational purposes. All
+                platform software, logos, and designs remain the exclusive
+                property of letsten.
+              </p>
+            </section>
+
+            {/* Section 07: Governing Law */}
+            <section>
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <span className="bg-gray-100 text-gray-600 w-8 h-8 rounded flex items-center justify-center text-sm mr-3 font-mono">
+                  07
+                </span>
+                Governing Law & Disputes
+              </h2>
+              <p className="text-gray-600 text-sm leading-relaxed pl-11">
+                These terms shall be governed by the laws of the Federal
+                Republic of Nigeria. Any disputes arising from these terms that
+                cannot be settled amicably shall be subject to the exclusive
+                jurisdiction of the courts in Lagos State.
+              </p>
+            </section>
+
+            {/* Final Contact Section */}
+            <section className="pt-8 border-t border-gray-100">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">
+                Questions or Notices
+              </h2>
+              <p className="text-gray-600 text-sm mb-6">
+                If you have questions regarding these Terms or need to report a
+                fraudulent listing, please contact our legal department:
+              </p>
+              <div className="flex flex-col space-y-2">
+                <a
+                  href="mailto:legal@letsten.com"
+                  className="text-blue-600 font-bold hover:underline flex items-center"
+                >
+                  <svg
+                    className="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    ></path>
+                  </svg>
+                  legal@letsten.com
+                </a>
+                <span className="text-gray-500 text-sm font-mono">
+                  +234 (0) 800-GET-LEASE
+                </span>
               </div>
-            </div>
-          </section>
+            </section>
+          </div>
 
-          {/* Prohibited Activities */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              4. Prohibited Activities
-            </h2>
-            <p className="text-gray-700 mb-4">
-              You may not use our platform to:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700">
-              <li>Post false, misleading, or fraudulent listings</li>
-              <li>Harass, abuse, or harm other users</li>
-              <li>Violate any applicable laws or regulations</li>
-              <li>Infringe on intellectual property rights</li>
-              <li>Distribute spam, malware, or harmful code</li>
-              <li>Attempt to gain unauthorized access to our systems</li>
-              <li>Use automated tools to scrape or collect data</li>
-              <li>Impersonate another person or entity</li>
-            </ul>
-          </section>
-
-          {/* Property Listings */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              5. Property Listings
-            </h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              Landlords are solely responsible for the accuracy of their
-              property listings. We verify basic information but do not
-              guarantee the accuracy of all listing details. Tenants should
-              conduct their own due diligence before renting any property.
-            </p>
-            <p className="text-gray-700 leading-relaxed">
-              We reserve the right to remove any listing that violates these
-              Terms or applicable laws.
-            </p>
-          </section>
-
-          {/* Payments and Fees */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              6. Payments and Fees
-            </h2>
-            <ul className="list-disc list-inside space-y-2 text-gray-700">
-              <li>All fees are clearly disclosed before you incur them</li>
-              <li>
-                Payment processing is handled securely through third-party
-                providers
-              </li>
-              <li>
-                Refund policies vary by service and are specified at time of
-                purchase
-              </li>
-              <li>
-                You are responsible for any taxes associated with your use of
-                the platform
-              </li>
-              <li>
-                We reserve the right to change our fee structure with notice
-              </li>
-            </ul>
-          </section>
-
-          {/* Intellectual Property */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              7. Intellectual Property
-            </h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              The platform, including its design, code, content, and trademarks,
-              is owned by GetMeLeased and protected by intellectual property
-              laws. You may not copy, modify, or distribute our content without
-              permission.
-            </p>
-            <p className="text-gray-700 leading-relaxed">
-              By posting content on our platform, you grant us a license to use,
-              display, and distribute that content as necessary to provide our
-              services.
-            </p>
-          </section>
-
-          {/* Disclaimers */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              8. Disclaimers and Limitation of Liability
-            </h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              Our platform is provided "as is" without warranties of any kind.
-              We do not guarantee uninterrupted access, error-free operation, or
-              specific results from using our services.
-            </p>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              We are not a party to rental agreements between landlords and
-              tenants. We are not responsible for disputes, damages, or losses
-              arising from rental transactions.
-            </p>
-            <p className="text-gray-700 leading-relaxed">
-              Our liability is limited to the maximum extent permitted by law.
-              We are not liable for indirect, incidental, or consequential
-              damages.
-            </p>
-          </section>
-
-          {/* Dispute Resolution */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              9. Dispute Resolution
-            </h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              If you have a dispute with another user, please attempt to resolve
-              it directly. We may provide support but are not obligated to
-              mediate disputes.
-            </p>
-            <p className="text-gray-700 leading-relaxed">
-              Any disputes with GetMeLeased will be governed by Nigerian law and
-              resolved in Nigerian courts.
-            </p>
-          </section>
-
-          {/* Termination */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              10. Termination
-            </h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              You may terminate your account at any time through your account
-              settings. We may suspend or terminate your account if you violate
-              these Terms or engage in fraudulent activity.
-            </p>
-            <p className="text-gray-700 leading-relaxed">
-              Upon termination, your right to use the platform ceases
-              immediately. We may retain certain information as required by law.
-            </p>
-          </section>
-
-          {/* Changes to Terms */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              11. Changes to Terms
-            </h2>
-            <p className="text-gray-700 leading-relaxed">
-              We may update these Terms periodically. We will notify you of
-              material changes via email or platform notification. Your
-              continued use after changes constitutes acceptance of the new
-              Terms.
-            </p>
-          </section>
-
-          {/* Contact */}
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              12. Contact Information
-            </h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              If you have questions about these Terms, please contact us:
-            </p>
-            <ul className="list-none space-y-2 text-gray-700">
-              <li>Email: legal@getmeleased.com</li>
-              <li>Phone: +234 812 345 6789</li>
-              <li>Address: Lagos, Nigeria</li>
-            </ul>
-          </section>
+          {/* Footer Bar */}
+          <div className="bg-gray-900 p-4 text-center text-[10px] text-gray-500 uppercase tracking-[0.2em]">
+            Official Electronic Record — LetsTenTerms of Service v1.2.0
+          </div>
         </div>
       </div>
     </div>
