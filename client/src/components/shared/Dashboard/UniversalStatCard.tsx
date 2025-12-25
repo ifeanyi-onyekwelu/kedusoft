@@ -1,5 +1,5 @@
 import React from "react";
-import { Paper, Group } from "@mantine/core";
+import { Paper, Group, Text, Box } from "@mantine/core";
 import { motion } from "framer-motion";
 
 interface UniversalStatCardProps {
@@ -26,47 +26,83 @@ const UniversalStatCard: React.FC<UniversalStatCardProps> = ({
       whileHover={{ y: -4 }}
       transition={{ duration: 0.2 }}
       onClick={onClick}
-      style={{ cursor: onClick ? "pointer" : "default" }}
+      style={{ cursor: onClick ? "pointer" : "default", height: "100%" }}
     >
       <Paper
-        p="md"
+        p="lg"
         withBorder
-        className="border-l-4 transition-all duration-300 hover:shadow-lg"
+        radius="md"
+        className="transition-all duration-300 hover:shadow-lg"
         style={{
-          borderLeftColor: color,
-          backgroundColor: "white",
+          background: `linear-gradient(135deg, #ffffff 0%, #fafafa 100%)`,
+          borderColor: "#f1f3f5",
           height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
         }}
       >
-        <Group justify="space-between" align="flex-start">
+        <Group justify="space-between" align="flex-start" wrap="nowrap">
           <div className="flex-1">
-            <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
-            <div className="flex items-center gap-2">
-              <p className="text-2xl font-bold text-gray-900">
+            <Text
+              size="xs"
+              fw={700}
+              tt="uppercase"
+              c="dimmed"
+              lts="0.5px"
+              mb={4}
+            >
+              {title}
+            </Text>
+
+            <div className="flex items-baseline gap-2">
+              <Text size="xl" fw={800} c="dark">
                 {typeof value === "number" ? value.toLocaleString() : value}
-              </p>
+              </Text>
+
               {trend !== undefined && (
-                <span
-                  className={`text-xs font-semibold ${
-                    trend > 0 ? "text-green-600" : "text-red-600"
-                  }`}
+                <Text
+                  size="xs"
+                  fw={700}
+                  c={trend > 0 ? "green.6" : "red.6"}
+                  className="flex items-center"
                 >
                   {trend > 0 ? "+" : ""}
                   {trend}%
-                </span>
+                </Text>
               )}
             </div>
+
             {subtitle && (
-              <p className="text-xs text-gray-500 mt-1">{subtitle}</p>
+              <Text size="xs" c="dimmed" mt={4}>
+                {subtitle}
+              </Text>
             )}
           </div>
-          <div
-            className="p-3 rounded-full flex-shrink-0"
-            style={{ backgroundColor: `${color}15` }}
+
+          <Box
+            className="flex items-center justify-center rounded-xl flex-shrink-0"
+            style={{
+              width: 44,
+              height: 44,
+              backgroundColor: `${color}12`, // 12% opacity of the theme color
+              color: color,
+            }}
           >
-            <div style={{ color }}>{icon}</div>
-          </div>
+            {/* Ensuring icon scales nicely */}
+            {React.isValidElement(icon)
+              ? React.cloneElement(icon as React.ReactElement, { size: 22 })
+              : icon}
+          </Box>
         </Group>
+
+        {/* Subtle accent indicator at the bottom */}
+        <Box
+          mt="md"
+          h={2}
+          className="rounded-full opacity-30"
+          style={{ backgroundColor: color, width: "20%" }}
+        />
       </Paper>
     </motion.div>
   );

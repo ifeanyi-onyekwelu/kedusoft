@@ -68,26 +68,48 @@ interface StatCardProps {
   icon: React.ReactNode;
   color: string;
 }
-
 const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => (
   <Paper
-    p="md"
+    p="lg"
     withBorder
-    className="border-l-4 transition-all duration-300 hover:shadow-md"
-    style={{ borderLeftColor: color }}
+    radius="md"
+    className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+    style={{
+      background: `linear-gradient(135deg, #ffffff 0%, #fafafa 100%)`,
+      borderColor: "#f1f3f5", // Very subtle border
+    }}
   >
-    <Group justify="space-between">
+    <Group justify="space-between" align="flex-start" wrap="nowrap">
       <div>
-        <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
-        <p className="text-2xl font-bold text-gray-900">{value}</p>
+        <Text size="xs" fw={700} tt="uppercase" c="dimmed" lts="0.5px" mb={4}>
+          {title}
+        </Text>
+        <Text size="xl" fw={800} c="dark">
+          {value.toLocaleString()}
+        </Text>
       </div>
-      <div
-        className="p-3 rounded-full"
-        style={{ backgroundColor: `${color}20` }}
+
+      <Box
+        className="flex items-center justify-center rounded-xl"
+        style={{
+          width: 44,
+          height: 44,
+          backgroundColor: `${color}12`, // Very soft tint
+          color: color,
+        }}
       >
+        {/* Cloning the icon to ensure it inherits the color correctly */}
         {icon}
-      </div>
+      </Box>
     </Group>
+
+    {/* Optional: A very thin accent line at the bottom instead of the side */}
+    <Box
+      mt="md"
+      h={2}
+      className="rounded-full opacity-40"
+      style={{ backgroundColor: color, width: "25%" }}
+    />
   </Paper>
 );
 
@@ -526,8 +548,7 @@ function Applications() {
         </Button>
       </div>
 
-      {/* Statistics Cards */}
-      <SimpleGrid cols={4} spacing="lg">
+      <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="lg">
         {statistics.map((stat, index) => (
           <StatCard key={index} {...stat} />
         ))}

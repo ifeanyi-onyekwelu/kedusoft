@@ -2,7 +2,15 @@ import Table from "./Table";
 import { getAllTransactions } from "../../../../apis/tenantApi";
 import { useEffect, useState } from "react";
 import EmptyState from "../../../../components/EmptyState";
-import { Button, Group, TextInput, Select, Paper, Badge } from "@mantine/core";
+import {
+  Button,
+  Group,
+  TextInput,
+  Select,
+  Paper,
+  Badge,
+  SimpleGrid,
+} from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import {
   IconCurrencyNaira,
@@ -199,29 +207,33 @@ function Transactions() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1, duration: 0.5 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
-          <AnimatePresence>
-            {statistics.map((stat, index) => (
-              <motion.div
-                key={stat.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ delay: index * 0.1, duration: 0.3 }}
-              >
-                <div onClick={() => handleStatClick(stat.filterKey)}>
+          <SimpleGrid
+            cols={{ base: 1, sm: 2, md: 3 }}
+            spacing="lg"
+            verticalSpacing="md"
+          >
+            <AnimatePresence>
+              {statistics.map((stat, index) => (
+                <motion.div
+                  key={stat.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ delay: index * 0.1, duration: 0.3 }}
+                  className="cursor-pointer"
+                  onClick={() => handleStatClick(stat.filterKey)}
+                >
                   <UniversalStatCard
                     title={stat.title}
                     value={stat.value}
                     icon={stat.icon}
                     color={stat.color}
-                    onClick={() => handleStatClick(stat.filterKey)}
                   />
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </SimpleGrid>
         </motion.div>
 
         {/* Active Filter Badge */}
@@ -299,47 +311,86 @@ function Transactions() {
               formatDate={formatDate}
             />
           ) : (
-            <EmptyState>
-              <motion.div
-                className="space-y-4 flex flex-col justify-center items-center text-center"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full flex items-center justify-center">
-                  <IconCurrencyNaira size={40} className="text-blue-400" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-800">
-                    No Transactions Found
-                  </h2>
-                  <p className="text-gray-500 max-w-md mt-2">
-                    {searchQuery || filterStatus
-                      ? "Try adjusting your search or filters to find what you're looking for."
-                      : "You haven't made any transactions yet. Start by browsing available properties."}
-                  </p>
-                </div>
-                <Group>
-                  {(searchQuery || filterStatus) && (
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setSearchQuery("");
-                        setFilterStatus(null);
+            <Paper
+              withBorder
+              radius="md"
+              p={60}
+              className="bg-white/50 backdrop-blur-sm border-dashed"
+            >
+              <EmptyState>
+                <motion.div
+                  className="flex flex-col justify-center items-center text-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, ease: "easeOut" }}
+                >
+                  {/* Animated Icon Container */}
+                  <div className="relative mb-6">
+                    <motion.div
+                      animate={{
+                        scale: [1, 1.1, 1],
+                        rotate: [0, 5, -5, 0],
                       }}
+                      transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                      className="w-24 h-24 bg-blue-50 rounded-3xl flex items-center justify-center relative z-10"
                     >
-                      Clear Filters
+                      <IconCurrencyNaira
+                        size={48}
+                        stroke={1.5}
+                        className="text-blue-500"
+                      />
+                    </motion.div>
+                    {/* Decorative background blobs */}
+                    <div className="absolute -top-2 -right-2 w-24 h-24 bg-blue-100/50 rounded-3xl blur-xl" />
+                    <div className="absolute -bottom-2 -left-2 w-24 h-24 bg-indigo-100/50 rounded-3xl blur-xl" />
+                  </div>
+
+                  <div className="max-w-sm">
+                    <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight">
+                      {searchQuery || filterStatus
+                        ? "No matches found"
+                        : "No transactions yet"}
+                    </h2>
+                    <p className="text-gray-500 mt-3 leading-relaxed">
+                      {searchQuery || filterStatus
+                        ? "We couldn't find any transactions matching your current filters. Try using different keywords."
+                        : "Your transaction history is empty. Once you make a payment for a property, it will appear here."}
+                    </p>
+                  </div>
+
+                  <Group mt={32} gap="md">
+                    {(searchQuery || filterStatus) && (
+                      <Button
+                        variant="subtle"
+                        color="gray"
+                        leftSection={<IconX size={16} />}
+                        onClick={() => {
+                          setSearchQuery("");
+                          setFilterStatus(null);
+                        }}
+                      >
+                        Clear all filters
+                      </Button>
+                    )}
+                    <Button
+                      size="md"
+                      radius="md"
+                      onClick={() => navigate("/properties/search")}
+                      className="bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-200 transition-all active:scale-95"
+                      leftSection={<IconSearch size={18} />}
+                    >
+                      {searchQuery || filterStatus
+                        ? "Try new search"
+                        : "Find a property"}
                     </Button>
-                  )}
-                  <Button
-                    onClick={() => navigate("/properties/search")}
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
-                    Browse Properties
-                  </Button>
-                </Group>
-              </motion.div>
-            </EmptyState>
+                  </Group>
+                </motion.div>
+              </EmptyState>
+            </Paper>
           )}
         </motion.div>
       </div>
