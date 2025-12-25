@@ -5,7 +5,7 @@ import { useLoading } from "../../../hooks/useLoading";
 import { ErrorState } from "../../../components/ErrorState";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
 import EmptyState from "../../../components/EmptyState";
-import { Button } from "@mantine/core";
+import { Stack, Text, Title, Button, ThemeIcon, Box } from "@mantine/core";
 import {
   IconBrain,
   IconAdjustments,
@@ -14,6 +14,8 @@ import {
   IconCurrencyNaira,
   IconBed,
   IconRefresh,
+  IconSparkles,
+  IconArrowRight,
 } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 
@@ -100,30 +102,61 @@ export default function RecommendationsPage() {
 
   if (!recommendations || recommendations.properties.length === 0) {
     return (
-      <div className="px-6 py-8">
+      <div className="px-4 py-6">
         <EmptyState>
-          <div className="space-y-6 flex flex-col justify-center items-center max-w-md mx-auto">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-              <IconBrain size={32} className="text-blue-600" />
-            </div>
-            <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold text-gray-900">
-                No Recommendations Yet
-              </h2>
-              <p className="text-gray-600">
-                Complete your onboarding to get personalized property
-                recommendations based on your preferences.
-              </p>
-            </div>
+          <Stack align="center" gap="xl" className="max-w-md">
+            {/* Icon Composition */}
+            <Box className="relative">
+              <ThemeIcon
+                size={80}
+                radius="24px"
+                variant="light"
+                color="blue"
+                className="bg-blue-50 border border-blue-100"
+              >
+                <IconBrain size={40} stroke={1.5} className="text-blue-600" />
+              </ThemeIcon>
+              <div className="absolute -top-2 -right-2 bg-white p-1.5 rounded-lg shadow-sm border border-slate-100">
+                <IconSparkles size={16} className="text-amber-500" />
+              </div>
+            </Box>
 
-            <Button
-              onClick={() => navigate("/onbording")}
-              variant="filled"
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              Complete Onboarding"
-            </Button>
-          </div>
+            {/* Text Content */}
+            <Stack gap="xs" align="center" className="text-center">
+              <Title
+                order={2}
+                className="text-slate-900 tracking-tight font-extrabold"
+              >
+                Personalize Your Search
+              </Title>
+              <Text
+                size="lg"
+                className="text-slate-500 leading-relaxed font-medium"
+              >
+                We haven't met your preferences yet. Complete your onboarding to
+                unlock AI-driven property matches.
+              </Text>
+            </Stack>
+
+            {/* Action Area */}
+            <Stack gap="sm" className="w-full sm:w-auto">
+              <Button
+                onClick={() => navigate("/onboarding")}
+                size="lg"
+                radius="xl"
+                className="bg-slate-900 hover:bg-slate-800 transition-all px-8"
+                rightSection={<IconArrowRight size={18} />}
+              >
+                Start Onboarding
+              </Button>
+              <Text
+                size="xs"
+                className="text-slate-400 font-bold uppercase tracking-widest text-center"
+              >
+                Takes less than 2 minutes
+              </Text>
+            </Stack>
+          </Stack>
         </EmptyState>
       </div>
     );

@@ -301,7 +301,6 @@ const Sidebar: React.FC<SidebarProps> = ({
     // Exact match for the path
     if (location.pathname === path) return true;
 
-    // For dashboard/home paths, only highlight if exact match
     if (
       path === "/property-owner" ||
       path === "/tenants" ||
@@ -310,8 +309,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       return location.pathname === path;
     }
 
-    // For other paths, check if current path starts with the menu path
-    // but ensure it's not just a prefix (e.g., /property-owner/properties should not activate /property-owner)
     return location.pathname.startsWith(path + "/");
   };
 

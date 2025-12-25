@@ -23,6 +23,7 @@ import { BiPlusCircle } from "react-icons/bi";
 import { IoMdClose } from "react-icons/io";
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
+import { FaBars } from "react-icons/fa6";
 
 type HeaderProps = {
   role: string;
@@ -161,22 +162,7 @@ const Header = ({ role, opened, toggle }: HeaderProps) => {
           {/* Left Section - Logo & Burger */}
           <div className="flex items-center gap-4">
             <button className="md:hidden text-gray-600" onClick={toggle}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d={
-                    opened ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"
-                  }
-                />
-              </svg>
+              <FaBars size={20} />
             </button>
 
             <Link to="/" className="flex items-center gap-2">
@@ -186,9 +172,9 @@ const Header = ({ role, opened, toggle }: HeaderProps) => {
                 className="flex items-center"
               >
                 <motion.img
-                  src="/images/brand/logo_cropped.png"
+                  src="/images/brand/logo.png"
                   alt="PropConnect Logo"
-                  className="h-12 w-auto object-contain"
+                  className="h-10 w-auto object-contain"
                 />
               </motion.div>
             </Link>
