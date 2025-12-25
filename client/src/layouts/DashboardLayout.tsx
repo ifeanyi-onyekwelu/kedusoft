@@ -43,7 +43,7 @@ const DashboardLayout: React.FC<LayoutProps> = ({ role }) => {
               : "ml-0 md:ml-[260px] w-full md:w-[calc(100%-260px)]"
           }`}
         >
-          <main className="flex-1 p-5 bg-[#F5F5F5] pt-[60px]">
+          <main className="flex-1 bg-[#F5F5F5] pt-[60px]">
             <Outlet context={user} />
           </main>
           <Footer />

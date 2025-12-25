@@ -133,7 +133,7 @@ class GoogleAuthSchema(Schema):
     token = fields.Str(
         required=True, error_messages={"required": "Google token is required"}
     )
-    role = fields.Str(required=True, error_messages={"required": "Role is required"})
+    role = fields.Str(required=False)
 
 
 class VerificationSchema(Schema):
@@ -646,9 +646,8 @@ def google_login():
         data = schema.load(request.get_json() or {})
         token = data["token"]
     except ValidationError as err:
-        log_security_event(
-            "GOOGLE_LOGIN_VALIDATION_ERROR", details={"errors": err.messages}
-        )
+        logger.info("Validation error in Google login", err)
+        log_security_event("GOOGLE_LOGIN_VALIDATION_ERROR", details={"errors": err})
         raise CustomRequestError("Validation error", 400)
 
     try:
