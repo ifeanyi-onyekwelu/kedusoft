@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
-import AdminSettingsLayout from "../layouts/AdminSettingsLayout";
 import Dashboard from "../pages/Dashboards/Admin/Dashboard/Dashboard";
 import Users from "../pages/Dashboards/Admin/users/Users";
 import AllUsers from "../pages/Dashboards/Admin/users/All-Users";
@@ -19,12 +18,6 @@ import Transactions from "../pages/Dashboards/Admin/Transactions/Transactions";
 import AllTransactions from "../pages/Dashboards/Admin/Transactions/All-Transactions";
 import AdminReport from "../pages/Dashboards/Admin/reports/Report";
 import AdminSupport from "../pages/Dashboards/Admin/support/Support";
-import AdminBioData from "../pages/Dashboards/Admin/Settings/BioData";
-import AdminChangePassword from "../pages/Dashboards/Admin/Settings/ChangePassword";
-import AdminNotifications from "../pages/Dashboards/Admin/Settings/Notifications";
-import AdminVerification from "../pages/Dashboards/Admin/Settings/Verification";
-import AdminSecurity from "../pages/Dashboards/Admin/Settings/Security";
-import AdminSystem from "../pages/Dashboards/Admin/Settings/System";
 
 function AdminRoutes() {
   return (
@@ -59,16 +52,6 @@ function AdminRoutes() {
 
         <Route path="reports" element={<AdminReport />} />
         <Route path="support" element={<AdminSupport />} />
-      </Route>
-
-      {/* Admin Settings Routes */}
-      <Route path="settings" element={<AdminSettingsLayout />}>
-        <Route path="profile" element={<AdminBioData />} />
-        <Route path="change-password" element={<AdminChangePassword />} />
-        <Route path="notifications" element={<AdminNotifications />} />
-        <Route path="verification" element={<AdminVerification />} />
-        <Route path="security" element={<AdminSecurity />} />
-        <Route path="system" element={<AdminSystem />} />
       </Route>
     </Routes>
   );
