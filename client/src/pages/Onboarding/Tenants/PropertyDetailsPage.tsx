@@ -14,7 +14,6 @@ import {
   IconArrowRight,
 } from "@tabler/icons-react";
 
-// Amenities options
 const AMENITIES_OPTIONS = [
   "Swimming Pool",
   "Gym",
@@ -27,7 +26,6 @@ const AMENITIES_OPTIONS = [
   "Wi-Fi",
 ];
 
-// Lease duration options
 const LEASE_DURATION_OPTIONS = [
   { value: "1 month", label: "1 Month" },
   { value: "3 months", label: "3 Months" },
@@ -41,7 +39,6 @@ export default function PropertyDetailsPage() {
   const navigate = useNavigate();
   const { updatePreference, preferences } = useOnboarding();
 
-  // State management
   const [bedrooms, setBedrooms] = useState<number | "">(
     preferences.bedrooms ?? ""
   );
@@ -71,7 +68,6 @@ export default function PropertyDetailsPage() {
     preferences.amenities ?? []
   );
 
-  // Handle number input changes
   const handleNumberChange =
     (setter: React.Dispatch<React.SetStateAction<number | "">>) =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,7 +75,6 @@ export default function PropertyDetailsPage() {
       setter(value === "" ? "" : parseInt(value, 10));
     };
 
-  // Handle amenity selection
   const handleAmenityToggle = (amenity: string) => {
     setAmenities((prev) =>
       prev.includes(amenity)
@@ -88,7 +83,6 @@ export default function PropertyDetailsPage() {
     );
   };
 
-  // Submit handler
   const handleNext = () => {
     updatePreference("bedrooms", bedrooms === "" ? undefined : bedrooms);
     updatePreference("bathrooms", bathrooms === "" ? undefined : bathrooms);
@@ -100,463 +94,270 @@ export default function PropertyDetailsPage() {
     updatePreference("year_built", yearBuilt === "" ? undefined : yearBuilt);
     updatePreference("minimum_lease_duration", minimumLeaseDuration);
     updatePreference("amenities", amenities);
-
     navigate("/onboarding/tenant/location");
   };
 
-  // Check if required fields are filled
   const isFormValid = bedrooms !== "" && bathrooms !== "";
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl">
+    <div className="min-h-screen bg-white font-manrope">
+      {/* Progress Bar */}
+      <div className="fixed top-0 left-0 w-full h-1.5 bg-gray-100 z-50">
+        <div className="h-full bg-secondary w-2/5 transition-all duration-500" />
+      </div>
+
+      <div className="max-w-5xl mx-auto px-6 pt-16 pb-24">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-2 h-8 bg-blue-900 rounded-full"></div>
-            <h2 className="text-xl font-semibold text-slate-700">
-              Step 2 of 5
-            </h2>
-          </div>
-          <h1 className="text-3xl font-bold text-slate-900 mb-3">
-            Property Specifications
+        <header className="mb-12">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center text-gray-500 hover:text-primary mb-6 transition-colors font-bold"
+          >
+            <IconArrowLeft size={18} className="mr-2" />
+            <span className="text-xs uppercase tracking-widest">Back</span>
+          </button>
+          <h1 className="text-4xl font-bold text-gray-900 font-sora mb-2">
+            Property Specs
           </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            Tell us about the specific features and requirements for your ideal
-            property
+          <p className="text-gray-500 font-medium text-lg">
+            Define the blueprint of your perfect home.
           </p>
-        </div>
+        </header>
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="p-8">
-            {/* Property Features Grid */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-              {/* Left Column - Essential Features */}
-              <div className="xl:col-span-2 space-y-8">
-                {/* Room Configuration */}
-                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
-                  <h3 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
-                    <IconHome size={20} className="text-blue-900" />
-                    Room Configuration
-                  </h3>
-
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    {/* Bedrooms */}
-                    <div className="text-center">
-                      <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                        <IconBed size={24} className="text-blue-900" />
-                      </div>
-                      <label className="block text-sm font-medium text-slate-700 mb-3">
-                        Bedrooms
-                      </label>
-                      <div className="flex border border-slate-300 rounded-lg overflow-hidden bg-white">
-                        <button
-                          className="bg-slate-100 px-3 py-2 text-lg hover:bg-slate-200 transition-colors"
-                          onClick={() =>
-                            setBedrooms((prev) => Math.max(0, (prev || 0) - 1))
-                          }
-                        >
-                          -
-                        </button>
-                        <input
-                          type="number"
-                          value={bedrooms}
-                          onChange={handleNumberChange(setBedrooms)}
-                          className="w-full text-center py-2 focus:outline-none bg-white"
-                          min="0"
-                          placeholder="0"
-                        />
-                        <button
-                          className="bg-slate-100 px-3 py-2 text-lg hover:bg-slate-200 transition-colors"
-                          onClick={() => setBedrooms((prev) => (prev || 0) + 1)}
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Bathrooms */}
-                    <div className="text-center">
-                      <div className="w-12 h-12 bg-sky-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                        <IconBath size={24} className="text-sky-600" />
-                      </div>
-                      <label className="block text-sm font-medium text-slate-700 mb-3">
-                        Bathrooms
-                      </label>
-                      <div className="flex border border-slate-300 rounded-lg overflow-hidden bg-white">
-                        <button
-                          className="bg-slate-100 px-3 py-2 text-lg hover:bg-slate-200 transition-colors"
-                          onClick={() =>
-                            setBathrooms((prev) => Math.max(0, (prev || 0) - 1))
-                          }
-                        >
-                          -
-                        </button>
-                        <input
-                          type="number"
-                          value={bathrooms}
-                          onChange={handleNumberChange(setBathrooms)}
-                          className="w-full text-center py-2 focus:outline-none bg-white"
-                          min="0"
-                          placeholder="0"
-                        />
-                        <button
-                          className="bg-slate-100 px-3 py-2 text-lg hover:bg-slate-200 transition-colors"
-                          onClick={() =>
-                            setBathrooms((prev) => (prev || 0) + 1)
-                          }
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Kitchens */}
-                    <div className="text-center">
-                      <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                        <IconToolsKitchen2
-                          size={24}
-                          className="text-amber-600"
-                        />
-                      </div>
-                      <label className="block text-sm font-medium text-slate-700 mb-3">
-                        Kitchens
-                      </label>
-                      <div className="flex border border-slate-300 rounded-lg overflow-hidden bg-white">
-                        <button
-                          className="bg-slate-100 px-3 py-2 text-lg hover:bg-slate-200 transition-colors"
-                          onClick={() =>
-                            setKitchens((prev) => Math.max(0, (prev || 0) - 1))
-                          }
-                        >
-                          -
-                        </button>
-                        <input
-                          type="number"
-                          value={kitchens}
-                          onChange={handleNumberChange(setKitchens)}
-                          className="w-full text-center py-2 focus:outline-none bg-white"
-                          min="0"
-                          placeholder="0"
-                        />
-                        <button
-                          className="bg-slate-100 px-3 py-2 text-lg hover:bg-slate-200 transition-colors"
-                          onClick={() => setKitchens((prev) => (prev || 0) + 1)}
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Floors */}
-                    <div className="text-center">
-                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                        <IconStairs size={24} className="text-slate-600" />
-                      </div>
-                      <label className="block text-sm font-medium text-slate-700 mb-3">
-                        Floors
-                      </label>
-                      <div className="flex border border-slate-300 rounded-lg overflow-hidden bg-white">
-                        <button
-                          className="bg-slate-100 px-3 py-2 text-lg hover:bg-slate-200 transition-colors"
-                          onClick={() =>
-                            setFloorsNo((prev) => Math.max(0, (prev || 0) - 1))
-                          }
-                        >
-                          -
-                        </button>
-                        <input
-                          type="number"
-                          value={floorsNo}
-                          onChange={handleNumberChange(setFloorsNo)}
-                          className="w-full text-center py-2 focus:outline-none bg-white"
-                          min="0"
-                          placeholder="0"
-                        />
-                        <button
-                          className="bg-slate-100 px-3 py-2 text-lg hover:bg-slate-200 transition-colors"
-                          onClick={() => setFloorsNo((prev) => (prev || 0) + 1)}
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Property Details */}
-                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
-                  <h3 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
-                    <IconBuildingSkyscraper
-                      size={20}
-                      className="text-blue-900"
-                    />
-                    Property Details
-                  </h3>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Year Built
-                      </label>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          {/* Main Configuration - Left Side */}
+          <div className="lg:col-span-2 space-y-12">
+            {/* Room Counters */}
+            <section>
+              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary mb-8">
+                Essential Configuration
+              </h3>
+              <div className="grid grid-cols-2 gap-6">
+                {[
+                  {
+                    label: "Bedrooms",
+                    val: bedrooms,
+                    set: setBedrooms,
+                    icon: IconBed,
+                  },
+                  {
+                    label: "Bathrooms",
+                    val: bathrooms,
+                    set: setBathrooms,
+                    icon: IconBath,
+                  },
+                  {
+                    label: "Kitchens",
+                    val: kitchens,
+                    set: setKitchens,
+                    icon: IconToolsKitchen2,
+                  },
+                  {
+                    label: "Floors",
+                    val: floorsNo,
+                    set: setFloorsNo,
+                    icon: IconStairs,
+                  },
+                ].map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="p-6 rounded-2xl border-2 border-gray-100 bg-gray-50/50 flex flex-col items-center"
+                  >
+                    <item.icon size={24} className="text-secondary mb-4" />
+                    <span className="text-sm font-bold text-gray-700 mb-4">
+                      {item.label}
+                    </span>
+                    <div className="flex items-center bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                      <button
+                        onClick={() =>
+                          item.set((prev) =>
+                            Math.max(0, (Number(prev) || 0) - 1)
+                          )
+                        }
+                        className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 text-primary font-bold transition-colors"
+                      >
+                        -
+                      </button>
                       <input
                         type="number"
-                        value={yearBuilt}
-                        onChange={handleNumberChange(setYearBuilt)}
-                        className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-blue-900 bg-white"
-                        placeholder="e.g., 2010"
-                        min="1800"
-                        max={new Date().getFullYear()}
+                        value={item.val}
+                        onChange={handleNumberChange(item.set as any)}
+                        className="w-12 text-center font-black text-primary focus:outline-none"
+                        placeholder="0"
                       />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Minimum Lease Duration
-                      </label>
-                      <select
-                        value={minimumLeaseDuration}
-                        onChange={(e) =>
-                          setMinimumLeaseDuration(e.target.value)
-                        }
-                        className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-blue-900 bg-white"
-                      >
-                        <option value="">Select duration</option>
-                        {LEASE_DURATION_OPTIONS.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Amenities */}
-                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
-                  <h3 className="text-lg font-semibold text-slate-800 mb-4">
-                    Desired Amenities
-                  </h3>
-                  <p className="text-sm text-slate-600 mb-6">
-                    Select the amenities that are important to you
-                  </p>
-
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {AMENITIES_OPTIONS.map((amenity) => (
-                      <div key={amenity} className="flex items-center">
-                        <button
-                          type="button"
-                          onClick={() => handleAmenityToggle(amenity)}
-                          className={`flex items-center gap-3 w-full p-3 rounded-lg border transition-all duration-200 ${
-                            amenities.includes(amenity)
-                              ? "bg-blue-50 border-blue-300 text-blue-900"
-                              : "bg-white border-slate-300 text-slate-700 hover:bg-slate-50"
-                          }`}
-                        >
-                          <div
-                            className={`w-5 h-5 rounded border flex items-center justify-center ${
-                              amenities.includes(amenity)
-                                ? "bg-blue-900 border-blue-900"
-                                : "border-slate-400"
-                            }`}
-                          >
-                            {amenities.includes(amenity) && (
-                              <IconCheck size={14} className="text-white" />
-                            )}
-                          </div>
-                          <span className="text-sm font-medium">{amenity}</span>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Column - Property Options */}
-              <div className="space-y-8">
-                {/* Property Options */}
-                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
-                  <h3 className="text-lg font-semibold text-slate-800 mb-6">
-                    Property Options
-                  </h3>
-
-                  <div className="space-y-4">
-                    {/* Parking Space */}
-                    <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-slate-200">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
-                          <IconCar size={20} className="text-slate-600" />
-                        </div>
-                        <div>
-                          <div className="font-medium text-slate-800">
-                            Parking Space
-                          </div>
-                          <div className="text-sm text-slate-600">
-                            Dedicated parking spot
-                          </div>
-                        </div>
-                      </div>
                       <button
-                        type="button"
-                        onClick={() => setParkingSpace(!parkingSpace)}
-                        className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                          parkingSpace ? "bg-blue-900" : "bg-slate-300"
-                        }`}
-                      >
-                        <span
-                          className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                            parkingSpace ? "translate-x-5" : "translate-x-0"
-                          }`}
-                        />
-                      </button>
-                    </div>
-
-                    {/* Furnished */}
-                    <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-slate-200">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
-                          <IconHome size={20} className="text-amber-600" />
-                        </div>
-                        <div>
-                          <div className="font-medium text-slate-800">
-                            Furnished
-                          </div>
-                          <div className="text-sm text-slate-600">
-                            Includes furniture
-                          </div>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
                         onClick={() =>
-                          setFurnished(furnished === "yes" ? "no" : "yes")
+                          item.set((prev) => (Number(prev) || 0) + 1)
                         }
-                        className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                          furnished === "yes" ? "bg-blue-900" : "bg-slate-300"
-                        }`}
+                        className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 text-primary font-bold transition-colors"
                       >
-                        <span
-                          className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                            furnished === "yes"
-                              ? "translate-x-5"
-                              : "translate-x-0"
-                          }`}
-                        />
-                      </button>
-                    </div>
-
-                    {/* Pets Allowed */}
-                    <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-slate-200">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
-                          <IconCheck size={20} className="text-pink-600" />
-                        </div>
-                        <div>
-                          <div className="font-medium text-slate-800">
-                            Pets Allowed
-                          </div>
-                          <div className="text-sm text-slate-600">
-                            Pet-friendly property
-                          </div>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setPets(pets === "yes" ? "no" : "yes")}
-                        className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                          pets === "yes" ? "bg-blue-900" : "bg-slate-300"
-                        }`}
-                      >
-                        <span
-                          className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                            pets === "yes" ? "translate-x-5" : "translate-x-0"
-                          }`}
-                        />
+                        +
                       </button>
                     </div>
                   </div>
-                </div>
-
-                {/* Summary Card */}
-                <div className="bg-slate-900 text-white p-6 rounded-xl">
-                  <h3 className="text-lg font-semibold mb-4">
-                    Your Selections
-                  </h3>
-                  <div className="space-y-3 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-slate-300">Bedrooms:</span>
-                      <span className="font-medium">
-                        {bedrooms || "Not set"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-300">Bathrooms:</span>
-                      <span className="font-medium">
-                        {bathrooms || "Not set"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-300">Parking:</span>
-                      <span className="font-medium">
-                        {parkingSpace ? "Yes" : "No"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-300">Furnished:</span>
-                      <span className="font-medium">
-                        {furnished === "yes" ? "Yes" : "No"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-300">Pets:</span>
-                      <span className="font-medium">
-                        {pets === "yes" ? "Allowed" : "Not allowed"}
-                      </span>
-                    </div>
-                    <div className="h-px bg-slate-700 my-3"></div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-300">Amenities:</span>
-                      <span className="font-medium">
-                        {amenities.length} selected
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
-            </div>
+            </section>
 
-            {/* Navigation */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-12 pt-8 border-t border-slate-200">
-              <button
-                type="button"
-                onClick={() => navigate(-1)}
-                className="flex-1 bg-white text-slate-700 px-6 py-4 rounded-lg border border-slate-300 hover:bg-slate-50 transition-all duration-200 font-medium flex items-center justify-center"
-              >
-                <IconArrowLeft size={20} className="mr-2" />
-                Back
-              </button>
-
-              <button
-                onClick={handleNext}
-                disabled={!isFormValid}
-                className={`flex-1 px-6 py-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center
-                  ${
-                    !isFormValid
-                      ? "bg-slate-300 text-slate-500 cursor-not-allowed"
-                      : "bg-blue-900 text-white hover:bg-blue-800 hover:shadow-lg"
-                  }`}
-              >
-                Next: Location Preferences
-                <IconArrowRight size={20} className="ml-2" />
-              </button>
-            </div>
-
-            {!isFormValid && (
-              <div className="mt-4 text-center text-slate-500 text-sm">
-                Please specify at least bedrooms and bathrooms to continue
+            {/* Amenities Grid */}
+            <section>
+              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary mb-6">
+                Lifestyle Amenities
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {AMENITIES_OPTIONS.map((amenity) => (
+                  <button
+                    key={amenity}
+                    onClick={() => handleAmenityToggle(amenity)}
+                    className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 font-bold text-sm
+                      ${
+                        amenities.includes(amenity)
+                          ? "border-secondary bg-blue-50/30 text-primary"
+                          : "border-gray-100 bg-gray-50 text-gray-500 hover:border-gray-200"
+                      }`}
+                  >
+                    <div
+                      className={`w-5 h-5 rounded flex items-center justify-center border-2 transition-colors
+                      ${
+                        amenities.includes(amenity)
+                          ? "bg-secondary border-secondary"
+                          : "bg-white border-gray-300"
+                      }`}
+                    >
+                      {amenities.includes(amenity) && (
+                        <IconCheck
+                          size={14}
+                          className="text-white"
+                          stroke={3}
+                        />
+                      )}
+                    </div>
+                    {amenity}
+                  </button>
+                ))}
               </div>
-            )}
+            </section>
           </div>
+
+          {/* Sidebar Details - Right Side */}
+          <div className="space-y-8">
+            <section className="bg-gray-50 p-8 rounded-3xl border-2 border-gray-100 space-y-8">
+              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary">
+                Lease & Year
+              </h3>
+
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-xs font-black text-gray-400 uppercase mb-2">
+                    Built Year
+                  </label>
+                  <input
+                    type="number"
+                    value={yearBuilt}
+                    onChange={handleNumberChange(setYearBuilt)}
+                    placeholder="e.g. 2022"
+                    className="w-full h-14 px-5 rounded-2xl border-2 border-gray-200 bg-white font-bold text-gray-700 focus:border-secondary outline-none transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-black text-gray-400 uppercase mb-2">
+                    Min. Lease
+                  </label>
+                  <select
+                    value={minimumLeaseDuration}
+                    onChange={(e) => setMinimumLeaseDuration(e.target.value)}
+                    className="w-full h-14 px-5 rounded-2xl border-2 border-gray-200 bg-white font-bold text-gray-700 focus:border-secondary outline-none appearance-none cursor-pointer transition-all"
+                  >
+                    <option value="">Duration...</option>
+                    {LEASE_DURATION_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-4">
+                {[
+                  {
+                    label: "Parking Space",
+                    state: parkingSpace,
+                    set: () => setParkingSpace(!parkingSpace),
+                    icon: IconCar,
+                  },
+                  {
+                    label: "Furnished",
+                    state: furnished === "yes",
+                    set: () => setFurnished(furnished === "yes" ? "no" : "yes"),
+                    icon: IconHome,
+                  },
+                  {
+                    label: "Pets Friendly",
+                    state: pets === "yes",
+                    set: () => setPets(pets === "yes" ? "no" : "yes"),
+                    icon: IconCheck,
+                  },
+                ].map((toggle, i) => (
+                  <div key={i} className="flex items-center justify-between">
+                    <span className="text-sm font-bold text-gray-600 flex items-center gap-2">
+                      <toggle.icon size={18} className="text-gray-400" />{" "}
+                      {toggle.label}
+                    </span>
+                    <button
+                      onClick={toggle.set}
+                      className={`w-12 h-6 rounded-full transition-all relative ${
+                        toggle.state ? "bg-primary" : "bg-gray-300"
+                      }`}
+                    >
+                      <div
+                        className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                          toggle.state ? "left-7" : "left-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Summary Visualizer */}
+            <div className="bg-primary p-8 rounded-3xl text-white shadow-2xl shadow-blue-900/20">
+              <h4 className="text-xs font-black uppercase tracking-widest text-secondary mb-4">
+                Live Preview
+              </h4>
+              <div className="text-2xl font-bold font-sora">
+                {bedrooms || 0} Bed • {bathrooms || 0} Bath
+              </div>
+              <p className="text-blue-200 text-sm mt-2 font-medium">
+                {furnished === "yes" ? "Furnished" : "Unfurnished"} •{" "}
+                {parkingSpace ? "Parking Inc." : "No Parking"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Button */}
+        <div className="mt-16 pt-10 border-t border-gray-100 flex flex-col items-center">
+          <button
+            onClick={handleNext}
+            disabled={!isFormValid}
+            className={`w-full max-w-lg h-16 rounded-2xl font-black text-lg flex items-center justify-center gap-3 transition-all duration-300
+              ${
+                !isFormValid
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : "bg-primary text-white hover:bg-black hover:shadow-xl active:scale-[0.98]"
+              }`}
+          >
+            Continue to Location
+            <IconArrowRight size={22} />
+          </button>
+          {!isFormValid && (
+            <p className="mt-4 text-[10px] font-black uppercase tracking-widest text-gray-400">
+              Complete bedrooms and bathrooms to proceed
+            </p>
+          )}
         </div>
       </div>
     </div>

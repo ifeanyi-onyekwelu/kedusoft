@@ -5,14 +5,14 @@ import {
   IconMapPin,
   IconSearch,
   IconWorld,
-  IconBuildingSkyscraper,
   IconCheck,
   IconArrowLeft,
   IconArrowRight,
   IconX,
+  IconCurrentLocation,
+  IconMapPins,
 } from "@tabler/icons-react";
 
-// Expanded locations dataset with multiple states
 const LOCATIONS_BY_STATE = [
   {
     state: "Enugu",
@@ -91,22 +91,6 @@ const LOCATIONS_BY_STATE = [
   },
 ];
 
-// Popular cities across Nigeria
-const POPULAR_CITIES = [
-  "Lagos",
-  "Abuja",
-  "Port Harcourt",
-  "Kano",
-  "Ibadan",
-  "Enugu",
-  "Abeokuta",
-  "Benin City",
-  "Uyo",
-  "Calabar",
-  "Kaduna",
-  "Owerri",
-];
-
 export default function LocationPage() {
   const navigate = useNavigate();
   const { updatePreference, preferences } = useOnboarding();
@@ -119,20 +103,15 @@ export default function LocationPage() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  // Get all cities from all states
   const allCities = LOCATIONS_BY_STATE.flatMap((stateData) => stateData.cities);
 
-  // Filter locations based on search
   const filteredLocations = searchTerm
-    ? allCities.filter(
-        (loc) =>
-          loc.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          activeState.toLowerCase().includes(searchTerm.toLowerCase())
+    ? allCities.filter((loc) =>
+        loc.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : LOCATIONS_BY_STATE.find((state) => state.state === activeState)?.cities ||
       [];
 
-  // Close suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
@@ -140,33 +119,18 @@ export default function LocationPage() {
         setIsSearchFocused(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const toggleLocation = (loc: string) => {
     setSelected((prev) => {
-      if (prev.includes(loc)) {
-        return prev.filter((l) => l !== loc);
-      } else if (prev.length < 3) {
-        return [...prev, loc];
-      }
+      if (prev.includes(loc)) return prev.filter((l) => l !== loc);
+      if (prev.length < 3) return [...prev, loc];
       return prev;
     });
     setSearchTerm("");
     setShowSuggestions(false);
-    setIsSearchFocused(false);
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setShowSuggestions(e.target.value.length > 0);
-  };
-
-  const handleSearchFocus = () => {
-    setShowSuggestions(true);
-    setIsSearchFocused(true);
   };
 
   const handleNext = () => {
@@ -176,257 +140,218 @@ export default function LocationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl">
+    <div className="min-h-screen bg-white font-manrope">
+      {/* Brand Progress Bar - Step 3 of 5 (60%) */}
+      <div className="fixed top-0 left-0 w-full h-1.5 bg-gray-100 z-50">
+        <div className="h-full bg-secondary w-[60%] transition-all duration-500" />
+      </div>
+
+      <div className="max-w-4xl mx-auto px-6 pt-16 pb-24">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-2 h-8 bg-blue-900 rounded-full"></div>
-            <h2 className="text-xl font-semibold text-slate-700">
-              Step 3 of 5
-            </h2>
-          </div>
-          <h1 className="text-3xl font-bold text-slate-900 mb-3">
-            Preferred Locations
+        <header className="mb-12">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center text-gray-500 hover:text-primary mb-6 transition-colors font-bold"
+          >
+            <IconArrowLeft size={18} className="mr-2" />
+            <span className="text-xs uppercase tracking-widest">Back</span>
+          </button>
+          <h1 className="text-4xl font-bold text-gray-900 font-sora mb-2">
+            Target Locations
           </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            Select up to 3 neighborhoods or cities that match your lifestyle
-            preferences
+          <p className="text-gray-500 font-medium">
+            Where should we look for your next home? Pick up to 3 areas.
           </p>
-        </div>
+        </header>
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="p-8">
-            {/* Progress indicator */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-medium text-slate-700">
-                  Your selections
-                </span>
-                <span className="text-sm font-medium text-blue-900">
-                  {selected.length}/3 selected
-                </span>
-              </div>
-              <div className="w-full bg-slate-200 rounded-full h-2">
-                <div
-                  className="bg-blue-900 h-2 rounded-full transition-all duration-500"
-                  style={{ width: `${(selected.length / 3) * 100}%` }}
-                ></div>
-              </div>
+        <div className="space-y-12">
+          {/* Search & Selected Tags */}
+          <section>
+            <div className="flex justify-between items-end mb-6">
+              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary">
+                Search Neighborhoods
+              </h3>
+              <span className="text-xs font-bold text-secondary bg-blue-50 px-3 py-1 rounded-full">
+                {selected.length}/3 Selected
+              </span>
             </div>
 
-            {/* Selected Locations Tags */}
-            {selected.length > 0 && (
-              <div className="mb-8 bg-blue-50 p-6 rounded-xl border border-blue-200">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                  <IconCheck size={20} className="text-blue-900" />
-                  Selected Locations
-                </h3>
-                <div className="flex flex-wrap gap-3">
-                  {selected.map((loc) => (
-                    <div
-                      key={loc}
-                      className="flex items-center bg-blue-900 text-white px-4 py-2 rounded-lg font-medium"
-                    >
-                      <span>{loc}</span>
-                      <button
-                        onClick={() => toggleLocation(loc)}
-                        className="ml-2 text-white hover:text-blue-200 focus:outline-none transition-colors"
-                      >
-                        <IconX size={16} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Search Section */}
-            <div className="mb-8" ref={searchRef}>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <IconSearch size={20} className="text-slate-400" />
-                </div>
-                <input
-                  id="location-search"
-                  type="text"
-                  value={searchTerm}
-                  onChange={handleSearchChange}
-                  onFocus={handleSearchFocus}
-                  placeholder="Search for cities or neighborhoods..."
-                  className={`block w-full pl-12 pr-4 py-4 border-2 ${
-                    isSearchFocused ? "border-blue-900" : "border-slate-300"
-                  } rounded-lg focus:ring-0 focus:outline-none transition-all bg-white`}
+            <div className="relative mb-6" ref={searchRef}>
+              <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+                <IconSearch
+                  size={22}
+                  className={
+                    isSearchFocused ? "text-secondary" : "text-gray-400"
+                  }
                 />
-
-                {showSuggestions && filteredLocations.length > 0 && (
-                  <div className="absolute z-10 mt-2 w-full bg-white shadow-lg rounded-lg max-h-60 overflow-auto border border-slate-200">
-                    {filteredLocations.map((loc) => (
-                      <div
-                        key={loc}
-                        className={`px-4 py-3 cursor-pointer hover:bg-blue-50 transition border-b border-slate-100 last:border-0 ${
-                          selected.includes(loc)
-                            ? "bg-blue-50 text-blue-900"
-                            : "text-slate-700"
-                        }`}
-                        onClick={() => toggleLocation(loc)}
-                      >
-                        <div className="font-medium">{loc}</div>
-                        <div className="text-sm text-slate-500 flex items-center mt-1">
-                          <IconMapPin size={14} className="mr-1" />
-                          {activeState}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
-            </div>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                onFocus={() => setIsSearchFocused(true)}
+                placeholder="Type a city or area name..."
+                className={`w-full h-16 pl-14 pr-6 bg-gray-50 border-2 rounded-2xl transition-all outline-none font-bold text-gray-700 ${
+                  isSearchFocused
+                    ? "border-secondary bg-white shadow-sm"
+                    : "border-gray-100"
+                }`}
+              />
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-              {/* State Selection */}
-              <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                  <IconWorld size={20} className="text-blue-900" />
-                  Browse by State
-                </h3>
-                <div className="flex flex-wrap gap-3">
-                  {LOCATIONS_BY_STATE.map((stateData) => (
+              {showSuggestions && searchTerm && (
+                <div className="absolute z-20 mt-2 w-full bg-white shadow-2xl rounded-2xl border border-gray-100 overflow-hidden max-h-60 overflow-y-auto">
+                  {filteredLocations.map((loc) => (
                     <button
-                      key={stateData.state}
-                      onClick={() => {
-                        setActiveState(stateData.state);
-                        setSearchTerm("");
-                      }}
-                      className={`px-4 py-3 rounded-lg transition-all flex items-center ${
-                        activeState === stateData.state
-                          ? "bg-blue-900 text-white shadow-sm"
-                          : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-300"
-                      }`}
+                      key={loc}
+                      onClick={() => toggleLocation(loc)}
+                      className="w-full text-left px-6 py-4 hover:bg-gray-50 flex items-center justify-between group transition-colors border-b border-gray-50 last:border-0"
                     >
-                      {stateData.state}
-                      {activeState === stateData.state && (
-                        <IconCheck size={16} className="ml-2" />
+                      <div className="flex items-center gap-3">
+                        <IconMapPin
+                          size={18}
+                          className="text-gray-400 group-hover:text-secondary"
+                        />
+                        <span className="font-bold text-gray-700">{loc}</span>
+                      </div>
+                      {selected.includes(loc) && (
+                        <IconCheck
+                          size={20}
+                          className="text-secondary"
+                          stroke={3}
+                        />
                       )}
                     </button>
                   ))}
                 </div>
-              </div>
-
-              {/* Popular Cities */}
-              <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                  <IconBuildingSkyscraper size={20} className="text-blue-900" />
-                  Popular Cities
-                </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {POPULAR_CITIES.map((city) => (
-                    <button
-                      key={city}
-                      onClick={() => toggleLocation(city)}
-                      disabled={
-                        selected.length === 3 && !selected.includes(city)
-                      }
-                      className={`p-3 rounded-lg text-center transition-all font-medium
-                        ${
-                          selected.includes(city)
-                            ? "bg-blue-900 text-white shadow-sm"
-                            : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-300"
-                        }
-                        ${
-                          selected.length === 3 && !selected.includes(city)
-                            ? "opacity-50 cursor-not-allowed"
-                            : ""
-                        }
-                      `}
-                    >
-                      {city}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              )}
             </div>
 
-            {/* Location Grid */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                  <IconMapPin size={20} className="text-blue-900" />
-                  Neighborhoods in {activeState}
-                </h3>
-                <span className="text-sm text-slate-500">
-                  {filteredLocations.length} locations
-                </span>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {filteredLocations.map((loc) => (
-                  <button
-                    key={loc}
-                    type="button"
-                    onClick={() => toggleLocation(loc)}
-                    disabled={selected.length === 3 && !selected.includes(loc)}
-                    className={`p-4 rounded-lg border transition-all duration-200 font-medium flex items-center justify-center text-center
-                      ${
-                        selected.includes(loc)
-                          ? "bg-blue-900 text-white border-blue-900 shadow-sm"
-                          : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
-                      }
-                      ${
-                        selected.length === 3 && !selected.includes(loc)
-                          ? "opacity-50 cursor-not-allowed"
-                          : ""
-                      }
-                    `}
-                  >
+            {/* Selected Pills */}
+            <div className="flex flex-wrap gap-2 min-h-[40px]">
+              {selected.map((loc) => (
+                <div
+                  key={loc}
+                  className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl animate-in zoom-in-95 duration-200"
+                >
+                  <span className="font-bold text-sm tracking-tight">
                     {loc}
-                    {selected.includes(loc) && (
-                      <IconCheck size={18} className="ml-2" />
-                    )}
+                  </span>
+                  <button
+                    onClick={() => toggleLocation(loc)}
+                    className="hover:text-secondary"
+                  >
+                    <IconX size={16} stroke={3} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <div className="grid md:grid-cols-12 gap-10">
+            {/* State Picker - Left Column */}
+            <div className="md:col-span-4 space-y-6">
+              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary">
+                Browse States
+              </h3>
+              <div className="flex flex-col gap-2">
+                {LOCATIONS_BY_STATE.map((s) => (
+                  <button
+                    key={s.state}
+                    onClick={() => {
+                      setActiveState(s.state);
+                      setSearchTerm("");
+                    }}
+                    className={`text-left px-5 py-4 rounded-2xl font-black transition-all duration-200 ${
+                      activeState === s.state
+                        ? "bg-secondary text-white shadow-lg shadow-blue-200 translate-x-1"
+                        : "bg-gray-50 text-gray-400 hover:bg-gray-100"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      {s.state}
+                      <IconWorld
+                        size={16}
+                        className={
+                          activeState === s.state ? "opacity-100" : "opacity-0"
+                        }
+                      />
+                    </div>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Navigation */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-12 pt-8 border-t border-slate-200">
-              <button
-                type="button"
-                onClick={() => navigate(-1)}
-                className="flex-1 bg-white text-slate-700 px-6 py-4 rounded-lg border border-slate-300 hover:bg-slate-50 transition-all duration-200 font-medium flex items-center justify-center"
-              >
-                <IconArrowLeft size={20} className="mr-2" />
-                Back
-              </button>
-
-              <button
-                onClick={handleNext}
-                disabled={selected.length === 0}
-                className={`flex-1 px-6 py-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center
-                  ${
-                    selected.length === 0
-                      ? "bg-slate-300 text-slate-500 cursor-not-allowed"
-                      : "bg-blue-900 text-white hover:bg-blue-800 hover:shadow-lg"
-                  }`}
-              >
-                Next: Home Vibe
-                <IconArrowRight size={20} className="ml-2" />
-              </button>
-            </div>
-
-            {selected.length === 0 && (
-              <div className="mt-4 text-center text-slate-500 text-sm">
-                Please select at least one location to continue
+            {/* Neighborhood Grid - Right Column */}
+            <div className="md:col-span-8 space-y-6">
+              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary">
+                Neighborhoods in {activeState}
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                {filteredLocations.map((loc) => {
+                  const isSelected = selected.includes(loc);
+                  const isLimitReached = selected.length === 3 && !isSelected;
+                  return (
+                    <button
+                      key={loc}
+                      disabled={isLimitReached}
+                      onClick={() => toggleLocation(loc)}
+                      className={`p-5 rounded-2xl border-2 text-left transition-all duration-200 group relative ${
+                        isSelected
+                          ? "border-secondary bg-blue-50/30 shadow-sm"
+                          : "border-gray-100 bg-gray-50/50 hover:border-gray-200"
+                      } ${
+                        isLimitReached
+                          ? "opacity-40 cursor-not-allowed"
+                          : "active:scale-95"
+                      }`}
+                    >
+                      <div className="flex justify-between items-center">
+                        <span
+                          className={`font-bold ${
+                            isSelected ? "text-primary" : "text-gray-600"
+                          }`}
+                        >
+                          {loc}
+                        </span>
+                        {isSelected && (
+                          <IconCheck
+                            size={18}
+                            stroke={3}
+                            className="text-secondary"
+                          />
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
-            )}
+            </div>
           </div>
         </div>
 
-        {/* Help Text */}
-        <div className="mt-8 text-center text-sm text-slate-500 max-w-md mx-auto">
-          <p className="flex items-center justify-center">
-            <IconMapPin size={16} className="mr-2" />
-            Can't find your location? Contact support for assistance
-          </p>
+        {/* Footer Action */}
+        <div className="mt-20 border-t border-gray-100 pt-10">
+          <button
+            onClick={handleNext}
+            disabled={selected.length === 0}
+            className={`w-full h-16 rounded-2xl font-black text-lg flex items-center justify-center gap-3 transition-all duration-300
+              ${
+                selected.length === 0
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : "bg-primary text-white hover:bg-black hover:shadow-[0_20px_50px_rgba(30,58,138,0.3)] active:scale-[0.98]"
+              }`}
+          >
+            Home Vibe
+            <IconArrowRight size={22} />
+          </button>
+          {selected.length === 0 && (
+            <p className="text-center mt-4 text-xs font-bold text-gray-400 uppercase tracking-widest">
+              Please select at least one location
+            </p>
+          )}
         </div>
       </div>
     </div>
