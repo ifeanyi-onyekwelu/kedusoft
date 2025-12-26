@@ -4,7 +4,10 @@ set -e
 echo "Applying database migrations..."
 flask db upgrade
 
-echo "seeding properties and users..."
+echo "seeding users..."
+flask seed
+
+echo "seeding properties..."
 flask seed
 
 echo "Starting Gunicorn..."
