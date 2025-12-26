@@ -15,11 +15,7 @@ import click
 from .utils.helpers import response
 from .utils.variables import (
     APP_NAME,
-    MAIL_SERVER,
-    MAIL_PASSWORD,
-    MAIL_PORT,
     APP_SECRET,
-    MAIL_USERNAME,
     JWT_SECRET,
     DATABASE_URL,
 )
@@ -97,13 +93,6 @@ def create_app():
             "APP_SECRET": APP_SECRET,
             "SECRET_KEY": APP_SECRET,
             "JWT_SECRET_KEY": JWT_SECRET,
-            "MAIL_SERVER": MAIL_SERVER,
-            "MAIL_PORT": int(MAIL_PORT),  # Ensure port is integer
-            "MAIL_USE_TLS": True,
-            "MAIL_USE_SSL": False,  # Use TLS, not SSL for Gmail
-            "MAIL_USERNAME": MAIL_USERNAME,
-            "MAIL_PASSWORD": MAIL_PASSWORD,
-            "MAIL_DEFAULT_SENDER": MAIL_USERNAME,
         }
     )
 
