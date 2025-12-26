@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useOnboarding } from "../../../context/OnboardingContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   IconBed,
   IconBath,
@@ -67,6 +67,24 @@ export default function PropertyDetailsPage() {
   const [amenities, setAmenities] = useState<string[]>(
     preferences.amenities ?? []
   );
+
+  // Load saved values from context when component mounts
+  useEffect(() => {
+    if (preferences.bedrooms !== undefined) setBedrooms(preferences.bedrooms);
+    if (preferences.bathrooms !== undefined)
+      setBathrooms(preferences.bathrooms);
+    if (preferences.parking_space !== undefined)
+      setParkingSpace(preferences.parking_space);
+    if (preferences.furnished) setFurnished(preferences.furnished);
+    if (preferences.pets) setPets(preferences.pets);
+    if (preferences.kitchens !== undefined) setKitchens(preferences.kitchens);
+    if (preferences.floors_no !== undefined) setFloorsNo(preferences.floors_no);
+    if (preferences.year_built !== undefined)
+      setYearBuilt(preferences.year_built);
+    if (preferences.minimum_lease_duration)
+      setMinimumLeaseDuration(preferences.minimum_lease_duration);
+    if (preferences.amenities) setAmenities(preferences.amenities);
+  }, []);
 
   const handleNumberChange =
     (setter: React.Dispatch<React.SetStateAction<number | "">>) =>

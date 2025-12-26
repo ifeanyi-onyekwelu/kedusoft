@@ -14,7 +14,7 @@ import {
   IconRefresh,
 } from "@tabler/icons-react";
 import { FaIdCard } from "react-icons/fa6";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function CompletionPage() {
   const navigate = useNavigate();
@@ -22,42 +22,37 @@ export default function CompletionPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Debug: Log preferences on mount
+  useEffect(() => {
+    console.log("CompletionPage preferences:", preferences);
+  }, [preferences]);
+
   const handleComplete = async () => {
     setIsSubmitting(true);
     setError(null);
-
     try {
       const success = await completeOnboarding();
-      console.log("Onboarding completion response:", success);
-
       if (success) {
         navigate("/onboarding/personalizing");
       } else {
         setError("Failed to save your preferences. Please try again.");
       }
     } catch (err) {
-      console.error("Onboarding completion error:", err);
-      setError(
-        "An unexpected error occurred. Please try again or contact support if the problem persists."
-      );
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleRetry = () => {
-    setError(null);
-    handleComplete();
+  const formatNaira = (amount: number) => {
+    if (amount >= 1000000) return `₦${(amount / 1000000).toFixed(1)}M`;
+    if (amount >= 1000) return `₦${(amount / 1000).toFixed(0)}K`;
+    return `₦${amount}`;
   };
 
-  const formatNaira = (amount: number) => {
-    if (amount >= 1000000) {
-      return `₦${(amount / 1000000).toFixed(1)}M`;
-    }
-    if (amount >= 1000) {
-      return `₦${(amount / 1000).toFixed(0)}K`;
-    }
-    return `₦${amount}`;
+  const formatArrayDisplay = (arr: any[] | undefined): string => {
+    if (!arr || arr.length === 0) return "Not specified";
+    return arr.join(", ");
   };
 
   const sections = [
@@ -65,321 +60,206 @@ export default function CompletionPage() {
       id: "personal",
       title: "Personal Profile",
       icon: IconUser,
-      data: [
-        { label: "Occupation", value: preferences.occupation },
-        { label: "Marital Status", value: preferences.maritalStatus },
-        { label: "Household Size", value: preferences.householdSize },
-        {
-          label: "Children",
-          value: preferences.hasChildren
-            ? `${preferences.numberOfChildren} children`
-            : "No children",
-        },
-        { label: "Pets", value: preferences.hasPets ? "Yes" : "No" },
-      ],
       route: "/onboarding/tenant/personal",
+      data: [
+        {
+          label: "Occupation",
+          value: preferences.occupation || "Not specified",
+        },
+        {
+          label: "Marital Status",
+          value: preferences.maritalStatus || "Not specified",
+        },
+        {
+          label: "Household",
+          value: preferences.householdSize
+            ? `${preferences.householdSize} Persons`
+            : "Not specified",
+        },
+      ],
     },
     {
       id: "property",
-      title: "Property Specifications",
+      title: "Property Specs",
       icon: IconHome,
+      route: "/onboarding/tenant/property-details",
       data: [
-        { label: "Bedrooms", value: preferences.bedrooms },
-        { label: "Bathrooms", value: preferences.bathrooms },
-        { label: "Kitchens", value: preferences.kitchens },
-        { label: "Floors", value: preferences.floors_no },
+        { label: "Bedrooms", value: preferences.bedrooms || "Not specified" },
+        { label: "Furnished", value: preferences.furnished || "Not specified" },
         {
           label: "Parking",
           value: preferences.parking_space ? "Required" : "Not required",
         },
-        { label: "Furnished", value: preferences.furnished },
-        { label: "Pets Allowed", value: preferences.pets },
       ],
-      route: "/onboarding/tenant/property-details",
-    },
-    {
-      id: "location",
-      title: "Preferred Locations",
-      icon: IconMapPin,
-      data: [
-        { label: "Selected Areas", value: preferences.locations?.join(", ") },
-      ],
-      route: "/onboarding/tenant/location",
-    },
-    {
-      id: "vibe",
-      title: "Home Style",
-      icon: IconPalette,
-      data: [{ label: "Selected Styles", value: preferences.vibe?.join(", ") }],
-      route: "/onboarding/tenant/vibes",
-    },
-    {
-      id: "features",
-      title: "Essential Features",
-      icon: IconStar,
-      data: [
-        { label: "Selected Features", value: preferences.features?.join(", ") },
-      ],
-      route: "/onboarding/tenant/features",
     },
     {
       id: "budget",
-      title: "Budget & Timeline",
+      title: "Financials",
       icon: IconCurrencyNaira,
+      route: "/onboarding/tenant/budget",
       data: [
         {
-          label: "Budget Range",
+          label: "Range",
           value: `${formatNaira(preferences.minBudget || 0)} - ${formatNaira(
             preferences.maxBudget || 0
           )}`,
         },
         {
-          label: "Preferred Budget",
-          value: formatNaira(preferences.budget || 0),
+          label: "Frequency",
+          value: preferences.paymentFrequency || "Not specified",
         },
-        { label: "Payment Frequency", value: preferences.paymentFrequency },
-        { label: "Move-in Date", value: preferences.moveInDate },
       ],
-      route: "/onboarding/tenant/budget",
     },
     {
-      id: "verification",
-      title: "Verification",
-      icon: FaIdCard,
+      id: "locations",
+      title: "Preferred Locations",
+      icon: IconMapPin,
+      route: "/onboarding/tenant/location",
+      fullWidth: true,
       data: [
-        { label: "Status", value: "Completed" },
         {
-          label: "Documents",
-          value: `${
-            Object.keys(preferences.verificationDocuments || {}).length
-          } documents uploaded`,
+          label: "Locations",
+          value: formatArrayDisplay(preferences.locations),
         },
       ],
-      route: "/onboarding/tenant/verification",
+    },
+    {
+      id: "vibe",
+      title: "Lifestyle Preferences",
+      icon: IconPalette,
+      route: "/onboarding/tenant/vibes",
+      fullWidth: true,
+      data: [
+        { label: "Styles", value: formatArrayDisplay(preferences.vibe) },
+        { label: "Features", value: formatArrayDisplay(preferences.features) },
+      ],
     },
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl">
+    <div className="min-h-screen bg-white font-manrope">
+      {/* 100% Progress Bar */}
+      <div className="fixed top-0 left-0 w-full h-1.5 bg-gray-100 z-50">
+        <div className="h-full bg-secondary w-full" />
+      </div>
+
+      <div className="max-w-6xl mx-auto px-6 pt-16 pb-24">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-2 h-8 bg-blue-900 rounded-full"></div>
-            <h2 className="text-xl font-semibold text-slate-700">
-              Final Review
-            </h2>
-          </div>
-          <h1 className="text-3xl font-bold text-slate-900 mb-3">
-            Review Your Preferences
+        <header className="mb-12">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center text-gray-400 hover:text-primary mb-6 transition-colors font-bold"
+          >
+            <IconArrowLeft size={18} className="mr-2" />
+            <span className="text-xs uppercase tracking-widest text-primary">
+              Back
+            </span>
+          </button>
+          <h1 className="text-4xl font-bold text-gray-900 font-sora mb-2">
+            Final Review
           </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            Everything is set! Review your selections before we start finding
-            your perfect home
+          <p className="text-gray-500 font-medium">
+            Review your selections before we generate your personalized home
+            matches.
           </p>
-        </div>
+        </header>
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          {/* Completion Header */}
-          <div className="bg-slate-900 text-white p-8 text-center">
-            <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <IconCheck size={32} className="text-white" />
-            </div>
-            <h1 className="text-2xl md:text-3xl font-bold mb-2">
-              All Set for Your Home Search
-            </h1>
-            <p className="text-slate-300">
-              {sections.length} sections completed successfully
-            </p>
+        {error && (
+          <div className="mb-8 p-4 bg-red-50 rounded-2xl border-2 border-red-100 flex items-center gap-3 text-red-700 font-bold text-sm">
+            <IconExclamationCircle size={20} />
+            {error}
+            <button onClick={handleComplete} className="ml-auto underline">
+              Try Again
+            </button>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Detailed Review Cards */}
+          <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {sections.map((section) => (
+              <div
+                key={section.id}
+                className={`p-8 rounded-[32px] border-2 border-gray-50 bg-gray-50/50 hover:border-secondary transition-all group ${
+                  section.fullWidth ? "md:col-span-2" : ""
+                }`}
+              >
+                <div className="flex justify-between items-start mb-6">
+                  <div className="p-3 bg-white rounded-2xl shadow-sm text-secondary group-hover:bg-secondary group-hover:text-white transition-all">
+                    <section.icon size={24} />
+                  </div>
+                  <button
+                    onClick={() => navigate(section.route)}
+                    className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-secondary transition-colors flex items-center gap-1"
+                  >
+                    <IconEdit size={14} /> Edit
+                  </button>
+                </div>
+                <h3 className="text-sm font-black uppercase tracking-widest text-gray-400 mb-4">
+                  {section.title}
+                </h3>
+                <div className="space-y-4">
+                  {section.data.map((item, i) => (
+                    <div key={i} className="flex flex-col">
+                      <span className="text-[11px] font-bold text-gray-400 uppercase tracking-tighter">
+                        {item.label}
+                      </span>
+                      <span className="text-sm font-bold text-gray-900">
+                        {item.value || "Not specified"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
 
-          <div className="p-8">
-            {/* Error Alert */}
-            {error && (
-              <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4">
-                <div className="flex items-start gap-3">
-                  <IconExclamationCircle
-                    size={20}
-                    className="text-red-600 mt-0.5 flex-shrink-0"
-                  />
-                  <div className="flex-1">
-                    <h3 className="text-red-800 font-medium mb-1">
-                      Submission Failed
-                    </h3>
-                    <p className="text-red-700 text-sm">{error}</p>
-                    <div className="flex gap-3 mt-3">
-                      <button
-                        onClick={handleRetry}
-                        disabled={isSubmitting}
-                        className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                      >
-                        <IconRefresh size={16} />
-                        Try Again
-                      </button>
-                      <button
-                        onClick={() => setError(null)}
-                        className="bg-white text-red-700 border border-red-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors"
-                      >
-                        Dismiss
-                      </button>
-                    </div>
+          {/* Submission Sidebar */}
+          <div className="lg:col-span-4">
+            <div className="sticky top-24 bg-primary rounded-[40px] p-10 text-white shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-secondary opacity-20 rounded-full -mr-16 -mt-16 blur-3xl" />
+
+              <div className="w-16 h-16 bg-secondary/20 rounded-3xl flex items-center justify-center mb-8">
+                <IconCheck size={32} className="text-secondary" />
+              </div>
+
+              <h2 className="text-3xl font-bold font-sora mb-4 leading-tight">
+                Ready to Find Your Home?
+              </h2>
+              <p className="text-gray-400 font-medium text-sm mb-8 leading-relaxed">
+                By clicking complete, we'll analyze your preferences against
+                thousands of listings to find your best matches.
+              </p>
+
+              <div className="space-y-4 mb-10">
+                <div className="flex items-center gap-3 text-xs font-bold text-gray-300">
+                  <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center text-green-500">
+                    <IconCheck size={12} />
                   </div>
+                  Identity Verified
                 </div>
-              </div>
-            )}
-
-            {/* Progress Summary */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 text-center">
-                <div className="text-2xl font-bold text-blue-900">
-                  {sections.length}
-                </div>
-                <div className="text-sm text-blue-700">Sections Completed</div>
-              </div>
-              <div className="bg-sky-50 p-4 rounded-xl border border-sky-200 text-center">
-                <div className="text-2xl font-bold text-sky-700">
-                  {preferences.locations?.length || 0}
-                </div>
-                <div className="text-sm text-sky-700">Locations</div>
-              </div>
-              <div className="bg-slate-100 p-4 rounded-xl border border-slate-300 text-center">
-                <div className="text-2xl font-bold text-slate-700">
-                  {preferences.features?.length || 0}
-                </div>
-                <div className="text-sm text-slate-600">Features</div>
-              </div>
-              <div className="bg-green-50 p-4 rounded-xl border border-green-200 text-center">
-                <div className="text-2xl font-bold text-green-700">
-                  {Object.keys(preferences.verificationDocuments || {}).length}
-                </div>
-                <div className="text-sm text-green-700">Documents</div>
-              </div>
-            </div>
-
-            {/* Sections Review */}
-            <div className="space-y-6 mb-8">
-              {sections.map((section) => {
-                const IconComponent = section.icon;
-                return (
-                  <div
-                    key={section.id}
-                    className="border border-slate-200 rounded-xl p-6 hover:shadow-sm transition-all duration-200"
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                          <IconComponent size={20} className="text-blue-900" />
-                        </div>
-                        <div>
-                          <h3 className="text-lg font-semibold text-slate-800">
-                            {section.title}
-                          </h3>
-                          <p className="text-sm text-slate-500">
-                            {section.data.length} details provided
-                          </p>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => navigate(section.route)}
-                        disabled={isSubmitting}
-                        className="flex items-center gap-2 text-blue-900 hover:text-blue-700 transition-colors bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <IconEdit size={16} />
-                        <span className="text-sm font-medium">Edit</span>
-                      </button>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {section.data.map((item, index) => (
-                        <div
-                          key={index}
-                          className="flex justify-between items-center py-2 border-b border-slate-100"
-                        >
-                          <span className="text-sm text-slate-600 font-medium">
-                            {item.label}
-                          </span>
-                          <span className="text-sm text-slate-800 bg-slate-50 px-3 py-1 rounded-md">
-                            {item.value || "Not specified"}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
+                <div className="flex items-center gap-3 text-xs font-bold text-gray-300">
+                  <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center text-green-500">
+                    <IconCheck size={12} />
                   </div>
-                );
-              })}
-            </div>
-
-            {/* Summary Card */}
-            <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 mb-8">
-              <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                <IconCheck size={20} className="text-green-600" />
-                Ready to Find Your Home
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-600">
-                <p>
-                  Based on your preferences, we'll start matching you with
-                  properties that meet your specific requirements.
-                </p>
-                <p>
-                  You can always update your preferences later from your account
-                  settings.
-                </p>
+                  Profile Completed
+                </div>
               </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button
-                type="button"
-                onClick={() => navigate("/onboarding/tenant/verification")}
-                disabled={isSubmitting}
-                className="flex-1 bg-white text-slate-700 px-6 py-4 rounded-lg border border-slate-300 hover:bg-slate-50 transition-all duration-200 font-medium flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <IconArrowLeft size={20} className="mr-2" />
-                Back to Verification
-              </button>
 
               <button
                 onClick={handleComplete}
                 disabled={isSubmitting}
-                className={`flex-1 px-6 py-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center ${
-                  isSubmitting
-                    ? "bg-blue-600 cursor-not-allowed"
-                    : "bg-blue-900 hover:bg-blue-800 hover:shadow-lg"
-                } text-white`}
+                className="w-full h-16 bg-secondary text-white rounded-2xl font-black text-lg transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-secondary/20 flex items-center justify-center disabled:opacity-50"
               >
                 {isSubmitting ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                    Saving Your Preferences...
-                  </>
+                  <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
-                  <>
-                    Complete Onboarding
-                    <IconCheck size={20} className="ml-2" />
-                  </>
+                  "Complete Profile"
                 )}
               </button>
-            </div>
 
-            {/* Privacy Notice */}
-            <div className="mt-6 text-center text-sm text-slate-500">
-              <p>
-                By completing onboarding, you agree to our{" "}
-                <a
-                  href="#"
-                  className="text-blue-900 hover:underline font-medium"
-                >
-                  Terms of Service
-                </a>{" "}
-                and{" "}
-                <a
-                  href="#"
-                  className="text-blue-900 hover:underline font-medium"
-                >
-                  Privacy Policy
-                </a>
+              <p className="text-[10px] text-gray-500 text-center mt-6 uppercase tracking-widest font-bold">
+                Terms & Privacy Apply
               </p>
             </div>
           </div>

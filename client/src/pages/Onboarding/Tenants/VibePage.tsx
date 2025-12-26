@@ -24,115 +24,112 @@ import {
   IconBeach,
 } from "@tabler/icons-react";
 
-const vibes = [
+const VIBES = [
   {
     id: "modern-minimalist",
     name: "Modern Minimalist",
     icon: IconLeaf,
-    description: "Clean lines, uncluttered spaces, and functional design",
+    description: "Clean lines and functional design",
   },
   {
     id: "cozy-traditional",
     name: "Cozy & Traditional",
     icon: IconArmchair,
-    description: "Warm textures, classic furniture, and inviting atmosphere",
+    description: "Warm textures and inviting atmosphere",
   },
   {
     id: "vibrant-eclectic",
     name: "Vibrant & Eclectic",
     icon: IconPalette,
-    description: "Bold colors, mixed patterns, and personal collections",
+    description: "Bold colors and mixed patterns",
   },
   {
     id: "spacious-family",
-    name: "Spacious Family Home",
+    name: "Spacious Family",
     icon: IconUsers,
-    description:
-      "Practical layouts, durable materials, and kid-friendly spaces",
+    description: "Practical and kid-friendly layouts",
   },
   {
     id: "urban-loft",
     name: "Urban Loft",
     icon: IconBuildingSkyscraper,
-    description: "Open layouts, industrial elements, and city views",
+    description: "Industrial elements and city views",
   },
   {
     id: "luxury-living",
     name: "Luxury Living",
     icon: IconCrown,
-    description: "Premium finishes, statement pieces, and elegant details",
+    description: "Premium finishes and elegant details",
   },
   {
     id: "nature-inspired",
     name: "Nature Inspired",
     icon: IconTrees,
-    description: "Natural materials, organic shapes, and indoor plants",
+    description: "Natural materials and organic shapes",
   },
   {
     id: "industrial-chic",
     name: "Industrial Chic",
     icon: IconBuildingFactory,
-    description: "Exposed structures, raw materials, and utilitarian aesthetic",
+    description: "Raw materials and utilitarian vibes",
   },
   {
     id: "scandinavian-calm",
     name: "Scandinavian Calm",
     icon: IconSnowflake,
-    description: "Light colors, functional simplicity, and hygge elements",
+    description: "Light colors and simple hygge",
   },
   {
     id: "bohemian-retreat",
     name: "Bohemian Retreat",
     icon: IconMoon,
-    description: "Layered textiles, global influences, and free-spirited vibe",
+    description: "Layered textiles and global vibes",
   },
   {
     id: "classic-elegance",
     name: "Classic Elegance",
     icon: IconBuildingLighthouse,
-    description:
-      "Timeless furniture, refined details, and sophisticated palette",
+    description: "Timeless and sophisticated palette",
   },
   {
     id: "smart-techy",
     name: "Smart & Techy",
     icon: IconDeviceGamepad,
-    description: "Automated systems, integrated tech, and futuristic elements",
+    description: "Integrated tech and automation",
   },
   {
     id: "artistic-studio",
     name: "Artistic Studio",
     icon: IconBrush,
-    description: "Creative spaces, gallery walls, and inspiring environment",
+    description: "Creative and inspiring environments",
   },
   {
     id: "resort-style",
     name: "Resort Style",
     icon: IconBeach,
-    description: "Spa-like bathrooms, outdoor living, and vacation vibes",
+    description: "Spa-like and vacation feelings",
   },
   {
     id: "vintage-charm",
     name: "Vintage Charm",
     icon: IconClock,
-    description: "Antique pieces, nostalgic elements, and retro flair",
+    description: "Antique pieces and nostalgic flair",
   },
   {
     id: "zen-sanctuary",
     name: "Zen Sanctuary",
     icon: IconYoga,
-    description: "Tranquil spaces, minimalist design, and peaceful atmosphere",
+    description: "Tranquil and peaceful atmosphere",
   },
 ];
 
 export default function VibePage() {
   const navigate = useNavigate();
   const { updatePreference, preferences } = useOnboarding();
+
   const [selected, setSelected] = useState<string[]>(() => {
     return preferences.vibe
-      ? vibes
-          .filter((vibe) => preferences.vibe.includes(vibe.name))
-          .map((vibe) => vibe.id)
+      ? VIBES.filter((v) => preferences.vibe.includes(v.name)).map((v) => v.id)
       : [];
   });
 
@@ -148,204 +145,134 @@ export default function VibePage() {
 
   const handleNext = () => {
     if (selected.length === 0) return;
-
-    const selectedVibes = vibes
-      .filter((vibe) => selected.includes(vibe.id))
-      .map((vibe) => vibe.name);
-
-    updatePreference("vibe", selectedVibes);
+    const selectedVibeNames = VIBES.filter((v) => selected.includes(v.id)).map(
+      (v) => v.name
+    );
+    updatePreference("vibe", selectedVibeNames);
     navigate("/onboarding/tenant/features");
   };
 
-  const selectedVibes = vibes.filter((vibe) => selected.includes(vibe.id));
-
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl">
+    <div className="min-h-screen bg-white font-manrope">
+      {/* Brand Progress Bar - Step 4 of 5 (80%) */}
+      <div className="fixed top-0 left-0 w-full h-1.5 bg-gray-100 z-50">
+        <div className="h-full bg-secondary w-[80%] transition-all duration-500" />
+      </div>
+
+      <div className="max-w-5xl mx-auto px-6 pt-16 pb-24">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-2 h-8 bg-blue-900 rounded-full"></div>
-            <h2 className="text-xl font-semibold text-slate-700">
-              Step 3 of 5
-            </h2>
-          </div>
-          <h1 className="text-3xl font-bold text-slate-900 mb-3">
-            Define Your Home Vibe
+        <header className="mb-12">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center text-gray-500 hover:text-primary mb-6 transition-colors font-bold"
+          >
+            <IconArrowLeft size={18} className="mr-2" />
+            <span className="text-xs uppercase tracking-widest">Back</span>
+          </button>
+          <h1 className="text-4xl font-bold text-gray-900 font-sora mb-2">
+            Home Aesthetic
           </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            Select up to 2 styles that reflect your personality and preferences
+          <p className="text-gray-500 font-medium">
+            Define the atmosphere of your ideal home. Pick up to 2 vibes.
           </p>
+        </header>
+
+        <div className="space-y-10">
+          {/* Selection Counter */}
+          <div className="flex justify-between items-center border-b border-gray-100 pb-6">
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary">
+              Choose your style
+            </h3>
+            <div className="flex items-center gap-2">
+              <span
+                className={`text-sm font-black ${
+                  selected.length === 2 ? "text-secondary" : "text-gray-400"
+                }`}
+              >
+                {selected.length} of 2 SELECTED
+              </span>
+            </div>
+          </div>
+
+          {/* Vibe Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {VIBES.map((vibe) => {
+              const IconComponent = vibe.icon;
+              const isSelected = selected.includes(vibe.id);
+              const isDisabled = selected.length === 2 && !isSelected;
+
+              return (
+                <button
+                  key={vibe.id}
+                  onClick={() => toggleVibe(vibe.id)}
+                  disabled={isDisabled}
+                  className={`relative p-6 rounded-2xl border-2 text-left transition-all duration-300 group flex flex-col h-full
+                    ${
+                      isSelected
+                        ? "border-secondary bg-blue-50/30 shadow-md translate-y-[-4px]"
+                        : "border-gray-100 bg-gray-50/50 hover:border-gray-200"
+                    }
+                    ${
+                      isDisabled
+                        ? "opacity-40 cursor-not-allowed grayscale"
+                        : "active:scale-95"
+                    }
+                  `}
+                >
+                  <div
+                    className={`w-12 h-12 rounded-xl mb-4 flex items-center justify-center transition-colors
+                    ${
+                      isSelected
+                        ? "bg-secondary text-white"
+                        : "bg-white text-gray-400 group-hover:text-primary shadow-sm"
+                    }
+                  `}
+                  >
+                    <IconComponent size={24} stroke={1.5} />
+                  </div>
+
+                  <h4
+                    className={`font-bold text-sm mb-1 ${
+                      isSelected ? "text-primary" : "text-gray-900"
+                    }`}
+                  >
+                    {vibe.name}
+                  </h4>
+                  <p className="text-xs text-gray-500 font-medium leading-relaxed">
+                    {vibe.description}
+                  </p>
+
+                  {isSelected && (
+                    <div className="absolute top-4 right-4 text-secondary">
+                      <IconCheck size={20} stroke={3} />
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="p-8">
-            {/* Progress indicator */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-medium text-slate-700">
-                  Your selections
-                </span>
-                <span className="text-sm font-medium text-blue-900">
-                  {selected.length}/2 selected
-                </span>
-              </div>
-              <div className="w-full bg-slate-200 rounded-full h-2">
-                <div
-                  className="bg-blue-900 h-2 rounded-full transition-all duration-500"
-                  style={{ width: `${(selected.length / 2) * 100}%` }}
-                ></div>
-              </div>
-            </div>
-
-            {/* Selected Vibes Preview */}
-            {selected.length > 0 && (
-              <div className="mb-8 bg-blue-50 p-6 rounded-xl border border-blue-200">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                  <IconCheck size={20} className="text-blue-900" />
-                  Your Selected Styles
-                </h3>
-                <div className="flex flex-wrap gap-3">
-                  {selectedVibes.map((vibe) => {
-                    const IconComponent = vibe.icon;
-                    return (
-                      <div
-                        key={vibe.id}
-                        className="flex items-center bg-white px-4 py-3 rounded-lg font-medium shadow-sm border border-slate-200"
-                      >
-                        <IconComponent
-                          size={18}
-                          className="text-blue-900 mr-2"
-                        />
-                        <span>{vibe.name}</span>
-                        <button
-                          onClick={() => toggleVibe(vibe.id)}
-                          className="ml-3 text-slate-500 hover:text-red-500 focus:outline-none transition-colors"
-                        >
-                          <IconX size={16} />
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Vibe Selection Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
-              {vibes.map((vibe) => {
-                const IconComponent = vibe.icon;
-                return (
-                  <button
-                    key={vibe.id}
-                    type="button"
-                    onClick={() => toggleVibe(vibe.id)}
-                    disabled={
-                      selected.length === 2 && !selected.includes(vibe.id)
-                    }
-                    className={`p-6 rounded-lg border transition-all duration-200 flex flex-col items-center justify-center text-center min-h-[160px] group
-                      ${
-                        selected.includes(vibe.id)
-                          ? "bg-blue-900 text-white border-blue-900 shadow-sm"
-                          : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
-                      }
-                      ${
-                        selected.length === 2 && !selected.includes(vibe.id)
-                          ? "opacity-50 cursor-not-allowed"
-                          : ""
-                      }
-                    `}
-                  >
-                    <div
-                      className={`p-3 rounded-lg mb-4 transition-colors ${
-                        selected.includes(vibe.id)
-                          ? "bg-blue-800"
-                          : "bg-slate-100 group-hover:bg-slate-200"
-                      }`}
-                    >
-                      <IconComponent
-                        size={24}
-                        className={
-                          selected.includes(vibe.id)
-                            ? "text-white"
-                            : "text-slate-600"
-                        }
-                      />
-                    </div>
-                    <h3 className="font-semibold mb-2 text-sm">{vibe.name}</h3>
-                    <p
-                      className={`text-xs ${
-                        selected.includes(vibe.id)
-                          ? "text-blue-200"
-                          : "text-slate-500"
-                      }`}
-                    >
-                      {vibe.description}
-                    </p>
-
-                    {/* Selection indicator */}
-                    {selected.includes(vibe.id) && (
-                      <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-white flex items-center justify-center">
-                        <IconCheck size={14} className="text-blue-900" />
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Summary Card */}
-            <div className="bg-slate-900 text-white p-6 rounded-xl mb-8">
-              <h3 className="text-lg font-semibold mb-4">Style Summary</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-slate-300">Styles Selected:</span>
-                  <span className="font-medium">{selected.length}/2</span>
-                </div>
-                {selected.length > 0 && (
-                  <>
-                    <div className="h-px bg-slate-700 my-3"></div>
-                    <div className="text-slate-300 text-sm">
-                      Your selected styles will help us match you with
-                      properties that fit your aesthetic preferences
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* Navigation */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-8 border-t border-slate-200">
-              <button
-                type="button"
-                onClick={() => navigate(-1)}
-                className="flex-1 bg-white text-slate-700 px-6 py-4 rounded-lg border border-slate-300 hover:bg-slate-50 transition-all duration-200 font-medium flex items-center justify-center"
-              >
-                <IconArrowLeft size={20} className="mr-2" />
-                Back
-              </button>
-
-              <button
-                onClick={handleNext}
-                disabled={selected.length === 0}
-                className={`flex-1 px-6 py-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center
-                  ${
-                    selected.length === 0
-                      ? "bg-slate-300 text-slate-500 cursor-not-allowed"
-                      : "bg-blue-900 text-white hover:bg-blue-800 hover:shadow-lg"
-                  }`}
-              >
-                Next: Must-Have Features
-                <IconArrowRight size={20} className="ml-2" />
-              </button>
-            </div>
-
-            {selected.length === 0 && (
-              <div className="mt-4 text-center text-slate-500 text-sm">
-                Please select at least one style to continue
-              </div>
-            )}
-          </div>
+        {/* Footer Action */}
+        <div className="mt-20 border-t border-gray-100 pt-10">
+          <button
+            onClick={handleNext}
+            disabled={selected.length === 0}
+            className={`w-full h-16 rounded-2xl font-black text-lg flex items-center justify-center gap-3 transition-all duration-300
+              ${
+                selected.length === 0
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : "bg-primary text-white hover:bg-black hover:shadow-[0_20px_50px_rgba(30,58,138,0.3)] active:scale-[0.98]"
+              }`}
+          >
+            Must-Have Features
+            <IconArrowRight size={22} />
+          </button>
+          {selected.length === 0 && (
+            <p className="text-center mt-4 text-xs font-bold text-gray-400 uppercase tracking-widest">
+              Select at least one vibe to continue
+            </p>
+          )}
         </div>
       </div>
     </div>

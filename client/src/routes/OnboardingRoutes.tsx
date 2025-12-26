@@ -9,7 +9,6 @@ import CompletionPage from "../pages/Onboarding/Tenants/CompletionPage";
 import BudgetPage from "../pages/Onboarding/Tenants/BudgetPage";
 import FeaturesPage from "../pages/Onboarding/Tenants/FeaturesPage";
 import PropertyDetailsPage from "../pages/Onboarding/Tenants/PropertyDetailsPage";
-import VerificationPage from "@/pages/Onboarding/Tenants/VerificationPage";
 import PersonalDetailsPage from "@/pages/Onboarding/Tenants/PersonalDetails";
 
 // Landlord Onboarding
@@ -42,12 +41,11 @@ function OnboardingRoutes() {
           <Route path="welcome" element={<TenantWelcomePage />} />
           <Route path="personal" element={<PersonalDetailsPage />} />
           <Route path="property-details" element={<PropertyDetailsPage />} />
-          <Route path="verification" element={<VerificationPage />} />
           <Route path="location" element={<LocationPage />} />
           <Route path="vibes" element={<VibePage />} />
-          <Route path="summary" element={<CompletionPage />} />
-          <Route path="budget" element={<BudgetPage />} />
           <Route path="features" element={<FeaturesPage />} />
+          <Route path="budget" element={<BudgetPage />} />
+          <Route path="summary" element={<CompletionPage />} />
         </Route>
       </Route>
 

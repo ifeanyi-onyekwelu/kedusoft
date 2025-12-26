@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useOnboarding } from "../../../context/OnboardingContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   IconSchool,
   IconBriefcase,
@@ -47,6 +47,18 @@ export default function PersonalDetailsPage() {
     preferences.numberOfChildren || 0
   );
   const [hasPets, setHasPets] = useState(preferences.hasPets || false);
+
+  // Load saved values from context when component mounts
+  useEffect(() => {
+    if (preferences.occupation) setOccupation(preferences.occupation);
+    if (preferences.maritalStatus) setMaritalStatus(preferences.maritalStatus);
+    if (preferences.householdSize) setHouseholdSize(preferences.householdSize);
+    if (preferences.hasChildren !== undefined)
+      setHasChildren(preferences.hasChildren);
+    if (preferences.numberOfChildren)
+      setNumberOfChildren(preferences.numberOfChildren);
+    if (preferences.hasPets !== undefined) setHasPets(preferences.hasPets);
+  }, []);
 
   const handleNext = () => {
     updatePreference("occupation", occupation);

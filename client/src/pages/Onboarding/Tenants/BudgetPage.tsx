@@ -11,14 +11,12 @@ import {
   IconCheck,
 } from "@tabler/icons-react";
 
-// Payment frequency options
 const PAYMENT_FREQUENCIES = [
   { id: "monthly", label: "Monthly", description: "Pay rent every month" },
   { id: "quarterly", label: "Quarterly", description: "Pay every 3 months" },
   { id: "annually", label: "Annually", description: "Pay once per year" },
 ];
 
-// Additional cost options
 const ADDITIONAL_COSTS = [
   {
     id: "utilities",
@@ -55,20 +53,27 @@ export default function BudgetPage() {
     preferences.additionalCosts || ["utilities"]
   );
 
-  // Update min/max when budget changes
   useEffect(() => {
     if (budget < minBudget) setMinBudget(budget);
     if (budget > maxBudget) setMaxBudget(budget);
   }, [budget, minBudget, maxBudget]);
 
-  // Format currency in Naira
+  // Load saved values from context when component mounts
+  useEffect(() => {
+    if (preferences.budget) setBudget(preferences.budget);
+    if (preferences.minBudget) setMinBudget(preferences.minBudget);
+    if (preferences.maxBudget) setMaxBudget(preferences.maxBudget);
+    if (preferences.paymentFrequency)
+      setPaymentFrequency(preferences.paymentFrequency);
+    if (preferences.moveInDate) setMoveInDate(preferences.moveInDate);
+    if (preferences.additionalCosts && preferences.additionalCosts.length > 0) {
+      setAdditionalCosts(preferences.additionalCosts);
+    }
+  }, []);
+
   const formatNaira = (amount: number) => {
-    if (amount >= 1000000) {
-      return `₦${(amount / 1000000).toFixed(1)}M`;
-    }
-    if (amount >= 1000) {
-      return `₦${(amount / 1000).toFixed(0)}K`;
-    }
+    if (amount >= 1000000) return `₦${(amount / 1000000).toFixed(1)}M`;
+    if (amount >= 1000) return `₦${(amount / 1000).toFixed(0)}K`;
     return `₦${amount}`;
   };
 
@@ -79,7 +84,6 @@ export default function BudgetPage() {
     updatePreference("paymentFrequency", paymentFrequency);
     updatePreference("moveInDate", moveInDate);
     updatePreference("additionalCosts", additionalCosts);
-
     navigate("/onboarding/tenant/summary");
   };
 
@@ -90,290 +94,243 @@ export default function BudgetPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl">
+    <div className="min-h-screen bg-white font-manrope">
+      {/* Brand Progress Bar - Final Step (100%) */}
+      <div className="fixed top-0 left-0 w-full h-1.5 bg-gray-100 z-50">
+        <div className="h-full bg-secondary w-full transition-all duration-500" />
+      </div>
+
+      <div className="max-w-6xl mx-auto px-6 pt-16 pb-24">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-2 h-8 bg-blue-900 rounded-full"></div>
-            <h2 className="text-xl font-semibold text-slate-700">
-              Step 5 of 5
-            </h2>
-          </div>
-          <h1 className="text-3xl font-bold text-slate-900 mb-3">
+        <header className="mb-12">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center text-gray-400 hover:text-primary mb-6 transition-colors font-bold"
+          >
+            <IconArrowLeft size={18} className="mr-2" />
+            <span className="text-xs uppercase tracking-widest">Back</span>
+          </button>
+          <h1 className="text-4xl font-bold text-gray-900 font-sora mb-2">
             Budget & Timeline
           </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            Set your financial parameters and preferred move-in schedule
+          <p className="text-gray-500 font-medium">
+            Finalize your financial range and moving schedule.
           </p>
-        </div>
+        </header>
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="p-8">
-            {/* Budget Range Section */}
-            <div className="mb-8 bg-slate-50 p-6 rounded-xl border border-slate-200">
-              <h3 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
-                <IconCurrencyNaira size={20} className="text-blue-900" />
-                Your Budget Range
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          {/* Main Controls */}
+          <div className="lg:col-span-7 space-y-12">
+            {/* Range Selectors */}
+            <section>
+              <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6">
+                Price Range
               </h3>
-
-              {/* Budget Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <BudgetCard
-                  title="Minimum Budget"
+              <div className="space-y-8">
+                <BudgetSlider
+                  label="Minimum Budget"
                   value={minBudget}
-                  formattedValue={formatNaira(minBudget)}
+                  max={maxBudget}
+                  step={10000}
                   onChange={setMinBudget}
-                  min={50000}
-                  max={maxBudget}
-                  icon={IconCurrencyNaira}
-                  color="bg-blue-100"
+                  format={formatNaira}
                 />
-                <BudgetCard
-                  title="Preferred Budget"
-                  value={budget}
-                  formattedValue={formatNaira(budget)}
-                  onChange={setBudget}
-                  min={minBudget}
-                  max={maxBudget}
-                  icon={IconCash}
-                  color="bg-sky-100"
-                />
-                <BudgetCard
-                  title="Maximum Budget"
+                <BudgetSlider
+                  label="Maximum Budget"
                   value={maxBudget}
-                  formattedValue={formatNaira(maxBudget)}
-                  onChange={setMaxBudget}
                   min={minBudget}
-                  max={2500000}
-                  icon={IconCurrencyNaira}
-                  color="bg-slate-100"
+                  max={5000000}
+                  step={50000}
+                  onChange={setMaxBudget}
+                  format={formatNaira}
                 />
               </div>
+            </section>
 
-              {/* Budget Summary */}
-              <div className="bg-slate-900 text-white p-6 rounded-xl">
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <IconCheck size={20} className="text-sky-400" />
-                  Budget Summary
-                </h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-slate-300">Minimum Budget:</span>
-                    <span className="font-medium">
-                      {formatNaira(minBudget)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-300">Preferred Budget:</span>
-                    <span className="font-medium text-sky-400">
-                      {formatNaira(budget)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-300">Maximum Budget:</span>
-                    <span className="font-medium">
-                      {formatNaira(maxBudget)}
-                    </span>
-                  </div>
-                  <div className="h-px bg-slate-700 my-3"></div>
-                  <div className="flex justify-between font-medium">
-                    <span className="text-slate-300">Total Range:</span>
-                    <span className="text-sky-400">
-                      {formatNaira(minBudget)} - {formatNaira(maxBudget)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-              {/* Payment Frequency */}
-              <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                  <IconCash size={20} className="text-blue-900" />
+            {/* Frequency & Date Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <section>
+                <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6">
                   Payment Frequency
                 </h3>
-                <div className="space-y-3">
-                  {PAYMENT_FREQUENCIES.map((freq) => (
+                <div className="flex flex-col gap-3">
+                  {PAYMENT_FREQUENCIES.map((f) => (
                     <button
-                      key={freq.id}
-                      type="button"
-                      onClick={() => setPaymentFrequency(freq.id)}
-                      className={`w-full p-4 rounded-lg border transition-all duration-200 text-left
-                        ${
-                          paymentFrequency === freq.id
-                            ? "bg-blue-900 text-white border-blue-900 shadow-sm"
-                            : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
-                        }
-                      `}
+                      key={f.id}
+                      onClick={() => setPaymentFrequency(f.id)}
+                      className={`px-5 py-4 rounded-2xl border-2 text-left transition-all ${
+                        paymentFrequency === f.id
+                          ? "border-secondary bg-blue-50/30"
+                          : "border-gray-50 bg-gray-50 hover:bg-gray-100"
+                      }`}
                     >
-                      <div className="font-medium mb-1">{freq.label}</div>
-                      <div
-                        className={`text-sm ${
-                          paymentFrequency === freq.id
-                            ? "text-blue-200"
-                            : "text-slate-600"
+                      <p
+                        className={`font-bold text-sm ${
+                          paymentFrequency === f.id
+                            ? "text-secondary"
+                            : "text-gray-900"
                         }`}
                       >
-                        {freq.description}
-                      </div>
+                        {f.label}
+                      </p>
+                      <p className="text-xs text-gray-500 font-medium">
+                        {f.description}
+                      </p>
                     </button>
                   ))}
                 </div>
-              </div>
+              </section>
 
-              {/* Move-in Date */}
-              <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                  <IconCalendar size={20} className="text-blue-900" />
-                  Move-in Timeline
+              <section>
+                <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6">
+                  Move-in Date
                 </h3>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-3">
-                    When do you plan to move in?
-                  </label>
+                <div className="relative group">
+                  <IconCalendar
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-secondary transition-colors"
+                    size={20}
+                  />
                   <input
                     type="date"
                     value={moveInDate}
                     onChange={(e) => setMoveInDate(e.target.value)}
-                    min={new Date().toISOString().split("T")[0]}
-                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-blue-900 bg-white"
+                    className="w-full pl-12 pr-4 h-14 bg-gray-50 border-2 border-gray-50 rounded-2xl focus:bg-white focus:border-secondary outline-none font-bold text-sm transition-all"
                   />
                 </div>
-              </div>
+                <div className="mt-4 p-4 bg-orange-50 rounded-2xl flex gap-3">
+                  <IconInfoCircle
+                    className="text-orange-500 shrink-0"
+                    size={18}
+                  />
+                  <p className="text-[11px] font-bold text-orange-700 uppercase tracking-tight">
+                    Properties are typically listed 30-60 days before
+                    availability.
+                  </p>
+                </div>
+              </section>
             </div>
 
-            {/* Additional Costs */}
-            <div className="mb-8 bg-slate-50 p-6 rounded-xl border border-slate-200">
-              <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                <IconInfoCircle size={20} className="text-blue-900" />
-                Additional Costs to Include
+            {/* Additional Costs Chips */}
+            <section>
+              <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6">
+                Inclusive of
               </h3>
-              <p className="text-sm text-slate-600 mb-4">
-                Select which additional costs should be considered in your
-                budget
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="flex flex-wrap gap-3">
                 {ADDITIONAL_COSTS.map((cost) => (
                   <button
                     key={cost.id}
-                    type="button"
                     onClick={() => toggleAdditionalCost(cost.id)}
-                    className={`p-4 rounded-lg border transition-all duration-200 flex flex-col items-center text-center
+                    className={`px-6 py-3 rounded-xl border-2 font-bold text-xs uppercase tracking-wider transition-all
                       ${
                         additionalCosts.includes(cost.id)
-                          ? "bg-blue-900 text-white border-blue-900 shadow-sm"
-                          : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
+                          ? "border-secondary bg-secondary text-white shadow-lg"
+                          : "border-gray-100 text-gray-500 hover:border-gray-200"
                       }
                     `}
                   >
-                    <div className="font-medium mb-2">{cost.label}</div>
-                    <div
-                      className={`text-xs ${
-                        additionalCosts.includes(cost.id)
-                          ? "text-blue-200"
-                          : "text-slate-600"
-                      }`}
-                    >
-                      {cost.description}
-                    </div>
+                    {cost.label}
                   </button>
                 ))}
               </div>
-            </div>
+            </section>
+          </div>
 
-            {/* Navigation */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-12 pt-8 border-t border-slate-200">
-              <button
-                type="button"
-                onClick={() => navigate(-1)}
-                className="flex-1 bg-white text-slate-700 px-6 py-4 rounded-lg border border-slate-300 hover:bg-slate-50 transition-all duration-200 font-medium flex items-center justify-center"
-              >
-                <IconArrowLeft size={20} className="mr-2" />
-                Back
-              </button>
+          {/* Sidebar Summary */}
+          <div className="lg:col-span-5">
+            <div className="sticky top-24 bg-primary rounded-[32px] p-8 text-white shadow-2xl overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-secondary opacity-20 rounded-full -mr-16 -mt-16 blur-3xl" />
+
+              <h2 className="text-2xl font-bold font-sora mb-8 relative">
+                Review & Continue
+              </h2>
+
+              <div className="space-y-6 relative">
+                <div className="flex justify-between items-end border-b border-white/10 pb-4">
+                  <span className="text-gray-400 text-xs font-black uppercase tracking-widest">
+                    Price Range
+                  </span>
+                  <span className="text-xl font-bold font-sora text-secondary">
+                    {formatNaira(minBudget)} — {formatNaira(maxBudget)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                  <span className="text-gray-400 text-xs font-black uppercase tracking-widest">
+                    Schedule
+                  </span>
+                  <span className="font-bold text-sm">
+                    {paymentFrequency} • {moveInDate || "Not Set"}
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  <span className="text-gray-400 text-xs font-black uppercase tracking-widest block mb-4">
+                    Included Services
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {additionalCosts.map((id) => (
+                      <span
+                        key={id}
+                        className="text-[10px] bg-white/10 px-3 py-1 rounded-full font-bold uppercase tracking-tighter"
+                      >
+                        {id}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
 
               <button
                 onClick={handleNext}
-                className="flex-1 bg-blue-900 text-white px-6 py-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center hover:bg-blue-800 hover:shadow-lg"
+                className="w-full mt-12 h-16 bg-white text-primary rounded-2xl font-black text-lg flex items-center justify-center gap-3 transition-all hover:bg-secondary hover:text-white group"
               >
-                Review Your Preferences
-                <IconArrowRight size={20} className="ml-2" />
+                Complete Onboarding
+                <IconArrowRight className="group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           </div>
-        </div>
-
-        {/* Help Text */}
-        <div className="mt-8 text-center text-sm text-slate-500 max-w-xl mx-auto">
-          <p className="flex items-center justify-center">
-            <IconInfoCircle size={16} className="mr-2" />
-            Your budget information helps us find properties that match your
-            financial comfort zone
-          </p>
         </div>
       </div>
     </div>
   );
 }
 
-// Budget Card Component
-function BudgetCard({
-  title,
-  value,
-  formattedValue,
-  onChange,
-  min,
-  max,
-  icon: IconComponent,
-  color,
-}: {
-  title: string;
+interface SliderProps {
+  label: string;
   value: number;
-  formattedValue: string;
-  onChange: (value: number) => void;
-  min: number;
+  min?: number;
   max: number;
-  icon: any;
-  color: string;
-}) {
+  step: number;
+  onChange: (v: number) => void;
+  format: (v: number) => string;
+}
+
+function BudgetSlider({
+  label,
+  value,
+  min = 0,
+  max,
+  step,
+  onChange,
+  format,
+}: SliderProps) {
   return (
-    <div className={`${color} p-6 rounded-xl border border-slate-200`}>
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-          <IconComponent size={20} className="text-blue-900" />
-        </div>
-        <div>
-          <h4 className="text-sm font-medium text-slate-700">{title}</h4>
-          <div className="text-lg font-bold text-blue-900">
-            {formattedValue}
-          </div>
-        </div>
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <label className="text-sm font-bold text-gray-900">{label}</label>
+        <span className="text-secondary font-black font-sora">
+          {format(value)}
+        </span>
       </div>
       <input
         type="range"
         min={min}
         max={max}
+        step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-900"
+        className="w-full h-1.5 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-secondary"
       />
-      <div className="flex justify-between text-xs text-slate-500 mt-2">
-        <span>{formatNaira(min)}</span>
-        <span>{formatNaira(max)}</span>
-      </div>
     </div>
   );
-}
-
-// Format currency in Naira (for BudgetCard component)
-function formatNaira(amount: number) {
-  if (amount >= 1000000) {
-    return `₦${(amount / 1000000).toFixed(1)}M`;
-  }
-  if (amount >= 1000) {
-    return `₦${(amount / 1000).toFixed(0)}K`;
-  }
-  return `₦${amount}`;
 }
