@@ -55,9 +55,10 @@ const PaymentForm = () => {
           Card Number
         </Text>
         <TextInput
-          placeholder="0000 0000 0000 0000"
           component={IMaskInput}
+          // @ts-ignore - OR use the casting below
           mask="0000 0000 0000 0000"
+          placeholder="0000 0000 0000 0000"
           leftSection={<IconCreditCard size={18} stroke={1.5} />}
           radius="md"
           size="md"
@@ -71,9 +72,10 @@ const PaymentForm = () => {
             Expiry Date
           </Text>
           <TextInput
-            placeholder="MM/YY"
             component={IMaskInput}
+            // @ts-ignore
             mask="00/00"
+            placeholder="MM/YY"
             radius="md"
             size="md"
             {...form.getInputProps("expiryDate")}
@@ -84,9 +86,10 @@ const PaymentForm = () => {
             CVV
           </Text>
           <TextInput
-            placeholder="123"
             component={IMaskInput}
+            // @ts-ignore
             mask="000"
+            placeholder="123"
             radius="md"
             size="md"
             {...form.getInputProps("cvv")}
