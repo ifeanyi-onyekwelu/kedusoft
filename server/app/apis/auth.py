@@ -442,9 +442,9 @@ def login_page():
         user_data = dict_except(user.to_dict(), "password")
         # Determine onboarding status based on user role
         is_onboarded = (
-            user.is_landlord_onboarded
+            user.landlord_info and user.landlord_info.verification_status == "approved"
             if user.role == "landlord"
-            else user.is_tenant_onboarded
+            else user.tenant_info and user.tenant_info.verification_status == "approved"
         )
         resp = make_response(
             response(
@@ -686,9 +686,9 @@ def google_login():
         # 7. Prepare Response
         user_data = dict_except(serialize(user), "password")
         is_onboarded = (
-            user.is_landlord_onboarded
+            user.landlord_info and user.landlord_info.verification_status == "approved"
             if user.role == "landlord"
-            else user.is_tenant_onboarded
+            else user.tenant_info and user.tenant_info.verification_status == "approved"
         )
 
         resp = make_response(

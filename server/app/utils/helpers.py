@@ -488,6 +488,8 @@ def seed_properties(session):
 
 
 def seed_users(session):
+    from app.models import UserIdentityDocument, LandlordInfo, TenantInfo
+
     users_to_seed = [
         {
             "firstName": "Chinedu",
@@ -496,8 +498,6 @@ def seed_users(session):
             "role": "landlord",
             "is_verified": True,
             "is_email_verified": True,
-            "is_landlord_onboarded": True,
-            "landlord_verification_status": "approved",
             "identity_documents": [
                 {
                     "type": "national_id",
@@ -505,6 +505,9 @@ def seed_users(session):
                     "verified": True,
                 }
             ],
+            "landlord_info": {
+                "verification_status": "approved",
+            },
         },
         {
             "firstName": "Amaka",
@@ -513,9 +516,6 @@ def seed_users(session):
             "role": "tenant",
             "is_verified": True,
             "is_email_verified": True,
-            "is_tenant_onboarded": True,
-            "tenant_verification_status": "approved",
-            "total_monthly_income": 1500000,
             "identity_documents": [
                 {
                     "type": "passport",
@@ -523,6 +523,10 @@ def seed_users(session):
                     "verified": True,
                 }
             ],
+            "tenant_info": {
+                "verification_status": "approved",
+                "total_monthly_income": 1500000,
+            },
         },
     ]
 
@@ -542,20 +546,36 @@ def seed_users(session):
                 joined_at=datetime.datetime.utcnow(),
             )
 
-            # Set Role Specific Flags
-            if user_data["role"] == "landlord":
-                new_user.is_landlord_onboarded = user_data["is_landlord_onboarded"]
-                new_user.landlord_verification_status = user_data[
-                    "landlord_verification_status"
-                ]
-            else:
-                new_user.is_tenant_onboarded = user_data["is_tenant_onboarded"]
-                new_user.tenant_verification_status = user_data[
-                    "tenant_verification_status"
-                ]
-                new_user.total_monthly_income = user_data["total_monthly_income"]
+            # Add identity documents
+            for doc in user_data.get("identity_documents", []):
+                identity_doc = UserIdentityDocument(
+                    user_id=new_user.id,
+                    document_type=doc["type"],
+                    document_url=doc["url"],
+                    is_verified=doc.get("verified", False),
+                )
+                new_user.identity_documents.append(identity_doc)
 
-            new_user.identity_documents = user_data["identity_documents"]
+            # Set Role Specific Data
+            if user_data["role"] == "landlord":
+                landlord_info_data = user_data.get("landlord_info", {})
+                landlord_info = LandlordInfo(
+                    user_id=new_user.id,
+                    verification_status=landlord_info_data.get(
+                        "verification_status", "not_started"
+                    ),
+                )
+                new_user.landlord_info = landlord_info
+            else:
+                tenant_info_data = user_data.get("tenant_info", {})
+                tenant_info = TenantInfo(
+                    user_id=new_user.id,
+                    verification_status=tenant_info_data.get(
+                        "verification_status", "not_started"
+                    ),
+                    total_monthly_income=tenant_info_data.get("total_monthly_income"),
+                )
+                new_user.tenant_info = tenant_info
 
             session.add(new_user)
 

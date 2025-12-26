@@ -16,6 +16,11 @@ class BaseModel(db.Model):
 
 
 from .user import User
+from .user_documents import UserIdentityDocument
+from .user_bank_details import UserBankDetails
+from .user_insurance import UserInsurance
+from .landlord_info import LandlordInfo
+from .tenant_info import TenantInfo
 from .property import Property
 from .application import Application
 from .document import Document
