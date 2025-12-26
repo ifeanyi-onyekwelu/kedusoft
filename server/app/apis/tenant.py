@@ -850,7 +850,7 @@ def create_recommendation():
         "onboarding_completed",
         "Completed onboarding and set property preferences",
         "recommendation",
-        new_recommendation.id,
+        new_recommendation.recommendation_id,
     )
 
     return response(
