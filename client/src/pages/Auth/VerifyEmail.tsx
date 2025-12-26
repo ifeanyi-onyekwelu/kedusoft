@@ -20,9 +20,8 @@ function VerifyEmail() {
   const navigateBasedOnRole = (role: Role) => {
     // After email verification, redirect to role-specific onboarding
     const routes = {
-      tenant: "/onboarding/welcome",
+      tenant: "/onboarding/tenant/welcome",
       landlord: "/onboarding/landlord/welcome",
-      agent: "/onboarding/agent/welcome",
       admin: "/admin",
     };
     navigate((routes[role] as string) || "/");
