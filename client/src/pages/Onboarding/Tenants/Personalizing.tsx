@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Added navigate
 import { motion, AnimatePresence } from "framer-motion";
 import {
   IconSearch,
@@ -10,6 +11,7 @@ import {
 
 export default function PersonalizingScreen() {
   const [step, setStep] = useState(0);
+  const navigate = useNavigate(); // Hook for redirection
 
   const loadingSteps = [
     {
@@ -39,12 +41,32 @@ export default function PersonalizingScreen() {
     },
   ];
 
+  // 1. Handle the step increment logic
   useEffect(() => {
     const timer = setInterval(() => {
-      setStep((prev) => (prev < loadingSteps.length - 1 ? prev + 1 : prev));
+      setStep((prev) => {
+        if (prev < loadingSteps.length - 1) {
+          return prev + 1;
+        }
+        clearInterval(timer);
+        return prev;
+      });
     }, 2000);
+
     return () => clearInterval(timer);
-  }, []);
+  }, [loadingSteps.length]);
+
+  // 2. Handle the redirect after the bar is full
+  useEffect(() => {
+    // If we are on the last step, wait for the progress bar animation to finish (approx 1 sec)
+    if (step === loadingSteps.length - 1) {
+      const redirectTimeout = setTimeout(() => {
+        navigate("/tenants"); // OR "/recommendations"
+      }, 1500);
+
+      return () => clearTimeout(redirectTimeout);
+    }
+  }, [step, loadingSteps.length, navigate]);
 
   return (
     <div className="min-h-screen bg-primary flex flex-col items-center justify-center p-6 overflow-hidden relative">
@@ -62,10 +84,8 @@ export default function PersonalizingScreen() {
         />
       </div>
 
-      {/* Central Content */}
       <div className="relative z-10 text-center max-w-md">
         <div className="mb-12 relative flex justify-center">
-          {/* Main Animated Icon */}
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
@@ -81,7 +101,6 @@ export default function PersonalizingScreen() {
             </motion.div>
           </AnimatePresence>
 
-          {/* Floating Particles */}
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
@@ -107,11 +126,11 @@ export default function PersonalizingScreen() {
           </AnimatePresence>
         </div>
 
-        {/* Progress Bar Container */}
         <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
           <motion.div
             initial={{ width: "0%" }}
             animate={{ width: `${((step + 1) / loadingSteps.length) * 100}%` }}
+            transition={{ duration: 0.8, ease: "easeInOut" }} // Smoother bar transition
             className="h-full bg-secondary shadow-[0_0_15px_rgba(234,179,8,0.5)]"
           />
         </div>
