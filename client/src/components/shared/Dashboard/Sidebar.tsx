@@ -7,7 +7,6 @@ import {
   IconHome,
   IconLogout,
   IconMessage,
-  IconSettings,
   IconUsers,
   IconChevronDown,
   IconChevronLeft,
@@ -443,14 +442,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div className="px-3 pt-4 border-t border-gray-200">
         {collapsed ? (
           <>
-            <Tooltip label="Settings" position="right" offset={10} withArrow>
-              <Link
-                to="/settings/profile"
-                className="flex items-center justify-center p-3 rounded-xl hover:bg-gray-100 text-gray-700 mb-2 transition-all"
-              >
-                <StyledIcon icon={IconSettings} />
-              </Link>
-            </Tooltip>
             <Tooltip label="Logout" position="right" offset={10} withArrow>
               <button
                 onClick={handleLogout}
@@ -462,10 +453,13 @@ const Sidebar: React.FC<SidebarProps> = ({
           </>
         ) : (
           <>
-            <BottomLinks to="/settings/profile">
-              <StyledIcon icon={IconSettings} />
-              <span>Settings</span>
-            </BottomLinks>
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-red-50 text-gray-700 hover:text-red-600 transition-all font-medium"
+            >
+              <StyledIcon icon={IconLogout} />
+              <span>Logout</span>
+            </button>
           </>
         )}
       </div>

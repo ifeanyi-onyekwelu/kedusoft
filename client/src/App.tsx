@@ -8,7 +8,6 @@ import NotFound from "./pages/Errors/NotFound";
 import RequireAuth from "./utils/requireAuth";
 import ScrollToTop from "./utils/scrollToTop";
 import "@mantine/dates/styles.css";
-import SettingsRoute from "./routes/SettingsRoute";
 import { RouterProgress } from "./components/RouterProgress";
 import OnboardingRoutes from "./routes/OnboardingRoutes";
 import Toast from "@/components/common/Toast.tsx";
@@ -25,7 +24,7 @@ function App() {
       <BrowserRouter>
         <ScrollToTop />
         <RouterProgress />
-        <Toast/>
+        <Toast />
 
         <Routes>
           <Route path="/*" element={<PublicRoutes />} />
@@ -40,7 +39,6 @@ function App() {
             <Route path="property-owner/*" element={<LandlordRoutes />} />
           </Route>
           <Route path="onboarding/*" element={<OnboardingRoutes />}></Route>
-          <Route path="settings/*" element={<SettingsRoute />} />
           <Route path="error-500" element={<h1>Error 500</h1>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
