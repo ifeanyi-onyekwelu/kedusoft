@@ -6,4 +6,4 @@ flask db upgrade
 
 echo "Starting Gunicorn..."
 # The exec command is important for proper signal handling
-exec gunicorn --bind 0.0.0.0:${PORT:-8080} --workers 4 --threads 2 --timeout 60 app:app
+exec gunicorn --bind 0.0.0.0:${PORT:-8080} --workers 4 --threads 2 --timeout 60 run:app
