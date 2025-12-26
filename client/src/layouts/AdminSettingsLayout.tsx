@@ -4,6 +4,8 @@ import {
   IconUser,
   IconUserScan,
   IconSettings,
+  IconShield,
+  IconServer,
 } from "@tabler/icons-react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import Sidebar, { RoleLinks } from "../components/shared/Dashboard/Sidebar";
@@ -38,26 +40,44 @@ const SettingsTab = ({ link, isActive }: { link: any; isActive: boolean }) => (
     {isActive && (
       <Box
         component="span"
-        className="absolute bottom-0 left-0 right-0 h-0.5 bg-black rounded-full"
+        className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-full"
       />
     )}
   </UnstyledButton>
 );
 
-function SettingsLayout() {
+function AdminSettingsLayout() {
   const location = useLocation();
-  const [opened, { toggle }] = useDisclosure(true);
+  const [opened, { toggle, close }] = useDisclosure(false);
   const { user } = useUser();
 
   const links = [
-    { name: "General", path: "/settings/profile", icon: IconUser },
+    { name: "General", path: "/admin/settings/profile", icon: IconUser },
     {
       name: "Verification",
-      path: "/settings/verification",
+      path: "/admin/settings/verification",
       icon: IconUserScan,
     },
-    { name: "Security", path: "/settings/change-password", icon: IconLock },
-    { name: "Notifications", path: "/settings/notifications", icon: IconBell },
+    {
+      name: "Security",
+      path: "/admin/settings/change-password",
+      icon: IconLock,
+    },
+    {
+      name: "Notifications",
+      path: "/admin/settings/notifications",
+      icon: IconBell,
+    },
+    {
+      name: "Security & Privacy",
+      path: "/admin/settings/security",
+      icon: IconShield,
+    },
+    {
+      name: "System",
+      path: "/admin/settings/system",
+      icon: IconServer,
+    },
   ];
 
   if (!user) return <LoadingSpinner loading={!user} />;
@@ -71,18 +91,22 @@ function SettingsLayout() {
         <Sidebar role={role} opened={opened} />
 
         <main
-          className={`flex-1 transition-all duration-300 ${
-            opened ? "ml-0 md:ml-[15%]" : "ml-0 md:ml-[5%]"
-          } pt-[80px]`}
+          className={`flex-1 transition-all duration-300 ml-0 md:ml-[15%] pt-[80px]`}
+          onClick={() => opened && close()}
         >
           {/* Section Header */}
           <Box className="border-b border-gray-100 bg-white sticky top-[80px] z-20">
             <Container size="lg">
-              <div className="pt-10 pb-2">
-                <Group justify="space-between" align="center" mb="xl">
-                  <Box>
+              <div className="pt-10 pb-2 px-4 md:px-0">
+                <Group
+                  justify="space-between"
+                  align="center"
+                  mb="xl"
+                  wrap="wrap"
+                >
+                  <Box className="flex-1">
                     <Group gap="xs" mb={4}>
-                      <IconSettings size={16} className="text-gray-400" />
+                      <IconSettings size={16} className="text-blue-600" />
                       <Text
                         size="xs"
                         fw={700}
@@ -90,22 +114,26 @@ function SettingsLayout() {
                         c="dimmed"
                         lts="1px"
                       >
-                        Account Settings
+                        Admin Settings
                       </Text>
                     </Group>
                     <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-                      Workspace Preferences
+                      Administrator Settings
                     </h1>
                   </Box>
-                  <Badge variant="dot" color="blue" size="lg">
+                  <Badge
+                    variant="dot"
+                    color="blue"
+                    size="lg"
+                    className="shrink-0"
+                  >
                     {user.role} Account
                   </Badge>
                 </Group>
 
-                {/* Horizontal Modern Tabs */}
                 <Group
                   gap={30}
-                  className="overflow-x-auto flex-nowrap scrollbar-hide"
+                  className="overflow-x-auto flex-nowrap scrollbar-hide px-0 md:px-0 pb-4 md:pb-0"
                 >
                   {links.map((link) => (
                     <SettingsTab
@@ -120,8 +148,8 @@ function SettingsLayout() {
           </Box>
 
           {/* Centered Content Area */}
-          <Container size="lg" py={40}>
-            <div className="max-w-[800px]">
+          <Container size="lg">
+            <div className="max-w-[800px] px-4 md:px-0">
               <Outlet />
             </div>
           </Container>
@@ -131,4 +159,4 @@ function SettingsLayout() {
   );
 }
 
-export default SettingsLayout;
+export default AdminSettingsLayout;

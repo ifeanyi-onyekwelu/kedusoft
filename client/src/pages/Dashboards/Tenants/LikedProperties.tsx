@@ -5,33 +5,31 @@ import { useLoading } from "../../../hooks/useLoading";
 import { ErrorState } from "../../../components/ErrorState";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
 import EmptyState from "../../../components/EmptyState";
-import { Button } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
+import { IconSearch, IconHeartOff } from "@tabler/icons-react";
+import { Button, Text, Title, Stack } from "@mantine/core";
 
 export default function LikedPropertiesPage() {
   const [likedProperties, setLikedProperties] = useState<Property[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const { loading, stopLoading, startLoading } = useLoading();
-
+  const { loading, withLoading } = useLoading();
   const navigate = useNavigate();
 
   const fetchLikedProperties = async () => {
     try {
-      startLoading();
-      const response = await getLikedProperties();
-      console.log("LIKED PROPERTIES RESPONSE: ", response);
-      setLikedProperties(response.data.properties);
+      const response = await withLoading(getLikedProperties());
+      setLikedProperties(response.properties);
     } catch (err) {
       setError("Failed to load liked properties");
-    } finally {
-      stopLoading();
     }
   };
 
   useEffect(() => {
     fetchLikedProperties();
   }, []);
-  if (loading) return <LoadingSpinner />;
+
+  if (loading) return <LoadingSpinner label="Fetching your favorites" />;
+
   if (error) {
     return (
       <ErrorState
@@ -46,28 +44,44 @@ export default function LikedPropertiesPage() {
     <div className="px-6 space-y-10 py-5">
       {likedProperties.length === 0 ? (
         <EmptyState>
-          <div className="space-y-4 flex flex-col justify-center items-center">
-            <h2 className="text-4xl font-semibold text-gray-800">
-              You have not liked any properties
-            </h2>
-            <p className="text-sm text-gray-500">
-              Looks like you haven't liked any properties yet. Start browsing
-              properties to find your next home!
-            </p>
+          <Stack align="center" gap="lg" className="text-center">
+            {/* Modern Icon Presentation */}
+            <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mb-2">
+              <IconHeartOff size={40} stroke={1.5} className="text-slate-400" />
+            </div>
+
+            <div className="max-w-md space-y-2">
+              <Title
+                order={2}
+                className="text-2xl font-bold text-gray-900 tracking-tight"
+              >
+                No liked properties yet
+              </Title>
+              <Text size="sm" className="text-gray-500 leading-relaxed">
+                When you find a property you love, tap the heart icon to save it
+                here. It's the easiest way to keep track of your top choices.
+              </Text>
+            </div>
 
             <Button
               onClick={() => navigate("/properties/search")}
-              variant="outlined"
+              variant="filled"
+              color="dark"
+              size="md"
+              radius="md"
+              leftSection={<IconSearch size={18} />}
+              className="bg-gray-900 hover:bg-black px-8 mt-2 transition-transform active:scale-95"
             >
               Browse Properties
             </Button>
-          </div>
+          </Stack>
         </EmptyState>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {likedProperties.map((item) => (
-            <PropertyCard key={item.id} propertyData={item} />
-          ))}
+          {likedProperties &&
+            likedProperties?.map((item) => (
+              <PropertyCard key={item.id} propertyData={item} />
+            ))}
         </div>
       )}
     </div>

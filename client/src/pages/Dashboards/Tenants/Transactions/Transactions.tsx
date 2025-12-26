@@ -293,7 +293,7 @@ function Transactions() {
                 ]}
                 value={sortBy}
                 onChange={setSortBy}
-                className="w-[150px]"
+                className="w-[100px]"
               />
             </Group>
           </Paper>

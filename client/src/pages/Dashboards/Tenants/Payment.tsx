@@ -1,131 +1,272 @@
-import { IconArrowLeft, IconCreditCard } from "@tabler/icons-react";
-import { Link } from "react-router-dom";
-import { Button, Checkbox, TextInput } from "@mantine/core";
+import {
+  IconArrowLeft,
+  IconCreditCard,
+  IconLock,
+  IconShieldCheck,
+  IconBuildingBank,
+} from "@tabler/icons-react";
+import { useNavigate } from "react-router-dom";
+import {
+  Button,
+  Checkbox,
+  TextInput,
+  Paper,
+  Text,
+  Divider,
+  Stack,
+  SimpleGrid,
+  Box,
+  Group,
+  UnstyledButton,
+  Badge,
+} from "@mantine/core";
 import { IMaskInput } from "react-imask";
 import { useForm } from "@mantine/form";
 
 const PaymentForm = () => {
   const form = useForm({
-    initialValues: {
-      cardNumber: "",
-      expiryDate: "",
-      cvv: "",
-    },
+    initialValues: { cardNumber: "", expiryDate: "", cvv: "", name: "" },
     validate: {
       cardNumber: (value) =>
-        /^\d{16}$/.test(value) ? null : "Card number must be 16 digits",
+        value.replace(/\s/g, "").length === 16 ? null : "Invalid card number",
       expiryDate: (value) =>
-        /^(0[1-9]|1[0-2])\/?([0-9]{4}|[0-9]{2})$/.test(value)
-          ? null
-          : "Expiry date must be in MM/YY format",
-      cvv: (value) =>
-        /^\d{3,4}$/.test(value) ? null : "CVV must be 3 or 4 digits",
+        /^(0[1-9]|1[0-2])\/([0-9]{2})$/.test(value) ? null : "Use MM/YY",
+      cvv: (value) => (/^\d{3,4}$/.test(value) ? null : "Invalid CVV"),
+      name: (value) => (value.length < 2 ? "Name is required" : null),
     },
   });
+
   return (
-    <form
-      onSubmit={form.onSubmit(() => console.log("Form Submitted!!!"))}
-      className="w-full space-y-3"
-    >
-      <h2 className="text-md font-medium">Card Details</h2>
-      <TextInput
-        placeholder="1234 5678 9012 3456"
-        required
-        component={IMaskInput}
-        value={form.values.cardNumber}
-        {...{ mask: "0000 0000 0000 0000" }}
-        onChange={(event) =>
-          form.setFieldValue("cardNumber", event.currentTarget.value)
-        }
-        error={form.errors.cardNumber}
-        radius="sm"
-        style={{ flex: 1 }}
-        leftSection={<IconCreditCard />}
-      />
+    <form onSubmit={form.onSubmit((v) => console.log(v))} className="space-y-5">
+      <Stack gap={4}>
+        <Text size="sm" fw={600} c="gray.8">
+          Cardholder Name
+        </Text>
+        <TextInput
+          placeholder="Full Name"
+          radius="md"
+          size="md"
+          {...form.getInputProps("name")}
+        />
+      </Stack>
 
-      <TextInput
-        placeholder="MM/YY"
-        required
-        component={IMaskInput}
-        value={form.values.expiryDate}
-        {...{ mask: "00/00" }}
-        onChange={(event) =>
-          form.setFieldValue("expiryDate", event.currentTarget.value)
-        }
-        error={form.errors.expiryDate}
-        radius="sm"
-        style={{ flex: 1 }}
-      />
+      <Stack gap={4}>
+        <Text size="sm" fw={600} c="gray.8">
+          Card Number
+        </Text>
+        <TextInput
+          placeholder="0000 0000 0000 0000"
+          component={IMaskInput}
+          mask="0000 0000 0000 0000"
+          leftSection={<IconCreditCard size={18} stroke={1.5} />}
+          radius="md"
+          size="md"
+          {...form.getInputProps("cardNumber")}
+        />
+      </Stack>
 
-      <TextInput
-        placeholder="123"
-        required
-        component={IMaskInput}
-        value={form.values.cvv}
-        {...{ mask: "000" }}
-        onChange={(event) =>
-          form.setFieldValue("cvv", event.currentTarget.value)
-        }
-        error={form.errors.cvv}
-        radius="sm"
-        style={{ flex: 1 }}
-      />
+      <SimpleGrid cols={2} spacing="md">
+        <Stack gap={4}>
+          <Text size="sm" fw={600} c="gray.8">
+            Expiry Date
+          </Text>
+          <TextInput
+            placeholder="MM/YY"
+            component={IMaskInput}
+            mask="00/00"
+            radius="md"
+            size="md"
+            {...form.getInputProps("expiryDate")}
+          />
+        </Stack>
+        <Stack gap={4}>
+          <Text size="sm" fw={600} c="gray.8">
+            CVV
+          </Text>
+          <TextInput
+            placeholder="123"
+            component={IMaskInput}
+            mask="000"
+            radius="md"
+            size="md"
+            {...form.getInputProps("cvv")}
+          />
+        </Stack>
+      </SimpleGrid>
 
-      <Checkbox label="Save my card information" />
+      <Checkbox
+        label="Securely save card for future use"
+        mt="md"
+        color="dark"
+        radius="sm"
+      />
 
       <Button
         type="submit"
-        color="#4B0665"
-        radius="sm"
-        style={{ flex: 1 }}
-        display="block"
-        mx="auto"
-        mt={40}
-        size="md"
+        fullWidth
+        size="lg"
+        radius="md"
+        color="dark"
+        className="bg-gray-900 hover:bg-black transition-all mt-6"
+        leftSection={<IconLock size={18} />}
       >
-        Pay 500,000 Now
+        Pay ₦500,000.00
       </Button>
+
+      <Group justify="center" gap={8} opacity={0.5} mt="sm">
+        <IconShieldCheck size={16} />
+        <Text size="xs" fw={500}>
+          Protected by industry-standard encryption
+        </Text>
+      </Group>
     </form>
   );
 };
 
 function Payment() {
-  const payment = [
-    "/images/mastercard.png",
-    "/images/visa.png",
-    "/images/apple-pay.png",
+  const navigate = useNavigate();
+  const paymentLogos = [
+    { src: "/images/mastercard.png", alt: "Mastercard" },
+    { src: "/images/visa.png", alt: "Visa" },
+    { src: "/images/apple-pay.png", alt: "Apple Pay" },
   ];
+
   return (
-    <div className="relative flex items-center justify-center flex-col">
-      <IconArrowLeft size={20} stroke={1} className="absolute top-0 left-0" />
+    <div className="min-h-screen bg-gray-50/50">
+      {/* Navigation Header */}
+      <Box className="max-w-6xl mx-auto p-6">
+        <UnstyledButton
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-gray-500 hover:text-black transition-colors"
+        >
+          <IconArrowLeft size={18} />
+          <Text size="sm" fw={500}>
+            Back to listing
+          </Text>
+        </UnstyledButton>
+      </Box>
 
-      <div className=" w-full">
-        <div className="flex md:flex-row flex-col h-screen w-full mt-14">
-          <div className="md:w-1/2 w-full bg-[#562269] h-full py-20 px-10 flex flex-col items-start justify-between">
-            <h1 className="text-xl font-semibold text-center text-white">
-              How would you like to pay?
-            </h1>
+      <main className="max-w-6xl mx-auto px-6 pb-20">
+        <SimpleGrid cols={{ base: 1, md: 2 }} spacing={60}>
+          {/* Left Side: Summary and Options */}
+          <div className="space-y-8">
+            <Box>
+              <Badge color="blue" variant="light" mb="xs">
+                Secure Checkout
+              </Badge>
+              <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
+                Review and Pay
+              </h1>
+              <Text c="dimmed" size="sm" mt={4}>
+                Complete your transaction securely to finalize your booking.
+              </Text>
+            </Box>
 
-            <div className="flex items-center space-x-2 w-full">
-              {payment.map((pay) => (
-                <img src={pay} width={20} />
-              ))}
-            </div>
+            <Paper p="xl" radius="lg" withBorder className="bg-white">
+              <Text fw={700} size="lg" mb="xl">
+                Order Summary
+              </Text>
 
-            <img src="/images/card.png" alt="Atm Card" className="w-full" />
+              <Stack gap="md">
+                <Group justify="space-between" align="flex-start" wrap="nowrap">
+                  <Box>
+                    <Text size="sm" fw={600}>
+                      Luxury Penthouse #402
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      Rental Deposit & Service Fee
+                    </Text>
+                  </Box>
+                  <Text fw={600} size="sm">
+                    ₦450,000.00
+                  </Text>
+                </Group>
 
-            <Link
-              to=""
-              className="rounded-md py-3 bg-[#4B0665] text-xs text-white font-semibold px-10 hover:bg-primary duration-300 block mx-auto"
-            >
-              Pay with Bank Transfer
-            </Link>
+                <Group justify="space-between">
+                  <Text size="sm" c="dimmed">
+                    Transaction Fee
+                  </Text>
+                  <Text fw={600} size="sm">
+                    ₦50,000.00
+                  </Text>
+                </Group>
+
+                <Divider my="sm" />
+
+                <Group justify="space-between">
+                  <Text fw={700} size="md">
+                    Total Due
+                  </Text>
+                  <Text fw={800} size="xl" c="blue.8">
+                    ₦500,000.00
+                  </Text>
+                </Group>
+              </Stack>
+            </Paper>
+
+            <Box>
+              <Text
+                size="xs"
+                fw={700}
+                tt="uppercase"
+                c="dimmed"
+                mb="md"
+                lts="1px"
+              >
+                Other Ways to Pay
+              </Text>
+              <UnstyledButton className="w-full p-4 border rounded-xl border-gray-200 hover:border-gray-900 transition-colors bg-white group">
+                <Group justify="space-between">
+                  <Group>
+                    <Box className="p-2 bg-gray-100 rounded-lg group-hover:bg-gray-900 group-hover:text-white transition-colors">
+                      <IconBuildingBank size={20} />
+                    </Box>
+                    <Text size="sm" fw={600}>
+                      Bank Transfer
+                    </Text>
+                  </Group>
+                  <Text size="xs" c="dimmed">
+                    Instant Verification
+                  </Text>
+                </Group>
+              </UnstyledButton>
+            </Box>
           </div>
-          <div className="md:w-1/2 w-full h-full flex items-center justify-center p-5 bg-white">
+
+          {/* Right Side: The Form */}
+          <Paper
+            p={40}
+            radius="lg"
+            withBorder
+            className="bg-white shadow-sm self-start"
+          >
+            <Group justify="space-between" mb={30}>
+              <Text fw={700} size="lg">
+                Payment Information
+              </Text>
+              <Group gap={8}>
+                {paymentLogos.map((logo, idx) => (
+                  <img
+                    key={idx}
+                    src={logo.src}
+                    alt={logo.alt}
+                    className="h-4 w-auto grayscale opacity-50"
+                  />
+                ))}
+              </Group>
+            </Group>
+
             <PaymentForm />
-          </div>
-        </div>
-      </div>
+
+            <Divider my={30} label="Trusted Security" labelPosition="center" />
+
+            <Text size="xs" c="dimmed" ta="center" className="leading-relaxed">
+              By clicking "Pay Now", you agree to our terms of service and
+              acknowledge that your payment is processed by a secure provider.
+            </Text>
+          </Paper>
+        </SimpleGrid>
+      </main>
     </div>
   );
 }

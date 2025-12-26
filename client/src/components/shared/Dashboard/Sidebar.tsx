@@ -130,7 +130,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       },
       {
         name: "Liked Properties",
-        path: "/tenants/liked",
+        path: "/tenants/favorites",
         icon: <StyledIcon icon={IconHeart} />,
       },
       {
