@@ -17,6 +17,7 @@ import LandlordVerification from "../pages/Onboarding/Landlord/Verification";
 import LandlordVerificationSuccess from "../pages/Onboarding/Landlord/VerificationSuccess";
 
 import OnboardingLayout from "../layouts/OnboardingLayout";
+import PersonalizingScreen from "@/pages/Onboarding/Tenants/Personalizing";
 
 // Role-based redirect component
 function OnboardingRedirect() {
@@ -46,6 +47,7 @@ function OnboardingRoutes() {
           <Route path="features" element={<FeaturesPage />} />
           <Route path="budget" element={<BudgetPage />} />
           <Route path="summary" element={<CompletionPage />} />
+          <Route path="personalizing" element={<PersonalizingScreen />} />
         </Route>
       </Route>
 

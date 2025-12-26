@@ -69,7 +69,11 @@ def create_app():
 
     # --- Database Configuration --- #
     # PostgreSQL connection engine using environment variables
-    engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
+    engine = create_engine(
+        app.config["SQLALCHEMY_DATABASE_URI"],
+        pool_pre_ping=True,
+        pool_recycle=3600,
+    )
 
     # Scoped session factory for database sessions
     Session = scoped_session(sessionmaker(bind=engine))
