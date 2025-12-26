@@ -126,38 +126,6 @@ def create_app():
     @click.option(
         "--to", default="ifeanyi.onyekwelu@outlook.com", help="Recipient email address"
     )
-    @click.option("--subject", default="Test Email", help="Email subject")
-    def test_email(to, subject):
-        """Test email functionality."""
-        from .utils.mailer import send_email
-
-        try:
-            success = send_email(
-                subject=subject,
-                recipients=[to],
-                body=f"""
-                <h2>Email Test Successful! 🎉</h2>
-                <p>This is a test email from your apartment rental platform.</p>
-                <p><strong>Server:</strong> {MAIL_SERVER}:{MAIL_PORT}</p>
-                <p><strong>From:</strong> {MAIL_USERNAME}</p>
-                <p><strong>To:</strong> {to}</p>
-                <p><strong>Time:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
-                <hr>
-                <p style="color: green;">✅ Your email configuration is working correctly!</p>
-                """,
-            )
-
-            if success:
-                print(f"✅ Test email sent successfully to {to}")
-                return "Email sent successfully"
-            else:
-                print(f"❌ Failed to send test email to {to}")
-                return "Email sending failed"
-
-        except Exception as e:
-            print(f"❌ Email test failed: {e}")
-            return f"Error: {e}"
-
     @app.after_request
     def add_header(response):
         response.headers["Cross-Origin-Opener-Policy"] = "same-origin-allow-popups"
