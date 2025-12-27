@@ -11,7 +11,7 @@ from ..models import User, Category, Property
 import datetime
 import random
 import uuid
-from werkzeug.security import generate_password_hash
+import bcrypt
 
 
 def response(msg: str, data=None, success=True):
@@ -490,6 +490,16 @@ def seed_properties(session):
 def seed_users(session):
     from app.models import UserIdentityDocument, LandlordInfo, TenantInfo
 
+    # 1. Define the password and hash it correctly
+    raw_password = "password123"
+    # Convert string to bytes
+    password_bytes = raw_password.encode("utf-8")
+    # Generate salt and hash
+    salt = bcrypt.gensalt()
+    hashed_pw_bytes = bcrypt.hashpw(password_bytes, salt)
+    # 2. Decode bytes to string for database storage
+    hashed_pw_str = hashed_pw_bytes.decode("utf-8")
+
     users_to_seed = [
         {
             "firstName": "Chinedu",
@@ -539,7 +549,7 @@ def seed_users(session):
                 lastName=user_data["lastName"],
                 email=user_data["email"],
                 role=user_data["role"],
-                password=generate_password_hash("password123"),  # Standard for seeding
+                password=hashed_pw_str,  # Standard for seeding
                 is_active=True,
                 is_verified=user_data["is_verified"],
                 is_email_verified=user_data["is_email_verified"],

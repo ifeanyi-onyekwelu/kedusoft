@@ -354,8 +354,6 @@ def update_screening_tenant(screening_id):
 # PAYMENT ENDPOINTS
 # Handles payment operations related to screenings and applications
 ###############################################################################
-
-
 @tenant.route("/screenings/payment", methods=["POST"])
 @catch_exception
 @jwt_required()
@@ -408,8 +406,6 @@ def screening_payment_tenant():
 # APPLICATION ENDPOINTS
 # Handles property application operations (create, view, delete applications)
 ###############################################################################
-
-
 @tenant.route("/applications", methods=["GET"])
 @catch_exception
 @jwt_required()
@@ -598,8 +594,6 @@ def apply_for_property(property_id):
 # SEARCH HISTORY ENDPOINTS
 # Manages property search history for personalized recommendations
 ###############################################################################
-
-
 @tenant.route("/search-history", methods=["POST"])
 @catch_exception
 @jwt_required()
@@ -650,8 +644,6 @@ def clear_history_tenant():
 # TRANSACTION ENDPOINTS
 # Handles payment transactions related to applications and rent
 ###############################################################################
-
-
 @tenant.route("/transactions", methods=["GET"])
 @catch_exception
 @jwt_required()
@@ -875,25 +867,6 @@ def get_recommendations():
 
     return response(
         "Recommendations retrieved successfully", {"recommendations": recommendations}
-    )
-
-
-@tenant.route("/recommendations/<recommendation_id>", methods=["GET"])
-@catch_exception
-@jwt_required()
-@role_required("tenant")
-def get_single_recommendation(recommendation_id):
-    """
-    Get a specific recommendation by ID
-    """
-    user_id, _, _ = get_logged_in_user()
-
-    recommendation = get_item_by_filter(
-        g.session, Recommendation, recommendation_id, user_id=user_id
-    )
-
-    return response(
-        "Recommendation retrieved successfully", {"recommendation": recommendation}
     )
 
 
