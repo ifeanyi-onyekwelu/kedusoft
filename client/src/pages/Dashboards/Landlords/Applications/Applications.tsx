@@ -438,72 +438,6 @@ const StatCard = ({
   </Card>
 );
 
-// Application Status Pipeline Component
-const StatusPipeline = ({ stats }: { stats: any }) => {
-  const pipeline = [
-    {
-      status: "received",
-      label: "Received",
-      count: stats.total,
-      color: "blue",
-    },
-    {
-      status: "reviewing",
-      label: "Under Review",
-      count: stats.pending,
-      color: "yellow",
-    },
-    {
-      status: "screening",
-      label: "Screening",
-      count: stats.screening,
-      color: "orange",
-    },
-    {
-      status: "approved",
-      label: "Approved",
-      count: stats.approved,
-      color: "green",
-    },
-    {
-      status: "rejected",
-      label: "Rejected",
-      count: stats.rejected,
-      color: "red",
-    },
-  ];
-
-  return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
-      <Title order={4} mb="md">
-        Application Pipeline
-      </Title>
-      <Stack gap="sm">
-        {pipeline.map((stage, index) => (
-          <Group key={stage.status} justify="space-between">
-            <Group gap="xs">
-              <Badge color={stage.color} variant="dot" size="sm">
-                {stage.label}
-              </Badge>
-            </Group>
-            <Group gap="xs">
-              <Text size="sm" fw={500}>
-                {stage.count}
-              </Text>
-              <Progress
-                value={(stage.count / stats.total) * 100}
-                color={stage.color}
-                size="sm"
-                style={{ width: 60 }}
-              />
-            </Group>
-          </Group>
-        ))}
-      </Stack>
-    </Card>
-  );
-};
-
 // Mobile Card Component for Applications
 const ApplicationCard = ({
   application,
@@ -808,11 +742,6 @@ function Applications() {
   const [bulkEmailModal, setBulkEmailModal] = useState(false);
   const [selectedApplications, setSelectedApplications] = useState<any[]>([]);
   const { loading, withLoading } = useLoading();
-
-  // Debug modal states
-  useEffect(() => {
-    console.log("bulkEmailModal state:", bulkEmailModal);
-  }, [bulkEmailModal]);
 
   // Use responsive breakpoint
   const isMobile = useMatches({
@@ -1189,13 +1118,6 @@ function Applications() {
               size={isMobile ? "sm" : "md"}
             >
               {isMobile ? "" : "Refresh"}
-            </Button>
-            <Button
-              leftSection={<IconDownload size={16} />}
-              variant="outline"
-              size={isMobile ? "sm" : "md"}
-            >
-              {isMobile ? "" : "Export"}
             </Button>
           </Group>
         </div>

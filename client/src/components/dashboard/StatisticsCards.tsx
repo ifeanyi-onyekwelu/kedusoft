@@ -1,128 +1,113 @@
-import { Grid, Badge, Group, Text } from "@mantine/core";
-import { IconArrowUpRight, IconArrowDownRight } from "@tabler/icons-react";
+import { Card, Text, Group, Box, Grid, Stack } from "@mantine/core";
+import {
+  IconTrendingUp,
+  IconTrendingDown,
+  IconChevronRight,
+} from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 
 interface Statistic {
   title: string;
   value: number;
   icon: any;
-  color: "blue" | "green" | "orange" | "violet";
-  change: string;
-  trend: "up" | "down" | "neutral";
-  link?: string; // Optional link for navigation
+  trend?: "up" | "down" | "neutral";
+  link?: string;
+  change?: string;
 }
 
 interface StatisticsCardsProps {
   statistics: Statistic[];
-  dateRange: "today" | "week" | "month" | "year";
 }
 
-export const StatisticsCards = ({
-  statistics,
-  dateRange,
-}: StatisticsCardsProps) => {
+const StatisticsCard = ({
+  title,
+  value,
+  icon: Icon,
+  trend = "neutral",
+  link,
+  change,
+}: Statistic) => {
   const navigate = useNavigate();
 
-  const colorMap: Record<
-    string,
-    { bg: string; border: string; iconBg: string; text: string }
-  > = {
-    blue: {
-      bg: "#e7f5ff",
-      border: "#74c0fc",
-      iconBg: "white",
-      text: "#1971c2",
-    },
-    green: {
-      bg: "#ebfbee",
-      border: "#69db7c",
-      iconBg: "white",
-      text: "#2f9e44",
-    },
-    orange: {
-      bg: "#fff4e6",
-      border: "#ffc078",
-      iconBg: "white",
-      text: "#f08c00",
-    },
-    violet: {
-      bg: "#f3f0ff",
-      border: "#b197fc",
-      iconBg: "white",
-      text: "#7950f2",
-    },
-  };
-
   return (
-    <Grid>
-      {statistics.map((stat, index) => {
-        const colors = colorMap[stat.color] || colorMap.blue;
+    <Card
+      padding="xl"
+      radius="md"
+      onClick={() => link && navigate(link)}
+      style={{
+        backgroundColor: "white",
+        height: "100%",
+        cursor: link ? "pointer" : "default",
+        // Soft, modern shadow instead of a border to separate it from the background
+        boxShadow:
+          "0 1px 3px rgba(0,0,0,0.05), 0 10px 15px -5px rgba(0,0,0,0.05)",
+        transition: "transform 0.2s ease, box-shadow 0.2s ease",
+      }}
+      className={link ? "hover:shadow-lg hover:-translate-y-0.5" : ""}
+    >
+      <Stack gap="xs">
+        <Group justify="space-between" wrap="nowrap">
+          <Text size="xs" c="dimmed" fw={600} tt="uppercase" lts="1px">
+            {title}
+          </Text>
+          <Box c="#290665" style={{ opacity: 0.6 }}>
+            <Icon size={20} stroke={1.5} />
+          </Box>
+        </Group>
 
-        return (
-          <Grid.Col key={index} span={{ base: 12, sm: 6, lg: 3 }}>
-            <div
-              className={`h-full p-5 rounded-xl border-2 hover:shadow-lg transition-all ${
-                stat.link ? "cursor-pointer hover:scale-105" : "cursor-default"
-              }`}
-              style={{
-                backgroundColor: colors.bg,
-                borderColor: colors.border,
-              }}
-              onClick={() => stat.link && navigate(stat.link)}
+        <Group align="flex-end" justify="space-between" mt="sm">
+          <Stack gap={0}>
+            <Text
+              size="xl"
+              fw={800}
+              style={{ fontSize: "1.85rem", color: "#111", lineHeight: 1.2 }}
             >
-              <Group justify="space-between" mb="md">
-                <div
-                  className="flex items-center justify-center w-12 h-12 rounded-xl"
-                  style={{ backgroundColor: colors.iconBg }}
+              {title.toLowerCase().includes("balance") ||
+              title.toLowerCase().includes("revenue")
+                ? `₦${value.toLocaleString()}`
+                : value.toLocaleString()}
+            </Text>
+
+            {change && (
+              <Group gap={4} mt={4}>
+                {trend === "up" ? (
+                  <IconTrendingUp size={14} color="#059669" />
+                ) : (
+                  <IconTrendingDown size={14} color="#dc2626" />
+                )}
+                <Text
+                  size="xs"
+                  fw={700}
+                  c={trend === "up" ? "#059669" : "#dc2626"}
                 >
-                  <stat.icon size={24} style={{ color: colors.text }} />
-                </div>
-                <Badge
-                  variant="filled"
-                  size="sm"
-                  style={{
-                    backgroundColor:
-                      stat.trend === "up"
-                        ? "#2f9e44"
-                        : stat.trend === "down"
-                        ? "#fa5252"
-                        : "#868e96",
-                    color: "white",
-                  }}
-                  leftSection={
-                    stat.trend === "up" ? (
-                      <IconArrowUpRight size={12} />
-                    ) : stat.trend === "down" ? (
-                      <IconArrowDownRight size={12} />
-                    ) : null
-                  }
-                >
-                  {stat.change}
-                </Badge>
+                  {change}{" "}
+                  <span style={{ fontWeight: 400, color: "#888" }}>
+                    this month
+                  </span>
+                </Text>
               </Group>
-              <Text size="xs" fw={500} c="dimmed" mb={6}>
-                {stat.title}
-              </Text>
-              <Text size="xl" fw={700} mb={4} style={{ color: colors.text }}>
-                {typeof stat.value === "number" &&
-                stat.title.includes("Balance")
-                  ? `₦${stat.value.toLocaleString()}`
-                  : stat.value.toLocaleString()}
-              </Text>
-              <Text size="xs" c="dimmed">
-                vs. previous{" "}
-                {dateRange === "today"
-                  ? "day"
-                  : dateRange === "week"
-                  ? "week"
-                  : dateRange === "month"
-                  ? "month"
-                  : "year"}
-              </Text>
-            </div>
-          </Grid.Col>
-        );
-      })}
+            )}
+          </Stack>
+
+          {link && <IconChevronRight size={18} color="#dee2e6" />}
+        </Group>
+      </Stack>
+    </Card>
+  );
+};
+
+export const LandlordStatisticsGrid = ({
+  statistics,
+}: StatisticsCardsProps) => {
+  return (
+    <Grid gutter="lg">
+      {statistics.map((stat, index) => (
+        <Grid.Col key={index} span={{ base: 12, sm: 6, lg: 3 }}>
+          <StatisticsCard {...stat} />
+        </Grid.Col>
+      ))}
     </Grid>
   );
 };
+
+export default LandlordStatisticsGrid;

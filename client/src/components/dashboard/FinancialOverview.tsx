@@ -1,11 +1,19 @@
-import { Grid, Text, Badge, Group, Stack, RingProgress } from "@mantine/core";
+import {
+  Grid,
+  Text,
+  Group,
+  Stack,
+  RingProgress,
+  Card,
+  Box,
+  Divider,
+} from "@mantine/core";
 import {
   IconCash,
   IconWallet,
   IconAlertCircle,
   IconTrendingUp,
-  IconArrowUpRight,
-  IconArrowDownRight,
+  IconTrendingDown,
 } from "@tabler/icons-react";
 
 interface FinancialOverviewProps {
@@ -32,199 +40,179 @@ export const FinancialOverview = ({ data }: FinancialOverviewProps) => {
 
   const financialCards = [
     {
-      label: "Revenue This Month",
+      label: "Revenue Collected",
       value: data.revenue_this_month,
       icon: IconCash,
-      color: "#2f9e44",
-      bgColor: "#ebfbee",
-      borderColor: "#69db7c",
-      badge: "Collected",
-      badgeColor: "green",
-      subtext: `${collectionRate}% of expected`,
+      subtext: `${collectionRate}% of target`,
+      trend: "neutral",
     },
     {
       label: "Expected Revenue",
       value: data.expected_revenue,
       icon: IconWallet,
-      color: "#1971c2",
-      bgColor: "#e7f5ff",
-      borderColor: "#74c0fc",
-      badge: "Expected",
-      badgeColor: "blue",
-      subtext: `${data.active_leases_count} active lease${
-        data.active_leases_count !== 1 ? "s" : ""
-      }`,
+      subtext: `${data.active_leases_count} active leases`,
+      trend: "neutral",
     },
     {
       label: "Outstanding Rent",
       value: data.outstanding_rent,
       icon: IconAlertCircle,
-      color: "#f08c00",
-      bgColor: "#fff4e6",
-      borderColor: "#ffc078",
-      badge: "Overdue",
-      badgeColor: "orange",
-      subtext: "Requires attention",
+      subtext: "Requires follow-up",
+      isWarning: data.outstanding_rent > 0,
     },
     {
       label: "Net Profit",
       value: Math.abs(data.net_profit),
-      icon: IconTrendingUp,
-      color: data.net_profit >= 0 ? "#7950f2" : "#fa5252",
-      bgColor: data.net_profit >= 0 ? "#f3f0ff" : "#fff5f5",
-      borderColor: data.net_profit >= 0 ? "#b197fc" : "#ffc9c9",
-      badge: `${profitMargin}%`,
-      badgeColor: data.net_profit >= 0 ? "violet" : "red",
-      badgeIcon:
-        data.net_profit >= 0 ? (
-          <IconArrowUpRight size={12} />
-        ) : (
-          <IconArrowDownRight size={12} />
-        ),
-      subtext: `After ₦${data.total_expenses.toLocaleString()} expenses`,
+      icon: data.net_profit >= 0 ? IconTrendingUp : IconTrendingDown,
+      subtext: `${profitMargin}% margin`,
+      isProfit: true,
+      profitValue: data.net_profit,
     },
   ];
 
   return (
-    <div className="space-y-4">
-      {/* Main Financial Cards */}
-      <Grid>
+    <Stack gap="lg">
+      {/* Top Layer: Executive Stats */}
+      <Grid gutter="md">
         {financialCards.map((card, index) => (
           <Grid.Col key={index} span={{ base: 12, sm: 6, lg: 3 }}>
-            <div
-              className="h-full p-5 rounded-xl border-2 hover:shadow-lg transition-all cursor-default"
+            <Card
+              padding="xl"
+              radius="md"
               style={{
-                backgroundColor: card.bgColor,
-                borderColor: card.borderColor,
+                backgroundColor: "white",
+                boxShadow:
+                  "0 1px 3px rgba(0,0,0,0.05), 0 10px 15px -5px rgba(0,0,0,0.05)",
               }}
             >
-              <Group justify="space-between" mb="md">
-                <div
-                  className="flex items-center justify-center w-12 h-12 rounded-xl"
-                  style={{ backgroundColor: "white" }}
-                >
-                  <card.icon size={24} style={{ color: card.color }} />
-                </div>
-                <Badge
-                  variant="filled"
-                  size="sm"
-                  style={{
-                    backgroundColor: card.color,
-                    color: "white",
-                  }}
-                  leftSection={card.badgeIcon}
-                >
-                  {card.badge}
-                </Badge>
+              <Group justify="space-between" mb="xs">
+                <Text size="xs" c="dimmed" fw={700} tt="uppercase" lts="0.5px">
+                  {card.label}
+                </Text>
+                <card.icon
+                  size={18}
+                  color={card.isWarning ? "#dc2626" : "#290665"}
+                  style={{ opacity: 0.7 }}
+                />
               </Group>
-              <Text size="xs" fw={500} c="dimmed" mb={6}>
-                {card.label}
-              </Text>
-              <Text size="xl" fw={700} mb={4} style={{ color: card.color }}>
+
+              <Text
+                size="xl"
+                fw={900}
+                style={{ fontSize: "1.6rem", color: "#111" }}
+              >
                 ₦{card.value.toLocaleString()}
               </Text>
-              <Text size="xs" c="dimmed">
+
+              <Text
+                size="xs"
+                fw={500}
+                mt={4}
+                c={card.isWarning ? "red.7" : "dimmed"}
+              >
                 {card.subtext}
               </Text>
-            </div>
+            </Card>
           </Grid.Col>
         ))}
       </Grid>
 
-      {/* Summary Card with Progress */}
-      <div className="p-6 rounded-xl bg-white border border-gray-200 hover:shadow-md transition-all">
-        <Group justify="space-between" align="flex-start" wrap="nowrap">
-          <Stack gap="md" style={{ flex: 1 }}>
+      {/* Bottom Layer: Detailed Analysis Card */}
+      <Card
+        padding="xl"
+        radius="md"
+        style={{
+          backgroundColor: "white",
+          boxShadow:
+            "0 1px 3px rgba(0,0,0,0.05), 0 10px 15px -5px rgba(0,0,0,0.05)",
+        }}
+      >
+        <Group justify="space-between" align="center">
+          <Stack gap="xs" style={{ flex: 1 }}>
             <div>
-              <Text size="lg" fw={600} mb={4}>
-                Financial Health Summary
+              <Text size="lg" fw={800} c="#290665">
+                Financial Health Analysis
               </Text>
               <Text size="xs" c="dimmed">
-                Overview of your financial performance
+                Detailed monthly performance breakdown
               </Text>
             </div>
-            <Grid>
+
+            <Grid mt="md">
               <Grid.Col span={6}>
-                <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
-                  <Text size="xs" c="dimmed" mb={4}>
-                    Collection Rate
+                <Box
+                  p="md"
+                  style={{ backgroundColor: "#f8f9fa", borderRadius: "8px" }}
+                >
+                  <Text size="xs" c="dimmed" fw={600} mb={4}>
+                    Income Generated
                   </Text>
-                  <Text size="lg" fw={700} c="green">
-                    {collectionRate}%
-                  </Text>
-                </div>
-              </Grid.Col>
-              <Grid.Col span={6}>
-                <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
-                  <Text size="xs" c="dimmed" mb={4}>
-                    Profit Margin
-                  </Text>
-                  <Text
-                    size="lg"
-                    fw={700}
-                    c={data.net_profit >= 0 ? "violet" : "red"}
-                  >
-                    {profitMargin}%
-                  </Text>
-                </div>
-              </Grid.Col>
-              <Grid.Col span={6}>
-                <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
-                  <Text size="xs" c="dimmed" mb={4}>
-                    Total Income
-                  </Text>
-                  <Text size="md" fw={600}>
+                  <Text size="md" fw={700} c="green.8">
                     ₦{data.revenue_this_month.toLocaleString()}
                   </Text>
-                </div>
+                </Box>
               </Grid.Col>
               <Grid.Col span={6}>
-                <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
-                  <Text size="xs" c="dimmed" mb={4}>
-                    Total Expenses
+                <Box
+                  p="md"
+                  style={{ backgroundColor: "#f8f9fa", borderRadius: "8px" }}
+                >
+                  <Text size="xs" c="dimmed" fw={600} mb={4}>
+                    Operating Expenses
                   </Text>
-                  <Text size="md" fw={600}>
+                  <Text size="md" fw={700} c="red.8">
                     ₦{data.total_expenses.toLocaleString()}
                   </Text>
-                </div>
+                </Box>
               </Grid.Col>
             </Grid>
+
+            <Divider my="sm" variant="dashed" />
+
+            <Group justify="space-between">
+              <Text size="xs" fw={700} c="dimmed">
+                PROFIT MARGIN
+              </Text>
+              <Text
+                size="sm"
+                fw={800}
+                c={data.net_profit >= 0 ? "violet.8" : "red.8"}
+              >
+                {data.net_profit >= 0 ? "+" : "-"}
+                {profitMargin}%
+              </Text>
+            </Group>
           </Stack>
 
-          {/* Collection Rate Ring Progress */}
-          <div className="text-center pl-6 border-l border-gray-200">
+          {/* Clean Performance Ring */}
+          <Stack
+            align="center"
+            gap={0}
+            pl="xl"
+            style={{ borderLeft: "1px solid #f1f3f5" }}
+          >
             <RingProgress
-              size={140}
-              thickness={14}
+              size={130}
+              thickness={12}
               roundCaps
-              sections={[
-                {
-                  value: parseFloat(collectionRate as string),
-                  color:
-                    parseFloat(collectionRate as string) >= 80
-                      ? "#2f9e44"
-                      : parseFloat(collectionRate as string) >= 50
-                      ? "#f08c00"
-                      : "#fa5252",
-                },
-              ]}
+              sections={[{ value: Number(collectionRate), color: "#290665" }]}
               label={
-                <div className="text-center">
-                  <Text size="xs" c="dimmed" mb={4}>
-                    Collection
-                  </Text>
-                  <Text size="xl" fw={700}>
+                <Stack gap={0} align="center">
+                  <Text size="xl" fw={900} style={{ lineHeight: 1 }}>
                     {collectionRate}%
                   </Text>
-                </div>
+                  <Text size="10px" c="dimmed" fw={700}>
+                    COLLECTED
+                  </Text>
+                </Stack>
               }
             />
-            <Text size="xs" c="dimmed" mt="md">
-              Overall Performance
+            <Text size="xs" c="dimmed" fw={600} mt="xs">
+              Revenue Realization
             </Text>
-          </div>
+          </Stack>
         </Group>
-      </div>
-    </div>
+      </Card>
+    </Stack>
   );
 };

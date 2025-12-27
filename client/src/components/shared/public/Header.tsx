@@ -128,7 +128,7 @@ function Header() {
   return (
     <Box
       component="header"
-      className="sticky top-0 w-full z-50 bg-white border-b shadow-sm"
+      className="sticky top-0 w-full z-50 bg-white shadow-sm"
     >
       <Box className="w-full px-4 lg:px-8">
         <div className="flex justify-between items-center h-16">

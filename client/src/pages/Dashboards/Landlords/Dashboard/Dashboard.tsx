@@ -1,15 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLandlordOperations } from "../../../../apis/landlordApi";
-import { Grid, Skeleton, Stack, Text, Title } from "@mantine/core";
+import { Grid, Stack } from "@mantine/core";
 import { DashboardHeader } from "../../../../components/dashboard/DashboardHeader";
-import { StatisticsCards } from "../../../../components/dashboard/StatisticsCards";
-import { FinancialOverview } from "../../../../components/dashboard/FinancialOverview";
-import QuickActions from "../../../../components/dashboard/QuickActions";
-import OccupancyOverview from "../../../../components/dashboard/OccupancyOverview";
-import RevenueChart from "../../../../components/dashboard/RevenueChart";
-import TenantSummary from "../../../../components/dashboard/TenantSummary";
+import { LandlordStatisticsGrid } from "../../../../components/dashboard/StatisticsCards";
 import { RecentApplications } from "../../../../components/dashboard/RecentApplications";
-import { PropertyPerformance } from "../../../../components/dashboard/PropertyPerformance";
 import { RecentActivities } from "../../../../components/dashboard/RecentActivities";
 import { useLoading } from "../../../../hooks/useLoading";
 import { LoadingSpinner } from "../../../../components/LoadingSpinner";
@@ -19,7 +13,6 @@ import {
   IconEye,
   IconTrendingUp,
   IconActivity,
-  IconFileText,
 } from "@tabler/icons-react";
 
 // Helper functions for activity icons and colors
@@ -30,8 +23,8 @@ const getActivityIcon = (activityType: string) => {
     property_published: IconHome,
     application_rejected: IconUsers,
     screening_initiated: IconActivity,
-    lease_created: IconFileText,
-    lease_signed: IconFileText,
+    lease_created: IconActivity,
+    lease_signed: IconActivity,
   };
   return iconMap[activityType] || IconActivity;
 };
@@ -118,20 +111,10 @@ const LandlordDashboard = () => {
   ]);
   const [recentActivities, setRecentActivities] = useState<any[]>([]);
   const [recentApplications, setRecentApplications] = useState<any[]>([]);
-  const [propertyPerformance, setPropertyPerformance] = useState<any[]>([]);
-  const [financialData, setFinancialData] = useState<any>(null);
-  const [occupancyData, setOccupancyData] = useState<any>(null);
-  const [tenantSummaryData, setTenantSummaryData] = useState<any>(null);
-  const [revenueChartData, setRevenueChartData] = useState<any>(null);
 
   // Loading states for individual widgets
   const [loadingApplications, setLoadingApplications] = useState(false);
-  const [loadingPerformance, setLoadingPerformance] = useState(false);
   const [loadingActivities, setLoadingActivities] = useState(false);
-  const [loadingFinancial, setLoadingFinancial] = useState(false);
-  const [loadingOccupancy, setLoadingOccupancy] = useState(false);
-  const [loadingTenantSummary, setLoadingTenantSummary] = useState(false);
-  const [loadingRevenueChart, setLoadingRevenueChart] = useState(false);
 
   const { loading } = useLoading();
 
@@ -216,8 +199,6 @@ const LandlordDashboard = () => {
     const ranges = getDateRanges(dateRange);
 
     try {
-      // Start loading for statistics (main stats don't need individual loading)
-
       // Fetch current period data with date filtering
       const [
         propertiesCount,
@@ -228,7 +209,7 @@ const LandlordDashboard = () => {
         previousApplicationStats,
         previousViewsStats,
       ] = await Promise.all([
-        fetchProperties(), // Properties don't need date filtering
+        fetchProperties(),
         getTransactionStatistics({
           start_date: ranges.current.start.toISOString().split("T")[0],
           end_date: ranges.current.end.toISOString().split("T")[0],
@@ -241,7 +222,6 @@ const LandlordDashboard = () => {
           start_date: ranges.current.start.toISOString().split("T")[0],
           end_date: ranges.current.end.toISOString().split("T")[0],
         }),
-        // Previous period for comparison
         getTransactionStatistics({
           start_date: ranges.previous.start.toISOString().split("T")[0],
           end_date: ranges.previous.end.toISOString().split("T")[0],
@@ -311,15 +291,7 @@ const LandlordDashboard = () => {
       ]);
 
       // Fetch widget data with individual loading states
-      await Promise.all([
-        fetchRecentActivities(),
-        fetchRecentApplications(),
-        fetchPropertyPerformance(),
-        fetchFinancialOverview(),
-        fetchOccupancyStats(),
-        fetchTenantSummary(),
-        fetchRevenueChart(),
-      ]);
+      await Promise.all([fetchRecentActivities(), fetchRecentApplications()]);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
       // Handle error state if needed
@@ -327,16 +299,11 @@ const LandlordDashboard = () => {
   };
 
   const fetchFinancialOverview = async () => {
-    setLoadingFinancial(true);
-    try {
-      const response = await getFinancialOverview();
-      setFinancialData(response);
-    } catch (error) {
-      console.error("Error fetching financial overview:", error);
-      setFinancialData(null);
-    } finally {
-      setLoadingFinancial(false);
-    }
+    // Removed - not needed in simplified dashboard
+  };
+
+  const fetchPropertyPerformance = async () => {
+    // Removed - not needed in simplified dashboard
   };
 
   const fetchRecentActivities = async () => {
@@ -380,58 +347,6 @@ const LandlordDashboard = () => {
     }
   };
 
-  const fetchPropertyPerformance = async () => {
-    setLoadingPerformance(true);
-    try {
-      const performanceResponse = await getPropertiesPerformance();
-      setPropertyPerformance(performanceResponse.properties || []);
-    } catch (error) {
-      console.error("Error fetching property performance:", error);
-      setPropertyPerformance([]);
-    } finally {
-      setLoadingPerformance(false);
-    }
-  };
-
-  const fetchOccupancyStats = async () => {
-    setLoadingOccupancy(true);
-    try {
-      const response = await getOccupancyStats();
-      setOccupancyData(response);
-    } catch (error) {
-      console.error("Error fetching occupancy stats:", error);
-      setOccupancyData(null);
-    } finally {
-      setLoadingOccupancy(false);
-    }
-  };
-
-  const fetchTenantSummary = async () => {
-    setLoadingTenantSummary(true);
-    try {
-      const response = await getTenantSummary();
-      setTenantSummaryData(response);
-    } catch (error) {
-      console.error("Error fetching tenant summary:", error);
-      setTenantSummaryData(null);
-    } finally {
-      setLoadingTenantSummary(false);
-    }
-  };
-
-  const fetchRevenueChart = async () => {
-    setLoadingRevenueChart(true);
-    try {
-      const response = await getRevenueChart();
-      setRevenueChartData(response);
-    } catch (error) {
-      console.error("Error fetching revenue chart:", error);
-      setRevenueChartData(null);
-    } finally {
-      setLoadingRevenueChart(false);
-    }
-  };
-
   useEffect(() => {
     fetchAllData();
   }, [dateRange]); // Re-fetch when date range changes
@@ -448,54 +363,16 @@ const LandlordDashboard = () => {
         />
 
         {/* Statistics Cards */}
-        <StatisticsCards statistics={statistics} dateRange={dateRange} />
-
-        {/* Quick Actions */}
-        <QuickActions />
-
-        {/* Financial Overview Section */}
-        {loadingFinancial ? (
-          <Skeleton height={200} radius="md" />
-        ) : financialData ? (
-          <>
-            <div className="flex items-center justify-between mb-3">
-              <Title order={3}>Financial Overview</Title>
-              <Text size="sm" c="dimmed">
-                Current Month
-              </Text>
-            </div>
-            <FinancialOverview data={financialData} />
-          </>
-        ) : null}
-
-        {/* Occupancy Overview - Compact */}
-        {loadingOccupancy ? (
-          <Skeleton height={250} radius="md" />
-        ) : occupancyData ? (
-          <OccupancyOverview data={occupancyData} loading={loadingOccupancy} />
-        ) : null}
-
-        {/* Full Width Revenue Chart */}
-        <RevenueChart data={revenueChartData} loading={loadingRevenueChart} />
-
-        {/* Tenant Summary - Full Width or could be sidebar */}
-        <TenantSummary
-          data={tenantSummaryData}
-          loading={loadingTenantSummary}
-        />
+        <LandlordStatisticsGrid statistics={statistics} />
 
         {/* Main Content Grid */}
         <Grid>
-          {/* Left Side - Applications and Property Performance */}
+          {/* Left Side - Applications */}
           <Grid.Col span={{ base: 12, lg: 8 }}>
             <Stack gap="lg">
               <RecentApplications
                 applications={recentApplications}
                 loading={loadingApplications}
-              />
-              <PropertyPerformance
-                properties={propertyPerformance}
-                loading={loadingPerformance}
               />
             </Stack>
           </Grid.Col>
