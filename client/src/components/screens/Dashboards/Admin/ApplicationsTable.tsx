@@ -51,7 +51,7 @@ const ApplicationsTable = ({
 }) => {
   const statusColors = {
     Approved: "bg-[#C3FBE1] text-green-800",
-    Pending: "bg-[#290665] text-white",
+    Pending: "bg-[#008CDB] text-white",
     Rejected: "bg-[#DD1C12] text-white",
   };
 

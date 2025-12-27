@@ -51,7 +51,7 @@ export default function EnhancedImageGallery({
           {media[0].type === "video" && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/20">
               <div className="bg-white/90 p-4 rounded-full shadow-xl">
-                <IconPlayerPlay size={30} color="#290665" />
+                <IconPlayerPlay size={30} color="#008CDB" />
               </div>
             </div>
           )}
@@ -83,7 +83,7 @@ export default function EnhancedImageGallery({
               className="w-full h-full object-cover"
               alt="More"
             />
-            <div className="absolute inset-0 bg-[#290665]/80 flex items-center justify-center">
+            <div className="absolute inset-0 bg-[#008CDB]/80 flex items-center justify-center">
               <Text c="white" fw={700}>
                 +{media.length - 4} Photos
               </Text>

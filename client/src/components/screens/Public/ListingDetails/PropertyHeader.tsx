@@ -27,7 +27,7 @@ export default function PropertyHeader({
         {/* Left: Title & Location */}
         <div className="flex-1">
           <div className="flex items-start gap-3 mb-3">
-            <h1 className="text-4xl font-bold text-[#290665] leading-tight">
+            <h1 className="text-4xl font-bold text-[#008CDB] leading-tight">
               {property.name}
             </h1>
             <Badge size="lg" bg="#CF8205" className="mt-2 font-semibold">
@@ -45,7 +45,7 @@ export default function PropertyHeader({
         {/* Right: Price & Stats */}
         <div className="lg:text-right">
           <div className="mb-4">
-            <div className="text-4xl font-black text-[#290665]">
+            <div className="text-4xl font-black text-[#008CDB]">
               {formatPrice(property.rent_amount)}
             </div>
             <div className="text-sm text-gray-500 font-medium mt-1">
@@ -69,7 +69,7 @@ export default function PropertyHeader({
           fullWidth={false}
           flex={1}
           size="md"
-          bg="#290665"
+          bg="#008CDB"
           onClick={openSharePropertyModal}
           leftSection={<IconShare2 size={16} />}
           className="font-semibold hover:bg-[#1e054a] transition-colors rounded-lg"
@@ -82,8 +82,8 @@ export default function PropertyHeader({
           flex={1}
           size="md"
           variant={likedData.isLiked ? "filled" : "outline"}
-          bg={likedData.isLiked ? "#290665" : undefined}
-          color={likedData.isLiked ? "#290665" : "gray"}
+          bg={likedData.isLiked ? "#008CDB" : undefined}
+          color={likedData.isLiked ? "#008CDB" : "gray"}
           onClick={handleLike}
           leftSection={
             <IconHeart

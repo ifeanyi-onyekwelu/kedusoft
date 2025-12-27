@@ -37,8 +37,9 @@ export default function Sidebar({
           {isVerified && (
             <Badge
               size="sm"
-              bg="#290665"
+              bg="green"
               variant="light"
+              color="white"
               leftSection={<IconCheck size={12} />}
             >
               Verified
@@ -52,16 +53,16 @@ export default function Sidebar({
             size="lg"
             radius="md"
             src={property.landlord?.avatar}
-            color="#290665"
+            color="#008CDB"
           >
             {property.landlord?.firstName?.[0]}
           </Avatar>
           <div className="flex-1 min-w-0">
-            <Text fw={600} size="sm" c="#290665" truncate>
+            <Text fw={600} size="sm" c="#008CDB" truncate>
               {property.landlord?.firstName} {property.landlord?.lastName}
             </Text>
             <Text size="xs" c="dimmed">
-              Active on Kedusoft
+              Active on Letsten
             </Text>
           </div>
         </div>
@@ -71,7 +72,7 @@ export default function Sidebar({
           <Button
             fullWidth
             size="md"
-            bg="#290665"
+            bg="#008CDB"
             onClick={openContactOwnerModal}
             leftSection={<IconPhone size={16} />}
             className="font-semibold"
@@ -120,7 +121,7 @@ export default function Sidebar({
       </div>
 
       {/* Helpful Info */}
-      <div className="p-4 bg-[#290665]/5 border border-[#290665]/20 rounded-lg">
+      <div className="p-4 bg-[#008CDB]/5 border border-[#008CDB]/20 rounded-lg">
         <p className="text-xs text-gray-700 leading-relaxed">
           💡 Tip: Landlord verification gives you peace of mind. Always verify
           property details before committing.

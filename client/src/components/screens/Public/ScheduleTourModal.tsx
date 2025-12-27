@@ -76,14 +76,14 @@ export function ScheduleTourModal({
       classNames={{
         content: "!bg-white !shadow-2xl",
         header: "!bg-white !border-b !border-gray-200 !px-8 !py-6",
-        title: "!font-black !text-2xl !text-[#290665]",
+        title: "!font-black !text-2xl !text-[#008CDB]",
         close: "!text-gray-400 hover:!text-gray-600",
       }}
       title="Schedule a Property Tour"
     >
       <div className="px-8 pb-8 space-y-6">
         {/* Property Summary Card */}
-        <div className="flex gap-4 p-4 bg-gradient-to-br from-[#290665]/5 to-[#CF8205]/5 border border-gray-200 rounded-xl">
+        <div className="flex gap-4 p-4 bg-gradient-to-br from-[#008CDB]/5 to-[#CF8205]/5 border border-gray-200 rounded-xl">
           <div className="relative flex-shrink-0">
             <img
               src={property.gallery?.[0]}
@@ -112,7 +112,7 @@ export function ScheduleTourModal({
         <div className="space-y-4">
           {/* Name Field */}
           <div>
-            <label className="block text-sm font-semibold text-[#290665] mb-2">
+            <label className="block text-sm font-semibold text-[#008CDB] mb-2">
               Full Name <span className="text-red-500">*</span>
             </label>
             <input
@@ -126,7 +126,7 @@ export function ScheduleTourModal({
 
           {/* Email Field */}
           <div>
-            <label className="block text-sm font-semibold text-[#290665] mb-2">
+            <label className="block text-sm font-semibold text-[#008CDB] mb-2">
               Email Address <span className="text-red-500">*</span>
             </label>
             <input
@@ -140,7 +140,7 @@ export function ScheduleTourModal({
 
           {/* Phone Field */}
           <div>
-            <label className="block text-sm font-semibold text-[#290665] mb-2">
+            <label className="block text-sm font-semibold text-[#008CDB] mb-2">
               Phone Number <span className="text-red-500">*</span>
             </label>
             <input
@@ -154,7 +154,7 @@ export function ScheduleTourModal({
 
           {/* Date Time Picker */}
           <div>
-            <label className="block text-sm font-semibold text-[#290665] mb-2">
+            <label className="block text-sm font-semibold text-[#008CDB] mb-2">
               Preferred Date & Time <span className="text-red-500">*</span>
             </label>
             <DateTimePicker
@@ -171,7 +171,7 @@ export function ScheduleTourModal({
 
           {/* Message Field */}
           <div>
-            <label className="block text-sm font-semibold text-[#290665] mb-2">
+            <label className="block text-sm font-semibold text-[#008CDB] mb-2">
               Additional Message
             </label>
             <textarea
@@ -190,7 +190,7 @@ export function ScheduleTourModal({
               id="agree"
               checked={agree}
               onChange={(e) => setAgree(e.target.checked)}
-              className="mt-1 w-5 h-5 accent-[#290665] cursor-pointer rounded border-gray-300"
+              className="mt-1 w-5 h-5 accent-[#008CDB] cursor-pointer rounded border-gray-300"
             />
             <label
               htmlFor="agree"
@@ -217,7 +217,7 @@ export function ScheduleTourModal({
             onClick={handleSubmit}
             loading={loading}
             leftSection={<IconCheck size={18} />}
-            className="flex-1 !h-12 !bg-[#290665] !font-semibold hover:!bg-[#1e054a] !text-white transition-all"
+            className="flex-1 !h-12 !bg-[#008CDB] !font-semibold hover:!bg-[#1e054a] !text-white transition-all"
           >
             Schedule Tour
           </Button>

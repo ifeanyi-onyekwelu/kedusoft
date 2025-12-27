@@ -89,10 +89,10 @@ const createPropertyIcon = (
     <div class="property-marker ${isSelected ? "selected" : ""} ${
     isHovered ? "hovered" : ""
   }" style="
-      background: ${isSelected ? "#290665" : isHovered ? "#290665" : "#ffffff"};
+      background: ${isSelected ? "#008CDB" : isHovered ? "#008CDB" : "#ffffff"};
       color: ${isSelected || isHovered ? "#ffffff" : "#1f2937"};
       border: 2px solid ${
-        isSelected ? "#1d4ed8" : isHovered ? "#290665" : "#e5e7eb"
+        isSelected ? "#1d4ed8" : isHovered ? "#008CDB" : "#e5e7eb"
       };
       border-radius: 20px;
       padding: 4px 8px;

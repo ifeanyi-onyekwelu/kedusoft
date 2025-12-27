@@ -15,7 +15,7 @@ export default function PropertyBreadcrumbs({
         </li>
         <li>/</li>
         <li>
-          <Link to="/properties" className="hover:underline">
+          <Link to="/listings" className="hover:underline">
             Properties
           </Link>
         </li>

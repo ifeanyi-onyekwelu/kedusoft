@@ -95,14 +95,14 @@ const ShareListingModal = ({
       classNames={{
         content: "!bg-white !shadow-2xl",
         header: "!bg-white !border-b !border-gray-200 !px-8 !py-6",
-        title: "!font-black !text-2xl !text-[#290665]",
+        title: "!font-black !text-2xl !text-[#008CDB]",
         close: "!text-gray-400 hover:!text-gray-600",
       }}
       title="Share This Property"
     >
       <div className="px-8 pb-8 space-y-8">
         {/* Property Info Card */}
-        <div className="flex gap-4 p-4 bg-gradient-to-br from-[#290665]/5 to-[#CF8205]/5 border border-gray-200 rounded-xl">
+        <div className="flex gap-4 p-4 bg-gradient-to-br from-[#008CDB]/5 to-[#CF8205]/5 border border-gray-200 rounded-xl">
           <img
             src={property.gallery?.[0]}
             alt={property.name}
@@ -119,7 +119,7 @@ const ShareListingModal = ({
         {/* Copy Link Section */}
         <div className="space-y-3">
           <div className="flex items-center gap-2 mb-3">
-            <IconLink size={20} className="text-[#290665]" stroke={2.5} />
+            <IconLink size={20} className="text-[#008CDB]" stroke={2.5} />
             <h4 className="font-semibold text-gray-900">Copy Link</h4>
           </div>
           <div className="flex gap-2">
@@ -134,7 +134,7 @@ const ShareListingModal = ({
               className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 whitespace-nowrap ${
                 copied
                   ? "bg-green-100 text-green-700 border border-green-200"
-                  : "bg-[#290665] text-white hover:bg-[#1e054a] border border-[#290665]"
+                  : "bg-[#008CDB] text-white hover:bg-[#1e054a] border border-[#008CDB]"
               }`}
             >
               {copied ? (
@@ -155,7 +155,7 @@ const ShareListingModal = ({
         {/* Social Media Section */}
         <div className="space-y-3">
           <div className="flex items-center gap-2 mb-3">
-            <IconMail size={20} className="text-[#290665]" stroke={2.5} />
+            <IconMail size={20} className="text-[#008CDB]" stroke={2.5} />
             <h4 className="font-semibold text-gray-900">
               Share on Social Media
             </h4>

@@ -128,7 +128,7 @@ function PropertyDetailsComponent() {
             <div className="relative rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <ImageGallery images={property.gallery} />
               <div className="absolute top-4 right-4 z-10">
-                <div className="bg-[#290665] text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide">
+                <div className="bg-[#008CDB] text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide">
                   {property.gallery?.length || 0} Photos
                 </div>
               </div>
@@ -170,7 +170,7 @@ function PropertyDetailsComponent() {
         <div className="fixed bottom-8 right-8 z-[90]">
           <button
             onClick={applyModal.open}
-            className="bg-[#290665] text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl hover:bg-[#1e054a] transform hover:-translate-y-1 transition-all duration-300 font-semibold text-base flex items-center gap-3 group"
+            className="bg-[#008CDB] text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl hover:bg-[#1e054a] transform hover:-translate-y-1 transition-all duration-300 font-semibold text-base flex items-center gap-3 group"
           >
             <span>Apply Now</span>
             <div className="bg-[#CF8205] p-2 rounded-full group-hover:scale-110 transition-transform">

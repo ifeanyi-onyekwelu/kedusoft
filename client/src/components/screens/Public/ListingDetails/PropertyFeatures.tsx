@@ -16,13 +16,13 @@ export default function PropertyFeatures({ property }: PropertyFeaturesProps) {
     {
       label: `${property.bedrooms || 0}`,
       sublabel: "Bedroom" + (property.bedrooms !== 1 ? "s" : ""),
-      icon: <IconBed size={22} color="#290665" stroke={2} />,
+      icon: <IconBed size={22} color="#008CDB" stroke={2} />,
       value: property.bedrooms,
     },
     {
       label: `${property.bathrooms || 0}`,
       sublabel: "Bathroom" + (property.bathrooms !== 1 ? "s" : ""),
-      icon: <IconBath size={22} color="#290665" stroke={2} />,
+      icon: <IconBath size={22} color="#008CDB" stroke={2} />,
       value: property.bathrooms,
     },
     {
@@ -30,25 +30,25 @@ export default function PropertyFeatures({ property }: PropertyFeaturesProps) {
         ? `${property.size_sqft.toLocaleString()}`
         : "N/A",
       sublabel: "Square Feet",
-      icon: <IconMaximize size={22} color="#290665" stroke={2} />,
+      icon: <IconMaximize size={22} color="#008CDB" stroke={2} />,
       value: property.size_sqft,
     },
     {
       label: `${property.parking_spaces || 0}`,
       sublabel: "Parking Space" + (property.parking_spaces !== 1 ? "s" : ""),
-      icon: <IconParking size={22} color="#290665" stroke={2} />,
+      icon: <IconParking size={22} color="#008CDB" stroke={2} />,
       value: property.parking_spaces,
     },
     {
       label: `${property.kitchens || 0}`,
       sublabel: "Kitchen" + (property.kitchens !== 1 ? "s" : ""),
-      icon: <IconChefHat size={22} color="#290665" stroke={2} />,
+      icon: <IconChefHat size={22} color="#008CDB" stroke={2} />,
       value: property.kitchens,
     },
     {
       label: property.furnished ? "Yes" : "No",
       sublabel: "Furnished",
-      icon: <IconParkingCircle size={22} color="#290665" stroke={2} />,
+      icon: <IconParkingCircle size={22} color="#008CDB" stroke={2} />,
       value: property.furnished,
     },
   ];
@@ -62,11 +62,11 @@ export default function PropertyFeatures({ property }: PropertyFeaturesProps) {
             className="p-4 border border-gray-200 rounded-xl hover:border-[#CF8205] hover:bg-[#CF8205]/5 transition-all duration-200"
           >
             <div className="flex flex-col items-center text-center gap-2">
-              <div className="p-3 bg-[#290665]/5 rounded-lg">
+              <div className="p-3 bg-[#008CDB]/5 rounded-lg">
                 {feature.icon}
               </div>
               <div>
-                <div className="text-lg font-bold text-[#290665]">
+                <div className="text-lg font-bold text-[#008CDB]">
                   {feature.label}
                 </div>
                 <div className="text-xs text-gray-600 font-medium">

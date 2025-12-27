@@ -19,7 +19,7 @@ export default function PropertyOverviewSection({
 
   return (
     <section className="py-8">
-      <h3 className="text-2xl font-bold text-[#290665] mb-6">
+      <h3 className="text-2xl font-bold text-[#008CDB] mb-6">
         About this property
       </h3>
 
@@ -36,14 +36,14 @@ export default function PropertyOverviewSection({
         {/* Available From */}
         <div className="p-5 bg-white border border-gray-200 rounded-lg hover:border-[#CF8205] transition-all">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2.5 bg-[#290665]/10 rounded-lg">
-              <IconCalendar size={20} color="#290665" stroke={2} />
+            <div className="p-2.5 bg-[#008CDB]/10 rounded-lg">
+              <IconCalendar size={20} color="#008CDB" stroke={2} />
             </div>
             <span className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
               Available From
             </span>
           </div>
-          <p className="text-lg font-bold text-[#290665] pl-12">
+          <p className="text-lg font-bold text-[#008CDB] pl-12">
             {availableFrom}
           </p>
         </div>
@@ -51,14 +51,14 @@ export default function PropertyOverviewSection({
         {/* Minimum Lease */}
         <div className="p-5 bg-white border border-gray-200 rounded-lg hover:border-[#CF8205] transition-all">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2.5 bg-[#290665]/10 rounded-lg">
-              <IconDoorEnter size={20} color="#290665" stroke={2} />
+            <div className="p-2.5 bg-[#008CDB]/10 rounded-lg">
+              <IconDoorEnter size={20} color="#008CDB" stroke={2} />
             </div>
             <span className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
               Min. Lease
             </span>
           </div>
-          <p className="text-lg font-bold text-[#290665] pl-12">
+          <p className="text-lg font-bold text-[#008CDB] pl-12">
             {minLeaseDuration}
           </p>
         </div>
@@ -66,14 +66,14 @@ export default function PropertyOverviewSection({
         {/* Status */}
         <div className="p-5 bg-white border border-gray-200 rounded-lg hover:border-[#CF8205] transition-all">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2.5 bg-[#290665]/10 rounded-lg">
-              <IconBuilding size={20} color="#290665" stroke={2} />
+            <div className="p-2.5 bg-[#008CDB]/10 rounded-lg">
+              <IconBuilding size={20} color="#008CDB" stroke={2} />
             </div>
             <span className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
               Property Status
             </span>
           </div>
-          <p className="text-lg font-bold text-[#290665] pl-12 capitalize">
+          <p className="text-lg font-bold text-[#008CDB] pl-12 capitalize">
             {property.status || "Available"}
           </p>
         </div>
@@ -81,8 +81,8 @@ export default function PropertyOverviewSection({
 
       {/* Additional Details */}
       {property.water_source && (
-        <div className="mt-8 p-6 bg-[#290665]/5 border border-[#290665]/20 rounded-lg">
-          <h4 className="font-semibold text-[#290665] mb-3">
+        <div className="mt-8 p-6 bg-[#008CDB]/5 border border-[#008CDB]/20 rounded-lg">
+          <h4 className="font-semibold text-[#008CDB] mb-3">
             Additional Details
           </h4>
           <ul className="space-y-2 text-gray-700">

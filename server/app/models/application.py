@@ -15,12 +15,13 @@ class Application(BaseModel):
         String(50), ForeignKey("users.id")
     )  # Kept for backward compatibility
 
-    # Snapshot of details
-    first_name = Column(String(100))
-    last_name = Column(String(100))
-    email = Column(String(150))
-    phone = Column(String(50))
-    message = Column(String(500))
+    # Application details
+    employment_status = Column(
+        String(50)
+    )  # employed, student, self-employed, unemployed
+    number_of_occupants = Column(String(10))
+    move_in_date = Column(DateTime, nullable=True)
+    message = Column(String(1000))  # Notes for landlord
 
     # Application process
     status = Column(
@@ -32,10 +33,6 @@ class Application(BaseModel):
     # Tour scheduling
     tour_date = Column(DateTime, nullable=True)
     tour_confirmed = Column(String(10), default="pending")  # pending/confirmed/declined
-
-    # Optional extra
-    preferred_move_in = Column(DateTime, nullable=True)
-    documents_url = Column(String(255), nullable=True)
 
     # Relationships
     applicant = relationship(

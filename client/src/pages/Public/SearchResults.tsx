@@ -19,7 +19,7 @@ function SearchResults() {
           <Property />
         </SimpleGrid>
 
-        <Pagination.Root total={10} autoContrast color="#290665">
+        <Pagination.Root total={10} autoContrast color="#008CDB">
           <Group gap={5} justify="center">
             <Pagination.First />
             <Pagination.Previous />

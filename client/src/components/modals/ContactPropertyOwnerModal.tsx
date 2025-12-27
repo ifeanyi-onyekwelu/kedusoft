@@ -127,7 +127,7 @@ function ContactPropertyOwnerModal({
             />
             <TextInput description="Price" value={formatPrice()} readOnly />
             <TextInput description="Address" value={formatAddress()} readOnly />
-            <Button color="#290665" type="submit" fullWidth>
+            <Button color="#008CDB" type="submit" fullWidth>
               Submit Contact Request
             </Button>
           </form>

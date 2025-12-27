@@ -16,7 +16,7 @@ export default function PropertyLocationSection({
 
   return (
     <section className="space-y-4">
-      <h3 className="text-xl font-bold text-[#290665]">Location</h3>
+      <h3 className="text-xl font-bold text-[#008CDB]">Location</h3>
       <div className="flex items-center gap-2 text-gray-600 mb-4">
         <IconMapPin size={18} color="#CF8205" />
         <span className="font-medium">

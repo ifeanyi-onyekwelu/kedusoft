@@ -532,7 +532,7 @@ def apply_for_property(property_id):
     data = request.get_json()
 
     # Validate required fields
-    required_fields = ["first_name", "last_name", "email", "phone", "employment_status"]
+    required_fields = ["employment_status", "number_of_occupants", "move_in_date"]
     for field in required_fields:
         if not data.get(field):
             raise CustomRequestError(f"Missing required field: {field}", 400)
@@ -558,22 +558,14 @@ def apply_for_property(property_id):
 
     application_data = {
         "property_id": property_id,
-        "applicant_id": user_id,  # Changed from tenant_id
-        "tenant_id": user_id,  # Kept for backward compatibility
-        "first_name": data["first_name"],
-        "last_name": data["last_name"],
-        "email": data["email"],
-        "phone": data["phone"],
+        "applicant_id": user_id,
+        "tenant_id": user_id,
+        "employment_status": data["employment_status"],
+        "number_of_occupants": data["number_of_occupants"],
+        "move_in_date": data["move_in_date"],
         "message": data.get("message", ""),
-        **data,
         "status": "received",
     }
-
-    # Add optional fields if provided
-    optional_fields = ["preferred_move_in", "documents_url"]
-    for field in optional_fields:
-        if field in data:
-            application_data[field] = data[field]
 
     # Create new application
     new_application = create_item(g.session, Application, application_data)

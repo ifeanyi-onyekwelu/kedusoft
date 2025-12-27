@@ -74,7 +74,7 @@ const ListedBySection = ({ landlord, property }: ListedBySectionProps) => {
           )}
           <button
             onClick={handleContactOwner}
-            className="mt-3 px-4 py-2 text-sm rounded-md bg-[#290665] text-white hover:opacity-90 transition"
+            className="mt-3 px-4 py-2 text-sm rounded-md bg-[#008CDB] text-white hover:opacity-90 transition"
           >
             Contact Owner
           </button>
