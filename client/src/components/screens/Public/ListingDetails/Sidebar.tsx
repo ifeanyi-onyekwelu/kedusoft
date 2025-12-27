@@ -1,41 +1,130 @@
-import { User, Phone, Home } from "lucide-react";
+import {
+  IconUserCircle,
+  IconPhone,
+  IconMessageCircle,
+  IconCheck,
+} from "@tabler/icons-react";
+import { Button, Text, Stack, Avatar, Badge } from "@mantine/core";
+import { useState } from "react";
+
+interface SidebarProps {
+  property: any;
+  openContactOwnerModal: () => void;
+}
 
 export default function Sidebar({
   property,
   openContactOwnerModal,
-}: {
-  property: Property;
-  openContactOwnerModal: () => void;
-}) {
+}: SidebarProps) {
+  const [isVerified] = useState(true); // Can be dynamic from property data
+
   return (
-    <aside className="w-full space-y-6">
-      {/* Listed By */}
-      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-        <h3 className="text-lg font-semibold text-gray-800 mb-3">Listed By</h3>
-        <div className="flex items-center space-x-3">
-          <User size={20} className="text-gray-600" />
+    <aside className="sticky top-24 space-y-5">
+      {/* Landlord Card */}
+      <div className="p-6 border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow">
+        <div className="flex items-start justify-between mb-5">
           <div>
-            <p className="font-medium text-gray-800">
-              {`${property.landlord?.firstName} ${property.landlord?.lastName}` ||
-                "Unknown"}
-            </p>
-            <p className="text-sm text-gray-600">Property Owner</p>
+            <Text
+              size="xs"
+              fw={700}
+              c="#CF8205"
+              tt="uppercase"
+              letter-spacing={0.5}
+            >
+              Property Owner
+            </Text>
+          </div>
+          {isVerified && (
+            <Badge
+              size="sm"
+              bg="#290665"
+              variant="light"
+              leftSection={<IconCheck size={12} />}
+            >
+              Verified
+            </Badge>
+          )}
+        </div>
+
+        {/* Owner Profile */}
+        <div className="flex items-center gap-3 mb-6 pb-5 border-b border-gray-100">
+          <Avatar
+            size="lg"
+            radius="md"
+            src={property.landlord?.avatar}
+            color="#290665"
+          >
+            {property.landlord?.firstName?.[0]}
+          </Avatar>
+          <div className="flex-1 min-w-0">
+            <Text fw={600} size="sm" c="#290665" truncate>
+              {property.landlord?.firstName} {property.landlord?.lastName}
+            </Text>
+            <Text size="xs" c="dimmed">
+              Active on Kedusoft
+            </Text>
           </div>
         </div>
-        <button
-          onClick={openContactOwnerModal}
-          className="mt-4 w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          Contact Owner
-        </button>
+
+        {/* Action Buttons */}
+        <Stack gap="sm">
+          <Button
+            fullWidth
+            size="md"
+            bg="#290665"
+            onClick={openContactOwnerModal}
+            leftSection={<IconPhone size={16} />}
+            className="font-semibold"
+            radius="md"
+          >
+            Schedule Tour
+          </Button>
+          <Button
+            fullWidth
+            variant="light"
+            color="gray"
+            size="md"
+            leftSection={<IconMessageCircle size={16} />}
+            className="font-semibold"
+            radius="md"
+          >
+            Send Message
+          </Button>
+        </Stack>
       </div>
 
-      {/* Similar Properties */}
-      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-        <h3 className="text-lg font-semibold text-gray-800 mb-3">
-          Similar Properties
-        </h3>
-        <p className="text-gray-600 text-sm">Coming soon...</p>
+      {/* Quick Info Card */}
+      <div className="p-5 bg-white border border-gray-200 rounded-xl">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+            <span className="text-sm text-gray-600">Listing ID</span>
+            <code className="text-xs bg-gray-50 px-2.5 py-1 rounded text-gray-700 font-mono font-medium">
+              {property.id?.toString().slice(0, 8).toUpperCase()}
+            </code>
+          </div>
+          <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+            <span className="text-sm text-gray-600">Type</span>
+            <span className="text-sm font-semibold text-gray-900 capitalize">
+              {property.listing_type || "Rent"}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600">Posted</span>
+            <span className="text-sm font-semibold text-gray-900">
+              {property.created_at
+                ? new Date(property.created_at).toLocaleDateString()
+                : "Recently"}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Helpful Info */}
+      <div className="p-4 bg-[#290665]/5 border border-[#290665]/20 rounded-lg">
+        <p className="text-xs text-gray-700 leading-relaxed">
+          💡 Tip: Landlord verification gives you peace of mind. Always verify
+          property details before committing.
+        </p>
       </div>
     </aside>
   );

@@ -29,14 +29,17 @@ import { LatLngBounds, LatLng } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
+// ============================================================================
+// TYPE IMPORTS
+// ============================================================================
+
+// Note: Property interface is defined in application scope (window.Property)
+// This component expects Property type to be available globally or passed through context
+
 /**
  * Map layer types for different viewing modes
  */
 type MapLayer = "street" | "satellite";
-
-/**
- * Interface for map geographical boundaries
- */
 interface MapBounds {
   north: number;
   south: number;

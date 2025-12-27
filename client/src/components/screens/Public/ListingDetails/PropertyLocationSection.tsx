@@ -1,33 +1,37 @@
-import { MapPin } from "lucide-react";
+import { IconMapPin } from "@tabler/icons-react";
 import InteractivePropertyMap from "../../../maps/InteractivePropertyMap";
+import { useState } from "react";
 
 export default function PropertyLocationSection({
   property,
   nearbyProperties = [],
-}: {
-  property: Property;
-  nearbyProperties?: Property[];
-}) {
+}: any) {
   const allProperties = [property, ...nearbyProperties];
+  const [selectedProperty, setSelectedProperty] = useState(property);
+
+  const handleMapBoundsChange = () => {
+    // Bounds change handler - can be used for fetching properties within bounds
+    // Currently a no-op since we're displaying static nearby properties
+  };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 space-y-4">
-      <h3 className="text-lg font-semibold text-gray-800 mb-3">Location</h3>
-      <div className="flex items-center text-gray-700">
-        <MapPin size={20} className="mr-2 text-blue-600" />
-        {property.address}, {property.city}, Nigeria
+    <section className="space-y-4">
+      <h3 className="text-xl font-bold text-[#290665]">Location</h3>
+      <div className="flex items-center gap-2 text-gray-600 mb-4">
+        <IconMapPin size={18} color="#CF8205" />
+        <span className="font-medium">
+          {property.address}, {property.city}
+        </span>
       </div>
-
-      <div className="mt-4 w-full rounded-lg overflow-hidden relative">
+      <div className="h-[400px] w-full rounded-xl overflow-hidden border border-gray-100 relative z-0">
         <InteractivePropertyMap
           properties={allProperties}
-          selectedProperty={property}
-          onPropertySelect={() => {}}
-          onPropertyHover={() => {}}
-          onMapBoundsChange={() => {}}
+          selectedProperty={selectedProperty}
+          onPropertySelect={setSelectedProperty}
+          onMapBoundsChange={handleMapBoundsChange}
           zoom={15}
         />
       </div>
-    </div>
+    </section>
   );
 }

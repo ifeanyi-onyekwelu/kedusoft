@@ -1,20 +1,79 @@
-import { Bed, Bath, Square } from "lucide-react";
+import {
+  IconBed,
+  IconBath,
+  IconMaximize,
+  IconParking,
+  IconChefHat,
+  IconParkingCircle,
+} from "@tabler/icons-react";
 
-export default function PropertyFeatures({ property }: { property: Property }) {
+interface PropertyFeaturesProps {
+  property: any;
+}
+
+export default function PropertyFeatures({ property }: PropertyFeaturesProps) {
   const features = [
-    { label: `${property.bedrooms} Bedrooms`, icon: <Bed size={18} /> },
-    { label: `${property.bathrooms} Bathrooms`, icon: <Bath size={18} /> },
-    { label: `${property.size_sqft} sqft`, icon: <Square size={18} /> },
+    {
+      label: `${property.bedrooms || 0}`,
+      sublabel: "Bedroom" + (property.bedrooms !== 1 ? "s" : ""),
+      icon: <IconBed size={22} color="#290665" stroke={2} />,
+      value: property.bedrooms,
+    },
+    {
+      label: `${property.bathrooms || 0}`,
+      sublabel: "Bathroom" + (property.bathrooms !== 1 ? "s" : ""),
+      icon: <IconBath size={22} color="#290665" stroke={2} />,
+      value: property.bathrooms,
+    },
+    {
+      label: property.size_sqft
+        ? `${property.size_sqft.toLocaleString()}`
+        : "N/A",
+      sublabel: "Square Feet",
+      icon: <IconMaximize size={22} color="#290665" stroke={2} />,
+      value: property.size_sqft,
+    },
+    {
+      label: `${property.parking_spaces || 0}`,
+      sublabel: "Parking Space" + (property.parking_spaces !== 1 ? "s" : ""),
+      icon: <IconParking size={22} color="#290665" stroke={2} />,
+      value: property.parking_spaces,
+    },
+    {
+      label: `${property.kitchens || 0}`,
+      sublabel: "Kitchen" + (property.kitchens !== 1 ? "s" : ""),
+      icon: <IconChefHat size={22} color="#290665" stroke={2} />,
+      value: property.kitchens,
+    },
+    {
+      label: property.furnished ? "Yes" : "No",
+      sublabel: "Furnished",
+      icon: <IconParkingCircle size={22} color="#290665" stroke={2} />,
+      value: property.furnished,
+    },
   ];
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-      <h3 className="text-lg font-semibold mb-4">Property Features</h3>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        {features.map((f, idx) => (
-          <div key={idx} className="flex items-center space-x-2 text-gray-700">
-            {f.icon}
-            <span>{f.label}</span>
+    <div className="py-8 border-b border-gray-200">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+        {features.map((feature, idx) => (
+          <div
+            key={idx}
+            className="p-4 border border-gray-200 rounded-xl hover:border-[#CF8205] hover:bg-[#CF8205]/5 transition-all duration-200"
+          >
+            <div className="flex flex-col items-center text-center gap-2">
+              <div className="p-3 bg-[#290665]/5 rounded-lg">
+                {feature.icon}
+              </div>
+              <div>
+                <div className="text-lg font-bold text-[#290665]">
+                  {feature.label}
+                </div>
+                <div className="text-xs text-gray-600 font-medium">
+                  {feature.sublabel}
+                </div>
+              </div>
+            </div>
           </div>
         ))}
       </div>
