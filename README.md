@@ -117,7 +117,7 @@
 ## 📁 Project Structure
 
 ```
-kedusoft/
+Letsten/
 ├── client/                      # Frontend application
 │   ├── public/                  # Static assets
 │   │   └── images/
@@ -215,8 +215,8 @@ Make sure you have the following installed:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/ifeanyi-onyekwelu/kedusoft.git
-   cd kedusoft
+   git clone https://github.com/ifeanyi-onyekwelu/Letsten.git
+   cd Letsten
    ```
 
 2. **Install all dependencies** (both client and server)

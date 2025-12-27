@@ -26,7 +26,7 @@ export default function WelcomePage() {
               {/* Replace 'logo.png' with your actual path */}
               <Image
                 src="/images/brand/logo.png"
-                alt="Kedusoft Logo"
+                alt="Letsten Logo"
                 w={200}
                 fallbackSrc="https://placehold.co/80x80?text=K"
               />
@@ -34,7 +34,7 @@ export default function WelcomePage() {
                 className="font-syne text-primary uppercase tracking-[0.2em] font-bold"
                 size="xl"
               >
-                Kedusoft
+                Letsten
               </Text>
             </Stack>
           </motion.div>

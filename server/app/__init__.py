@@ -1,5 +1,5 @@
 """
-Main application factory for the Kedusoft Rental API.
+Main application factory for the Letsten Rental API.
 Initializes Flask app, database connections, and all extensions.
 """
 

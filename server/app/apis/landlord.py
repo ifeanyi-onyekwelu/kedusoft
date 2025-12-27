@@ -5,6 +5,8 @@ from ..utils.decorators import role_required
 from ..utils.helpers import response, serialize, get_logged_in_user
 from ..utils.errors import CustomRequestError, catch_exception
 from ..utils.mailer import send_email
+from ..utils.activity_logger import ActivityLogger
+from ..utils.variables import SITE_URL
 from ..models.db_utils import (
     create_item,
     get_item_by_filter,
@@ -31,7 +33,6 @@ import logging
 from datetime import datetime, timedelta
 from sqlalchemy.orm import joinedload
 from sqlalchemy import func, and_, or_, desc, asc
-from ..utils.activity_logger import ActivityLogger
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -1000,16 +1001,9 @@ def get_application_stats():
 @jwt_required()
 @role_required("landlord")
 def approve_application(application_id):
-    """
-    Approves an application and updates its status
-    - Verifies application exists and belongs to landlord's property
-    - Updates application status to 'approved'
-    - Records approval action
-    """
     user_id, _, _ = get_logged_in_user()
     data = request.get_json() or {}
 
-    # Verify application exists and belongs to landlord
     application = get_item_by_filter(g.session, Application, {"id": application_id})
     if not application:
         raise CustomRequestError("Application not found", 404)
@@ -1020,104 +1014,95 @@ def approve_application(application_id):
     if not property:
         raise CustomRequestError("Not authorized to approve this application", 403)
 
-    # Check if application can be approved (not already processed)
     if application.status in ["approved", "rejected", "lease-created"]:
         raise CustomRequestError(
             f"Cannot approve application with status: {application.status}", 400
         )
 
-    # Update application status to approved
-    update_data = {
-        "status": "approved",
-        "approved_at": datetime.utcnow(),
-        "approval_notes": data.get("notes", ""),
-    }
-
     updated_application = update_item(
-        g.session, Application, application_id, update_data
+        g.session,
+        Application,
+        application_id,
+        {
+            "status": "approved",
+            "approved_at": datetime.utcnow(),
+        },
     )
 
-    # Log activity
+    # Send Approval Email
+    try:
+        applicant = application.applicant
+        template_vars = {
+            "name": f"{applicant.firstName} {applicant.lastName}",
+            "property_name": property.name,
+            "property_address": f"{property.street}, {property.city}",
+            "action_url": f"{SITE_URL}/tenants/applications",
+        }
+        send_email(
+            "Application Approved!",
+            [applicant.email],
+            "application_approved",  # Template name
+            template_vars,
+        )
+    except Exception as e:
+        logging.error(f"Email failed: {str(e)}")
+
     ActivityLogger.log_landlord_activity(
         g.session,
         user_id,
         "application_approved",
-        f"Approved application for property: {property.name}",
+        f"Approved for: {property.name}",
         "application",
         application_id,
     )
-
     return response(
-        "Application approved successfully",
-        {"application": serialize(updated_application)},
+        "Application approved", {"application": serialize(updated_application)}
     )
 
 
+# --- REJECT APPLICATION ---
 @landlord.patch("/applications/<string:application_id>/reject")
 @catch_exception
 @jwt_required()
 @role_required("landlord")
 def reject_application(application_id):
-    """
-    Rejects an application
-    - Verifies application exists and belongs to landlord's property
-    - Updates application status to 'rejected'
-    - Records rejection reason if provided
-    """
     user_id, _, _ = get_logged_in_user()
 
-    # Verify application exists and belongs to landlord
     application = get_item_by_filter(g.session, Application, {"id": application_id})
-    if not application:
-        raise CustomRequestError("Application not found", 404)
-
     property = get_item_by_filter(
         g.session, Property, {"id": application.property_id, "landlord_id": user_id}
     )
-    if not property:
-        raise CustomRequestError("Not authorized to reject this application", 403)
-
-    # Check if application can be rejected (not already processed)
-    if application.status in ["approved", "rejected"]:
-        raise CustomRequestError(
-            f"Cannot reject application with status: {application.status}", 400
-        )
-
-    # Update application status to rejected
-    update_data = {"status": "rejected"}
 
     updated_application = update_item(
-        g.session, Application, {"id": application_id}, update_data
+        g.session, Application, application_id, {"status": "rejected"}
     )
 
-    # Log activity
+    # Send Rejection Email
+    try:
+        applicant = application.applicant
+        template_vars = {
+            "name": f"{applicant.firstName} {applicant.lastName}",
+            "property_name": property.name,
+        }
+        send_email(
+            "Update regarding your rental application",
+            [applicant.email],
+            "application_rejected",  # Template name
+            template_vars,
+        )
+    except Exception as e:
+        logging.error(f"Email failed: {str(e)}")
+
     ActivityLogger.log_landlord_activity(
         g.session,
         user_id,
         "application_rejected",
-        f"Rejected application for property: {property.name}",
+        f"Rejected for: {property.name}",
         "application",
         application_id,
     )
-
-    # TODO: Send email notification to tenant about rejection
-    # try:
-    #     send_email(
-    #         subject="Application Update - Rejected",
-    #         recipients=[application.tenant.email],
-    #         body=f"""
-    #         <h2>Application Status Update</h2>
-    #         <p>Your application for {property.title} has been rejected.</p>
-    #         {f"<p>Reason: {data.get('rejection_reason', '')}</p>" if data.get('rejection_reason') else ""}
-    #         <p>Thank you for your interest.</p>
-    #         """
-    #     )
-    # except Exception as e:
-    #     logging.error(f"Failed to send rejection email: {e}")
-
     return response(
-        "Application rejected successfully",
-        {"application": serialize(updated_application)},
+        "Application rejected", {"application": serialize(updated_application)}
     )
 
 

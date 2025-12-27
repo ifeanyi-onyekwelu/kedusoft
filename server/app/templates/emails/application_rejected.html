@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Application Update - Letsten</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #1a1a1a;
+      margin: 0;
+      padding: 0;
+      background-color: #f9fafb;
+    }
+
+    .email-wrapper {
+      width: 100%;
+      padding: 40px 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 40px 30px;
+      text-align: center;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .logo-img {
+      height: 42px;
+      width: auto;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .content {
+      padding: 40px 30px;
+    }
+
+    .greeting {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #111827;
+    }
+
+    .info-box {
+      background-color: #f8f9fa;
+      border-radius: 6px;
+      padding: 20px;
+      margin-bottom: 30px;
+      border: 1px solid #e5e7eb;
+      font-size: 14px;
+      color: #374151;
+    }
+
+    .footer {
+      padding: 30px;
+      background-color: #f9fafb;
+      text-align: center;
+      font-size: 12px;
+      color: #9ca3af;
+      border-top: 1px solid #e5e7eb;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="email-wrapper">
+    <div class="container">
+      <div class="header">
+        <img src="https://res.cloudinary.com/dhzujlkls/image/upload/v1766829730/logo_frx51w.png" alt="Letsten Logo"
+          class="logo-img">
+        <h1>Application Update</h1>
+      </div>
+      <div class="content">
+        <p class="greeting">Hello {{ name }},</p>
+        <p style="font-size: 15px; color: #374151;">Thank you for your interest in the property located at <strong>{{
+            property_name }}</strong>.</p>
+        <div class="info-box">
+          After careful consideration of your application and current requirements, the landlord has decided not to move
+          forward with your application at this time.
+        </div>
+        <p style="font-size: 14px; color: #6b7280; margin-bottom: 0;">We appreciate the effort you put into your
+          application and wish you the very best in finding your next home.</p>
+      </div>
+      <div class="footer">
+        <p>&copy; 2025 Letsten. All rights reserved.</p>
+        <p>This is an automated notification regarding your application status.</p>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

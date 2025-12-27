@@ -260,7 +260,7 @@ export const ServicesPage: React.FC = () => {
           </h2>
           <p className="text-slate-600 text-lg mb-12 max-w-xl mx-auto leading-relaxed">
             Join thousands of property seekers and landlords already finding
-            success on Kedusoft.
+            success on Letsten.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button className="px-10 py-5 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all shadow-xl shadow-slate-200">
