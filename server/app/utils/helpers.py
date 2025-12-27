@@ -24,7 +24,7 @@ def get_logged_in_user():
     role = get_jwt().get("role")
 
     user = get_item_by_id(g.session, User, user_id)  # Convert to int if needed
-    return user.id, user.to_dict(), role
+    return user.id, user, role
 
 
 def generate_tokens(user):

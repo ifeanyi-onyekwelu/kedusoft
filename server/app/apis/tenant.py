@@ -24,10 +24,13 @@ from ..models import (
     Recommendation,
     User,
     RecentActivity,
+    TenantInfo,
 )
 import logging
 from datetime import datetime, timedelta
 from ..utils.activity_logger import ActivityLogger
+from ..utils.mailer import send_email
+from ..utils.variables import SITE_URL
 
 # Configure logging
 
@@ -799,7 +802,7 @@ def create_recommendation():
     """
     Create a new property recommendation based on tenant preferences
     """
-    user_id, _, _ = get_logged_in_user()
+    user_id, user, _ = get_logged_in_user()
     data = request.get_json()
 
     # Validate required fields
@@ -833,7 +836,32 @@ def create_recommendation():
     # Create the recommendation
     new_recommendation = create_item(g.session, Recommendation, recommendation_data)
 
-    update_item(g.session, User, user_id, {"is_onboarded": True})
+    # Update TenantInfo onboarding status
+    tenant_info = get_item_by_filter(g.session, TenantInfo, {"user_id": user_id})
+    if tenant_info:
+        update_item(g.session, TenantInfo, tenant_info.id, {"is_onboarded": True})
+
+    # Send Onboarding Completion Email
+    try:
+        template_vars = {
+            "name": f"{user.firstName} {user.lastName}",
+            "max_budget": data.get("max_budget"),
+            "location": (
+                data.get("locations")[0]
+                if data.get("locations")
+                else "your preferred areas"
+            ),
+            "dashboard_url": f"{SITE_URL}/tenants",
+        }
+
+        send_email(
+            "Onboarding Completed - Your Matches are Ready!",
+            [user.email],
+            "onboarding_complete_email",
+            template_vars,
+        )
+    except Exception as e:
+        raise CustomRequestError(f"Failed to send onboarding email: {e}", 500)
 
     # Log activity
     ActivityLogger.log_tenant_activity(

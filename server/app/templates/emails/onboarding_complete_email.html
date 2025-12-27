@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Kedusoft</title>
+  <style>
+    /* RESET STYLES */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: #ffffff;
+      color: #1a1a1a;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrapper {
+      width: 100%;
+      background-color: #f9fafb;
+      padding: 40px 0;
+    }
+
+    .main-content {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border: 1px solid #e5e7eb;
+    }
+
+    /* HEADER */
+    .header {
+      padding: 40px 40px 20px;
+    }
+
+    .logo-img {
+      height: 40px;
+      /* Adjusted for professional look */
+      width: auto;
+      display: block;
+    }
+
+    /* BODY */
+    .body-text {
+      padding: 0 40px 40px;
+      line-height: 1.6;
+    }
+
+    .body-text h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #111827;
+      margin-top: 0;
+      letter-spacing: -0.02em;
+    }
+
+    .body-text p {
+      font-size: 15px;
+      color: #4b5563;
+    }
+
+    /* SUMMARY BOX */
+    .highlight-box {
+      background-color: #fcfcfd;
+      border: 1px solid #f3f4f6;
+      border-left: 3px solid #CF8205;
+      padding: 24px;
+      margin: 30px 0;
+    }
+
+    .summary-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .summary-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: #111827;
+      margin: 0;
+    }
+
+    /* BUTTON */
+    .btn-container {
+      margin-top: 30px;
+    }
+
+    .btn {
+      background-color: #290665;
+      color: #ffffff !important;
+      padding: 14px 32px;
+      text-decoration: none;
+      font-weight: 600;
+      border-radius: 4px;
+      display: inline-block;
+      font-size: 14px;
+    }
+
+    /* FOOTER */
+    .footer {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 30px;
+      text-align: center;
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    hr {
+      border: 0;
+      border-top: 1px solid #f3f4f6;
+      margin: 35px 0 25px;
+    }
+
+    /* MOBILE OPTIMIZATION */
+    @media (max-width: 600px) {
+
+      .header,
+      .body-text {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .main-content {
+        border: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <div class="main-content">
+      <div class="header">
+        <img src="https://res.cloudinary.com/dhzujlkls/image/upload/v1766829730/logo_frx51w.png" alt="Kedusoft"
+          class="logo-img">
+      </div>
+
+      <div class="body-text">
+        <h2>Your preferences are set, {{ name }}.</h2>
+        <p>Thank you for completing your onboarding. Our matching engine has analyzed your requirements to find the best
+          rental opportunities for you.</p>
+
+        <div class="highlight-box">
+          <div class="summary-label">Search Criteria Summary</div>
+          <p class="summary-value">
+            Budget: ₦{{ max_budget }}<br>
+            Location: {{ location }}
+          </p>
+        </div>
+
+        <p>You can now access your dashboard to view verified listings, compare properties, and begin your application
+          process.</p>
+
+        <div class="btn-container">
+          <a href="{{ dashboard_url }}" class="btn">Access Dashboard</a>
+        </div>
+
+        <hr>
+        <p style="font-size: 13px; color: #9ca3af;">
+          Best regards,<br>
+          <strong style="color: #4b5563;">The Letsten Team</strong>
+        </p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>&copy; 2025 Letsten Technologies. All rights reserved.</p>
+      <p>Lagos, Nigeria | <a href="https://exquisite-grace-staging.up.railway.app/privacy-policy"
+          style="color: #9ca3af;">Privacy Policy</a></p>
+    </div>
+  </div>
+</body>
+
+</html>

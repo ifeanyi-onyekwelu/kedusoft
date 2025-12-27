@@ -1,10 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Welcome</title>
-</head>
-<body>
-<h1>Welcome {{ fullName }}</h1>
-</body>
-</html>
+{% extends "emails/base_email.html" %}
+
+{% block title %}Welcome to Kedusoft{% endblock %}
+
+{% block content %}
+<h2>Welcome to Kedusoft, {{ name }}!</h2>
+<p>Thank you for signing up! We're excited to help you find your perfect rental home in Nigeria.</p>
+
+<p>Here's what you can do next:</p>
+
+<div class="highlight-box">
+    <p style="margin: 0; font-size: 14px; color: #4b5563; line-height: 1.8;">
+        <strong>1. Complete Your Profile</strong> - Help us understand your housing preferences<br>
+        <strong>2. Browse Properties</strong> - Explore verified listings matching your criteria<br>
+        <strong>3. Apply for Properties</strong> - Submit applications directly to landlords<br>
+        <strong>4. Track Applications</strong> - Monitor your property applications in real-time
+    </p>
+</div>
+
+<p>Get started by completing your onboarding to unlock personalized property recommendations.</p>
+
+<div class="btn-container">
+    <a href="{{ dashboard_url }}" class="btn">Get Started</a>
+</div>
+
+<p style="font-size: 12px; color: #9ca3af; margin-top: 30px;">
+    If you have any questions, feel free to reach out to our support team at support@kedusoft.com
+</p>
+{% endblock %}

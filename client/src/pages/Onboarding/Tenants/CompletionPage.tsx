@@ -33,7 +33,7 @@ export default function CompletionPage() {
     try {
       const success = await completeOnboarding();
       if (success) {
-        navigate("/onboarding/personalizing");
+        navigate("/onboarding/tenant/personalizing");
       } else {
         setError("Failed to save your preferences. Please try again.");
       }

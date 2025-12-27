@@ -284,7 +284,7 @@ export default function BudgetPage() {
                 onClick={handleNext}
                 className="w-full mt-12 h-16 bg-white text-primary rounded-2xl font-black text-lg flex items-center justify-center gap-3 transition-all hover:bg-secondary hover:text-white group"
               >
-                Complete Onboarding
+                Review
                 <IconArrowRight className="group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
