@@ -6,12 +6,13 @@ import {
   Group,
   Stack,
   ThemeIcon,
-  Alert,
+  Box,
+  Title,
 } from "@mantine/core";
 import {
   IconAlertTriangle,
   IconCheck,
-  IconX,
+  IconInfoCircle,
   IconTrash,
 } from "@tabler/icons-react";
 
@@ -39,28 +40,22 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   loading = false,
 }) => {
   const getIcon = () => {
+    const size = 28;
     switch (type) {
-      case "danger":
-        return <IconTrash size={24} />;
-      case "success":
-        return <IconCheck size={24} />;
-      case "warning":
-        return <IconAlertTriangle size={24} />;
-      default:
-        return <IconAlertTriangle size={24} />;
+      case "danger": return <IconTrash size={size} stroke={1.5} />;
+      case "success": return <IconCheck size={size} stroke={1.5} />;
+      case "warning": return <IconAlertTriangle size={size} stroke={1.5} />;
+      case "info": return <IconInfoCircle size={size} stroke={1.5} />;
+      default: return <IconInfoCircle size={size} stroke={1.5} />;
     }
   };
 
   const getColor = () => {
     switch (type) {
-      case "danger":
-        return "red";
-      case "success":
-        return "green";
-      case "warning":
-        return "yellow";
-      default:
-        return "blue";
+      case "danger": return "red";
+      case "success": return "green";
+      case "warning": return "orange";
+      default: return "blue";
     }
   };
 
@@ -68,28 +63,44 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     <Modal
       opened={opened}
       onClose={onClose}
-      title={
-        <Group gap="sm">
-          <ThemeIcon color={getColor()} variant="light" size="lg">
-            {getIcon()}
-          </ThemeIcon>
-          <Text fw={600}>{title}</Text>
-        </Group>
-      }
+      withCloseButton={false} // Cleaner look
       centered
-      size="md"
+      size="sm" // Smaller modals feel more like "dialogues"
+      padding="xl"
+      radius="lg"
+      overlayProps={{
+        backgroundOpacity: 0.55,
+        blur: 3,
+      }}
     >
-      <Stack gap="lg">
-        <Alert color={getColor()} variant="light">
-          <Text size="sm">{message}</Text>
-        </Alert>
+      <Stack align="center" gap="md" style={{ textAlign: 'center' }}>
+        {/* Visual Identity Icon */}
+        <ThemeIcon
+          color={getColor()}
+          variant="light"
+          size={70}
+          radius={100} // Circular for a softer feel
+        >
+          {getIcon()}
+        </ThemeIcon>
 
-        <Group justify="flex-end" gap="sm">
+        <Box>
+          <Title order={3} fw={800} style={{ letterSpacing: '-0.5px' }}>
+            {title}
+          </Title>
+          <Text size="sm" c="dimmed" mt="xs" px="md" style={{ lineHeight: 1.6 }}>
+            {message}
+          </Text>
+        </Box>
+
+        <Group grow w="100%" mt="lg" gap="sm">
           <Button
-            variant="subtle"
-            color="gray"
+            variant="default"
             onClick={onClose}
             disabled={loading}
+            radius="md"
+            size="md"
+            fw={600}
           >
             {cancelText}
           </Button>
@@ -97,7 +108,9 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             color={getColor()}
             onClick={onConfirm}
             loading={loading}
-            variant={type === "danger" ? "filled" : "light"}
+            radius="md"
+            size="md"
+            fw={600}
           >
             {confirmText}
           </Button>

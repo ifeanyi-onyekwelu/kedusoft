@@ -4,9 +4,7 @@ import {
   Group,
   Pagination,
   TextInput,
-  Select,
   Badge,
-  ActionIcon,
   Card,
   Grid,
   Text,
@@ -14,18 +12,13 @@ import {
   Button,
   Menu,
   Tabs,
-  Tooltip,
-  Progress,
   Stack,
   ThemeIcon,
   Box,
   useMatches,
-  Modal,
-  Textarea,
 } from "@mantine/core";
 import {
   IconSearch,
-  IconDownload,
   IconRefresh,
   IconEye,
   IconMessage,
@@ -36,8 +29,6 @@ import {
   IconClipboardCheck,
   IconFileText,
   IconDotsVertical,
-  IconMail,
-  IconSend,
 } from "@tabler/icons-react";
 import EmptyState from "../../../../components/EmptyState";
 import { LoadingSpinner } from "../../../../components/LoadingSpinner";
@@ -47,357 +38,7 @@ import { formatDate } from "../../../../utils/helpers";
 import { useLoading } from "../../../../hooks/useLoading";
 import { notifications } from "@mantine/notifications";
 
-// Email Templates
-const emailTemplates = {
-  screening_invitation: {
-    subject: "Invitation for Property Screening - {propertyName}",
-    body: `Dear {tenantName},
-
-Thank you for your application for {propertyName}. We would like to invite you for a screening process.
-
-Please let us know your availability for the next few days so we can schedule a convenient time.
-
-Best regards,
-Property Management Team`,
-  },
-  application_update: {
-    subject: "Application Status Update - {propertyName}",
-    body: `Dear {tenantName},
-
-We wanted to update you regarding your application for {propertyName}.
-
-{customMessage}
-
-If you have any questions, please don't hesitate to contact us.
-
-Best regards,
-Property Management Team`,
-  },
-  general_inquiry: {
-    subject: "Regarding your application for {propertyName}",
-    body: `Dear {tenantName},
-
-I hope this message finds you well.
-
-{customMessage}
-
-Best regards,
-Property Management Team`,
-  },
-};
-
-// Email Modal Component
-const EmailModal = ({
-  opened,
-  onClose,
-  tenant,
-  property,
-  onSend,
-}: {
-  opened: boolean;
-  onClose: () => void;
-  tenant: any;
-  property: any;
-  onSend: (emailData: any) => Promise<void>;
-}) => {
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
-  const [subject, setSubject] = useState("");
-  const [message, setMessage] = useState("");
-  const [sending, setSending] = useState(false);
-
-  useEffect(() => {
-    if (opened && tenant && property) {
-      // Set default values when modal opens
-      setSubject(`Regarding your application for ${property.name}`);
-      setMessage("");
-      setSelectedTemplate("");
-    }
-  }, [opened, tenant, property]);
-
-  const handleTemplateChange = (templateKey: string) => {
-    setSelectedTemplate(templateKey);
-    if (
-      templateKey &&
-      emailTemplates[templateKey as keyof typeof emailTemplates]
-    ) {
-      const template =
-        emailTemplates[templateKey as keyof typeof emailTemplates];
-
-      // Replace placeholders
-      const processedSubject = template.subject
-        .replace("{propertyName}", property?.name || "")
-        .replace(
-          "{tenantName}",
-          `${tenant?.firstName || ""} ${tenant?.lastName || ""}`.trim()
-        );
-
-      const processedBody = template.body
-        .replace("{propertyName}", property?.name || "")
-        .replace(
-          "{tenantName}",
-          `${tenant?.firstName || ""} ${tenant?.lastName || ""}`.trim()
-        )
-        .replace("{customMessage}", "");
-
-      setSubject(processedSubject);
-      setMessage(processedBody);
-    }
-  };
-
-  const handleSend = async () => {
-    if (!subject.trim() || !message.trim()) {
-      notifications.show({
-        title: "Validation Error",
-        message: "Please fill in both subject and message fields",
-        color: "red",
-      });
-      return;
-    }
-
-    setSending(true);
-    try {
-      await onSend({
-        to: tenant.email,
-        subject: subject.trim(),
-        message: message.trim(),
-        tenantId: tenant.id,
-        propertyId: property.id,
-      });
-
-      notifications.show({
-        title: "Email Sent",
-        message: `Email sent successfully to ${tenant.firstName} ${tenant.lastName}`,
-        color: "green",
-      });
-
-      onClose();
-    } catch (error) {
-      notifications.show({
-        title: "Error",
-        message: "Failed to send email. Please try again.",
-        color: "red",
-      });
-    } finally {
-      setSending(false);
-    }
-  };
-
-  return (
-    <Modal
-      opened={opened}
-      onClose={onClose}
-      title="Send Email to Tenant"
-      size="lg"
-    >
-      <Stack gap="md">
-        <TextInput
-          label="To"
-          value={tenant?.email || ""}
-          disabled
-          leftSection={<IconMail size={16} />}
-        />
-
-        <Select
-          label="Email Template (Optional)"
-          placeholder="Choose a template to get started"
-          value={selectedTemplate}
-          onChange={(value) => handleTemplateChange(value || "")}
-          data={[
-            { value: "screening_invitation", label: "Screening Invitation" },
-            { value: "application_update", label: "Application Update" },
-            { value: "general_inquiry", label: "General Inquiry" },
-          ]}
-          clearable
-        />
-
-        <TextInput
-          label="Subject"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-          placeholder="Enter email subject"
-          required
-        />
-
-        <Textarea
-          label="Message"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Type your message here..."
-          minRows={8}
-          required
-        />
-
-        <Group justify="flex-end" gap="sm">
-          <Button variant="outline" onClick={onClose} disabled={sending}>
-            Cancel
-          </Button>
-          <Button
-            leftSection={<IconSend size={16} />}
-            onClick={handleSend}
-            loading={sending}
-          >
-            Send Email
-          </Button>
-        </Group>
-      </Stack>
-    </Modal>
-  );
-};
-
-// Bulk Email Modal Component
-const BulkEmailModal = ({
-  opened,
-  onClose,
-  selectedApplications,
-  onSend,
-}: {
-  opened: boolean;
-  onClose: () => void;
-  selectedApplications: any[];
-  onSend: (emailData: any) => Promise<void>;
-}) => {
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
-  const [subject, setSubject] = useState("");
-  const [message, setMessage] = useState("");
-  const [sending, setSending] = useState(false);
-
-  useEffect(() => {
-    if (opened) {
-      setSubject("Update regarding your property application");
-      setMessage("");
-      setSelectedTemplate("");
-    }
-  }, [opened]);
-
-  const handleTemplateChange = (templateKey: string) => {
-    setSelectedTemplate(templateKey);
-    if (
-      templateKey &&
-      emailTemplates[templateKey as keyof typeof emailTemplates]
-    ) {
-      const template =
-        emailTemplates[templateKey as keyof typeof emailTemplates];
-      setSubject(template.subject.replace("{propertyName}", "[Property Name]"));
-      setMessage(
-        template.body
-          .replace("{propertyName}", "[Property Name]")
-          .replace("{tenantName}", "[Tenant Name]")
-          .replace("{customMessage}", "")
-      );
-    }
-  };
-
-  const handleSend = async () => {
-    if (!subject.trim() || !message.trim()) {
-      notifications.show({
-        title: "Validation Error",
-        message: "Please fill in both subject and message fields",
-        color: "red",
-      });
-      return;
-    }
-
-    setSending(true);
-    try {
-      await onSend({
-        subject: subject.trim(),
-        message: message.trim(),
-        recipients: selectedApplications,
-        template_used: selectedTemplate,
-      });
-
-      notifications.show({
-        title: "Bulk Email Sent",
-        message: `Email sent successfully to ${selectedApplications.length} applicants`,
-        color: "green",
-      });
-
-      onClose();
-    } catch (error) {
-      notifications.show({
-        title: "Error",
-        message: "Failed to send bulk email. Please try again.",
-        color: "red",
-      });
-    } finally {
-      setSending(false);
-    }
-  };
-
-  return (
-    <Modal
-      opened={opened}
-      onClose={onClose}
-      title={`Send Bulk Email (${selectedApplications.length} recipients)`}
-      size="lg"
-    >
-      <Stack gap="md">
-        <div>
-          <Text size="sm" fw={500} mb="xs">
-            Recipients
-          </Text>
-          <Box
-            p="sm"
-            bg="gray.0"
-            style={{ borderRadius: 4, maxHeight: 120, overflowY: "auto" }}
-          >
-            {selectedApplications.map((app, index) => (
-              <Text key={index} size="sm">
-                {app.tenant?.firstName} {app.tenant?.lastName} (
-                {app.tenant?.email})
-              </Text>
-            ))}
-          </Box>
-        </div>
-
-        <Select
-          label="Email Template (Optional)"
-          placeholder="Choose a template to get started"
-          value={selectedTemplate}
-          onChange={(value) => handleTemplateChange(value || "")}
-          data={[
-            { value: "screening_invitation", label: "Screening Invitation" },
-            { value: "application_update", label: "Application Update" },
-            { value: "general_inquiry", label: "General Inquiry" },
-          ]}
-          clearable
-        />
-
-        <TextInput
-          label="Subject"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-          placeholder="Enter email subject"
-          required
-        />
-
-        <Textarea
-          label="Message"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Type your message here... Use [Tenant Name] and [Property Name] as placeholders"
-          minRows={8}
-          required
-        />
-
-        <Group justify="flex-end" gap="sm">
-          <Button variant="outline" onClick={onClose} disabled={sending}>
-            Cancel
-          </Button>
-          <Button
-            leftSection={<IconSend size={16} />}
-            onClick={handleSend}
-            loading={sending}
-          >
-            Send to {selectedApplications.length} Recipients
-          </Button>
-        </Group>
-      </Stack>
-    </Modal>
-  );
-};
-
-// Enhanced Statistics Card Component
+// Simplified Statistics Card Component
 const StatCard = ({
   icon,
   label,
@@ -449,12 +90,10 @@ const ApplicationCard = ({
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       received: "blue",
-      "under-review": "yellow",
       under_review: "yellow",
       screening: "orange",
       approved: "green",
       rejected: "red",
-      "lease-created": "teal",
       lease_created: "teal",
     };
     return colors[status] || "gray";
@@ -463,102 +102,51 @@ const ApplicationCard = ({
   return (
     <Card shadow="sm" padding="md" radius="md" withBorder mb="md">
       <Stack gap="sm">
-        {/* Applicant & Status */}
         <Group justify="space-between" align="flex-start">
           <Box>
             <Text size="sm" fw={600}>
-              {application.applicant?.firstName ||
-                application.tenant?.firstName}{" "}
-              {application.applicant?.lastName || application.tenant?.lastName}
+              {application.tenant?.firstName} {application.tenant?.lastName}
             </Text>
             <Text size="xs" c="dimmed">
-              {application.applicant?.email || application.tenant?.email}
+              {application.property?.name}
             </Text>
           </Box>
-          <Badge
-            color={getStatusColor(application.status)}
-            variant="light"
-            size="sm"
-          >
-            {application.status.replace("-", " ").toUpperCase()}
+          <Badge color={getStatusColor(application.status)} variant="light" size="sm">
+            {application.status.replace("_", " ").toUpperCase()}
           </Badge>
         </Group>
 
-        {/* Property Info */}
-        <Box>
-          <Text size="sm" fw={500}>
-            {application.property?.name}
-          </Text>
-          <Text size="xs" c="dimmed">
-            ₦{application.property?.rent_amount?.toLocaleString()}/month
-          </Text>
-        </Box>
-
-        {/* Date */}
-        <Text size="xs" c="dimmed">
-          Applied: {formatDate(application.created_at)}
-        </Text>
-
-        {/* Actions */}
-        <Group gap="xs" mt="xs">
+        <Group gap="xs">
           <Button
             variant="light"
             size="sm"
             leftSection={<IconEye size={16} />}
             onClick={() => onAction("view", application.id)}
-            fullWidth
+            flex={1}
           >
-            View Details
+            View
           </Button>
           <Button
             variant="light"
             color="green"
             size="sm"
-            leftSection={<IconMessage size={16} />}
-            onClick={() => onAction("message", application.id)}
-            fullWidth
+            leftSection={<IconChecks size={16} />}
+            onClick={() => onAction("approve", application.id)}
+            flex={1}
           >
-            Message
+            Approve
+          </Button>
+          <Button
+            variant="light"
+            color="red"
+            size="sm"
+            leftSection={<IconX size={16} />}
+            onClick={() => onAction("reject", application.id)}
+            flex={1}
+          >
+            Reject
           </Button>
         </Group>
-        <Menu shadow="md" width="100%" position="bottom">
-          <Menu.Target>
-            <Button
-              variant="light"
-              color="gray"
-              size="sm"
-              fullWidth
-              rightSection={<IconDotsVertical size={16} />}
-            >
-              More Actions
-            </Button>
-          </Menu.Target>
-          <Menu.Dropdown>
-            <Menu.Label>Communication</Menu.Label>
-            <Menu.Item
-              leftSection={<IconMail size={16} />}
-              onClick={() => onAction("email", application.id)}
-            >
-              Send Email
-            </Menu.Item>
-            <Menu.Divider />
-            <Menu.Label>Actions</Menu.Label>
-            <Menu.Item
-              leftSection={<IconChecks size={16} />}
-              color="green"
-              onClick={() => onAction("approve", application.id)}
-            >
-              Approve Application
-            </Menu.Item>
-            <Menu.Item
-              leftSection={<IconX size={16} />}
-              color="red"
-              onClick={() => onAction("reject", application.id)}
-            >
-              Reject Application
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
       </Stack>
     </Card>
   );
@@ -575,38 +163,29 @@ const ApplicationTableRow = ({
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       received: "blue",
-      "under-review": "yellow",
       under_review: "yellow",
       screening: "orange",
       approved: "green",
       rejected: "red",
-      "lease-created": "teal",
       lease_created: "teal",
     };
     return colors[status] || "gray";
   };
 
   return (
-    <tr className="hover:bg-blue-50/30 transition-colors border-b border-gray-100">
+    <tr className="hover:bg-blue-50 transition-colors border-b border-gray-100">
       <td className="p-4">
         <Box>
           <Text size="sm" fw={600} className="text-gray-900">
-            {application.applicant?.firstName || application.tenant?.firstName}{" "}
-            {application.applicant?.lastName || application.tenant?.lastName}
+            {application.tenant?.firstName} {application.tenant?.lastName}
           </Text>
-          <Text size="xs" c="dimmed" mt={2}>
-            {application.applicant?.email || application.tenant?.email}
+          <Text size="xs" c="dimmed">
+            {application.tenant?.email}
           </Text>
         </Box>
       </td>
       <td className="p-4">
-        <Text
-          size="sm"
-          fw={500}
-          className="text-gray-900"
-          lineClamp={1}
-          title={application.property?.name}
-        >
+        <Text size="sm" fw={500} className="text-gray-900" lineClamp={1}>
           {application.property?.name}
         </Text>
       </td>
@@ -614,17 +193,10 @@ const ApplicationTableRow = ({
         <Badge
           color={getStatusColor(application.status)}
           variant="light"
-          size="md"
-          radius="sm"
-          style={{ whiteSpace: "nowrap" }}
+          size="sm"
         >
-          {application.status.replace("-", " ").toUpperCase()}
+          {application.status.replace("_", " ").toUpperCase()}
         </Badge>
-      </td>
-      <td className="p-4">
-        <Text size="sm" fw={600} className="text-gray-900">
-          ₦{application.property?.rent_amount?.toLocaleString()}
-        </Text>
       </td>
       <td className="p-4">
         <Text size="sm" c="dimmed">
@@ -632,7 +204,7 @@ const ApplicationTableRow = ({
         </Text>
       </td>
       <td className="p-4">
-        <Group gap="sm" justify="flex-start" wrap="nowrap">
+        <Group gap="sm" justify="flex-start">
           <Button
             variant="light"
             size="sm"
@@ -645,48 +217,20 @@ const ApplicationTableRow = ({
             variant="light"
             color="green"
             size="sm"
-            leftSection={<IconMessage size={16} />}
-            onClick={() => onAction("message", application.id)}
+            leftSection={<IconChecks size={16} />}
+            onClick={() => onAction("approve", application.id)}
           >
-            Message
+            Approve
           </Button>
-          <Menu shadow="md" width={200} position="bottom-end">
-            <Menu.Target>
-              <Button
-                variant="light"
-                color="gray"
-                size="sm"
-                rightSection={<IconDotsVertical size={16} />}
-              >
-                More
-              </Button>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Label>Communication</Menu.Label>
-              <Menu.Item
-                leftSection={<IconMail size={16} />}
-                onClick={() => onAction("email", application.id)}
-              >
-                Send Email
-              </Menu.Item>
-              <Menu.Divider />
-              <Menu.Label>Actions</Menu.Label>
-              <Menu.Item
-                leftSection={<IconChecks size={16} />}
-                color="green"
-                onClick={() => onAction("approve", application.id)}
-              >
-                Approve Application
-              </Menu.Item>
-              <Menu.Item
-                leftSection={<IconX size={16} />}
-                color="red"
-                onClick={() => onAction("reject", application.id)}
-              >
-                Reject Application
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
+          <Button
+            variant="light"
+            color="red"
+            size="sm"
+            leftSection={<IconX size={16} />}
+            onClick={() => onAction("reject", application.id)}
+          >
+            Reject
+          </Button>
         </Group>
       </td>
     </tr>
@@ -730,17 +274,6 @@ function Applications() {
     action: null,
   });
   const [actionLoading, setActionLoading] = useState(false);
-  const [emailModal, setEmailModal] = useState<{
-    opened: boolean;
-    tenant: any;
-    property: any;
-  }>({
-    opened: false,
-    tenant: null,
-    property: null,
-  });
-  const [bulkEmailModal, setBulkEmailModal] = useState(false);
-  const [selectedApplications, setSelectedApplications] = useState<any[]>([]);
   const { loading, withLoading } = useLoading();
 
   // Use responsive breakpoint
@@ -820,148 +353,6 @@ function Applications() {
     fetchApplications(page);
   };
 
-  const handleSendEmail = async (emailData: any) => {
-    try {
-      // For now, we'll use a simple approach - open the user's email client
-      // This can be enhanced later with a backend email API
-      const mailtoLink = `mailto:${emailData.to}?subject=${encodeURIComponent(
-        emailData.subject
-      )}&body=${encodeURIComponent(emailData.message)}`;
-      window.open(mailtoLink);
-
-      // Log the email action for tracking (could be sent to backend)
-      console.log("Email composed:", emailData);
-
-      return Promise.resolve();
-    } catch (error) {
-      console.error("Failed to compose email:", error);
-      throw error;
-    }
-  };
-
-  // Export Applications to CSV
-  const handleExportApplications = () => {
-    try {
-      const csvData = filteredApplications.map((app) => ({
-        "Tenant Name": `${app.tenant?.firstName || ""} ${
-          app.tenant?.lastName || ""
-        }`,
-        Email: app.tenant?.email || "",
-        Phone: app.tenant?.phone || "",
-        Property: app.property?.name || "",
-        "Property Address": app.property?.address || "",
-        "Rent Amount": app.property?.rent_amount || "",
-        "Application Status": app.status || "",
-        "Application Date": app.created_at
-          ? new Date(app.created_at).toLocaleDateString()
-          : "",
-        "Viewed Date": app.viewed_at
-          ? new Date(app.viewed_at).toLocaleDateString()
-          : "Not viewed",
-      }));
-
-      // Convert to CSV
-      const headers = Object.keys(csvData[0] || {});
-      const csvContent = [
-        headers.join(","),
-        ...csvData.map((row) =>
-          headers
-            .map((header) => `"${row[header as keyof typeof row] || ""}"`)
-            .join(",")
-        ),
-      ].join("\n");
-
-      // Download CSV
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
-      if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute(
-          "download",
-          `applications_export_${new Date().toISOString().split("T")[0]}.csv`
-        );
-        link.style.visibility = "hidden";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-
-      notifications.show({
-        title: "Export Successful",
-        message: `Exported ${filteredApplications.length} applications to CSV`,
-        color: "green",
-      });
-    } catch (error) {
-      notifications.show({
-        title: "Export Failed",
-        message: "Failed to export applications. Please try again.",
-        color: "red",
-      });
-    }
-  };
-
-  // Handle Bulk Email
-  const handleBulkEmail = async (emailData: any) => {
-    try {
-      // For each recipient, open a mailto link (or implement proper bulk email backend)
-      for (const app of emailData.recipients) {
-        const personalizedSubject = emailData.subject
-          .replace("[Property Name]", app.property?.name || "")
-          .replace(
-            "[Tenant Name]",
-            `${app.tenant?.firstName || ""} ${app.tenant?.lastName || ""}`
-          );
-
-        const personalizedMessage = emailData.message
-          .replace("[Property Name]", app.property?.name || "")
-          .replace(
-            "[Tenant Name]",
-            `${app.tenant?.firstName || ""} ${app.tenant?.lastName || ""}`
-          );
-
-        // For now, we'll log this - in production, you'd send via backend
-        console.log(`Email to ${app.tenant?.email}:`, {
-          subject: personalizedSubject,
-          message: personalizedMessage,
-        });
-      }
-
-      // In a real implementation, you'd make a single API call to send all emails
-      // await landlordApi.sendBulkEmail(emailData);
-
-      return Promise.resolve();
-    } catch (error) {
-      console.error("Failed to send bulk email:", error);
-      throw error;
-    }
-  };
-
-  // Quick action handlers
-  const handleQuickAction = (action: string) => {
-    console.log("handleQuickAction called with:", action);
-    switch (action) {
-      case "export":
-        handleExportApplications();
-        break;
-      case "bulk-email":
-        if (filteredApplications.length === 0) {
-          notifications.show({
-            title: "No Applications",
-            message: "No applications available to send bulk email",
-            color: "orange",
-          });
-          return;
-        }
-        console.log("Setting bulkEmailModal to true");
-        setSelectedApplications(filteredApplications);
-        setBulkEmailModal(true);
-        break;
-      default:
-        console.log("Unknown action:", action);
-    }
-  };
-
   const showConfirmation = (
     title: string,
     message: string,
@@ -1005,30 +396,10 @@ function Applications() {
         );
         break;
 
-      case "viewApplicant":
-        navigate(
-          `/property-owner/applications/applicants/${application.tenant_id}`
-        );
-        break;
-
-      case "message":
-        // Navigate to messaging with tenant
-        navigate(`/property-owner/messages?tenant=${application.tenant?.id}`);
-        break;
-
-      case "email":
-        // Open email modal with tenant and property information
-        setEmailModal({
-          opened: true,
-          tenant: application.tenant,
-          property: application.property,
-        });
-        break;
-
       case "reject":
         showConfirmation(
           "Reject Application",
-          `Are you sure you want to reject ${application.tenant?.firstName} ${application.tenant?.lastName}'s application for ${application.property?.name}? This action cannot be undone.`,
+          `Are you sure you want to reject ${application.tenant?.firstName} ${application.tenant?.lastName}'s application? This action cannot be undone.`,
           "warning",
           "Reject Application",
           async () => {
@@ -1038,36 +409,34 @@ function Applications() {
               message: `${application.tenant?.firstName} ${application.tenant?.lastName}'s application has been rejected.`,
               color: "green",
             });
+            await fetchApplications(pagination.page);
           }
         );
         break;
 
       case "approve":
         showConfirmation(
-          "Approve Application & Invite for Screening",
-          `Are you sure you want to approve ${application.tenant?.firstName} ${application.tenant?.lastName}'s application for ${application.property?.name}? This will invite them for screening and send them an email notification.`,
+          "Approve Application",
+          `Are you sure you want to approve ${application.tenant?.firstName} ${application.tenant?.lastName}'s application for ${application.property?.name}?`,
           "success",
-          "Approve & Invite for Screening",
+          "Approve Application",
           async () => {
             try {
-              // Approve application and create screening invitation
               await approveApplication(applicationId, {
-                notes: "Application approved and tenant invited for screening",
+                notes: "Application approved",
               });
 
               notifications.show({
                 title: "Application Approved",
-                message: `${application.tenant?.firstName} ${application.tenant?.lastName} has been invited for screening. They can complete it anytime online.`,
+                message: `${application.tenant?.firstName} ${application.tenant?.lastName}'s application has been approved.`,
                 color: "green",
               });
 
-              // Refresh applications to show updated status
               await fetchApplications(pagination.page);
             } catch (error) {
               notifications.show({
                 title: "Error",
-                message:
-                  "Failed to approve application and create screening. Please try again.",
+                message: "Failed to approve application. Please try again.",
                 color: "red",
               });
               console.error("Error approving application:", error);
@@ -1077,9 +446,7 @@ function Applications() {
         break;
 
       default:
-        console.log(
-          `Unknown action: ${action} for application: ${applicationId}`
-        );
+        console.log(`Unknown action: ${action} for application: ${applicationId}`);
     }
   };
 
@@ -1177,7 +544,7 @@ function Applications() {
                 <Title order={4}>Applications</Title>
               </Group>
 
-              {/* Search and Sort Controls */}
+              {/* Search Controls */}
               <Group gap="sm" align="flex-end">
                 <TextInput
                   placeholder="Search applications..."
@@ -1186,19 +553,6 @@ function Applications() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   style={{ flex: 1, minWidth: 200 }}
                   size={isMobile ? "sm" : "md"}
-                />
-                <Select
-                  placeholder="Sort by"
-                  data={[
-                    { value: "created_at", label: "Date Created" },
-                    { value: "updated_at", label: "Last Updated" },
-                    { value: "tenant_name", label: "Tenant Name" },
-                    { value: "property_name", label: "Property Name" },
-                  ]}
-                  value={sortBy}
-                  onChange={(value) => setSortBy(value || "created_at")}
-                  size={isMobile ? "sm" : "md"}
-                  style={{ minWidth: 150 }}
                 />
               </Group>
 
@@ -1243,43 +597,22 @@ function Applications() {
                 /* Desktop Table View */
                 <Card shadow="sm" padding={0} radius="md" withBorder>
                   <Box style={{ overflowX: "auto" }}>
-                    <table className="w-full min-w-[900px]">
-                      <thead className="bg-gray-100 border-b-2 border-gray-200">
+                    <table className="w-full">
+                      <thead className="bg-gray-100 border-b border-gray-200">
                         <tr>
-                          <th
-                            className="text-left p-4 font-semibold text-gray-700 text-sm uppercase tracking-wide"
-                            style={{ width: "20%" }}
-                          >
+                          <th className="text-left p-4 font-semibold text-gray-700 text-sm uppercase tracking-wide">
                             Applicant
                           </th>
-                          <th
-                            className="text-left p-4 font-semibold text-gray-700 text-sm uppercase tracking-wide"
-                            style={{ width: "15%" }}
-                          >
+                          <th className="text-left p-4 font-semibold text-gray-700 text-sm uppercase tracking-wide">
                             Property
                           </th>
-                          <th
-                            className="text-left p-4 font-semibold text-gray-700 text-sm uppercase tracking-wide"
-                            style={{ width: "12%" }}
-                          >
+                          <th className="text-left p-4 font-semibold text-gray-700 text-sm uppercase tracking-wide">
                             Status
                           </th>
-                          <th
-                            className="text-left p-4 font-semibold text-gray-700 text-sm uppercase tracking-wide"
-                            style={{ width: "12%" }}
-                          >
-                            Rent/Month
+                          <th className="text-left p-4 font-semibold text-gray-700 text-sm uppercase tracking-wide">
+                            Date
                           </th>
-                          <th
-                            className="text-left p-4 font-semibold text-gray-700 text-sm uppercase tracking-wide"
-                            style={{ width: "12%" }}
-                          >
-                            Date Applied
-                          </th>
-                          <th
-                            className="text-left p-4 font-semibold text-gray-700 text-sm uppercase tracking-wide"
-                            style={{ width: "29%", minWidth: 320 }}
-                          >
+                          <th className="text-left p-4 font-semibold text-gray-700 text-sm uppercase tracking-wide">
                             Actions
                           </th>
                         </tr>
@@ -1348,29 +681,6 @@ function Applications() {
         </Card>
       </div>
 
-      {/* Quick Actions - Below Main Content */}
-      <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <Group justify="space-between" mb="md">
-          <Title order={4}>Quick Actions</Title>
-        </Group>
-        <Group gap="sm">
-          <Button
-            variant="light"
-            leftSection={<IconDownload size={16} />}
-            onClick={() => handleQuickAction("export")}
-          >
-            Export Applications
-          </Button>
-          <Button
-            variant="light"
-            leftSection={<IconMail size={16} />}
-            onClick={() => handleQuickAction("bulk-email")}
-          >
-            Bulk Email to All
-          </Button>
-        </Group>
-      </Card>
-
       {/* Confirmation Modal */}
       <ConfirmationModal
         opened={confirmationModal.opened}
@@ -1383,25 +693,6 @@ function Applications() {
         type={confirmationModal.type}
         confirmText={confirmationModal.confirmText}
         loading={actionLoading}
-      />
-
-      {/* Email Modal */}
-      <EmailModal
-        opened={emailModal.opened}
-        onClose={() =>
-          setEmailModal({ opened: false, tenant: null, property: null })
-        }
-        tenant={emailModal.tenant}
-        property={emailModal.property}
-        onSend={handleSendEmail}
-      />
-
-      {/* Bulk Email Modal */}
-      <BulkEmailModal
-        opened={bulkEmailModal}
-        onClose={() => setBulkEmailModal(false)}
-        selectedApplications={selectedApplications}
-        onSend={handleBulkEmail}
       />
     </div>
   );

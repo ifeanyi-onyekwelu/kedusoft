@@ -409,7 +409,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <nav
-      className={`h-screen flex flex-col justify-between pt-[70px] pb-6 fixed bg-white border-r border-gray-200 z-20 transition-all duration-300 ${
+      className={`no-scroll-bar h-screen flex flex-col justify-between pt-[70px] pb-6 fixed bg-white border-r border-gray-200 z-20 transition-all duration-300 ${
         opened
           ? collapsed
             ? "w-[70px] md:w-[70px]"

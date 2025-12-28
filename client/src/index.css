@@ -47,6 +47,10 @@ p {
   display: none;
 }
 
+.no-scroll-bar ::-webkit-scrollbar {
+  display: none;
+}
+
 *::-webkit-scrollbar {
   width: 10px;
 }
