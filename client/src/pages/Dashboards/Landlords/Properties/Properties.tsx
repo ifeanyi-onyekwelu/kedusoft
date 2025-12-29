@@ -120,7 +120,7 @@ const LandlordProperties = () => {
     );
 
   return (
-    <Box p="xl" className="bg-[#FAFBFC] min-h-screen">
+    <Box p="sm" className="bg-[#FAFBFC] min-h-screen">
       <Stack gap="xl">
         {/* Header */}
         <Group justify="space-between" align="flex-end">
