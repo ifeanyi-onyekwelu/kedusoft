@@ -932,7 +932,7 @@ def create_recommendation():
     """
     Create a new property recommendation based on tenant preferences
     """
-    user_id, user, _ = get_logged_in_user()
+    user_id, _, _ = get_logged_in_user()
     data = request.get_json()
 
     # Validate required fields
@@ -940,6 +940,12 @@ def create_recommendation():
     for field in required_fields:
         if not data.get(field):
             raise CustomRequestError(f"{field} is required", 400)
+
+    existing_recommendation = get_item_by_filter(
+        g.session, Recommendation, {"user_id": user_id}
+    )
+    if existing_recommendation:
+        raise CustomRequestError("Recommendation already exists for this user", 400)
 
     # Map the incoming data to the recommendation model
     recommendation_data = {
@@ -971,23 +977,32 @@ def create_recommendation():
     if tenant_info:
         update_item(g.session, TenantInfo, tenant_info.id, {"is_onboarded": True})
 
-    # Send Onboarding Completion Email
     try:
+        # Helper to format lists for the email
+        locations_list = data.get("locations", [])
+        locations_str = ", ".join(locations_list) if locations_list else "Flexible"
+
+        amenities_list = data.get("amenities", [])
+        amenities_str = ", ".join(amenities_list) if amenities_list else None
+
         template_vars = {
-            "name": f"{user.firstName} {user.lastName}",
-            "max_budget": data.get("max_budget"),
-            "location": (
-                data.get("locations")[0]
-                if data.get("locations")
-                else "your preferred areas"
-            ),
+            "name": f"{tenant_info.user.firstName}",
+            "min_budget": "{:,.0f}".format(data.get("min_budget", 0)),
+            "max_budget": "{:,.0f}".format(data.get("max_budget", 0)),
+            "locations": locations_str,
+            "bedrooms": data.get("bedrooms", "N/A"),
+            "bathrooms": data.get("bathrooms", "N/A"),
+            "furnished": data.get("furnished", "Not specified")
+            .replace("_", " ")
+            .capitalize(),
+            "amenities": amenities_str,
             "dashboard_url": f"{SITE_URL}/tenants",
         }
 
         send_email(
             "Onboarding Completed - Your Matches are Ready!",
-            [user.email],
-            "onboarding_complete_email",
+            [tenant_info.user.email],
+            "tenant_onboarding_complete",
             template_vars,
         )
     except Exception as e:

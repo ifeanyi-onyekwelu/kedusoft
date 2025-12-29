@@ -12,7 +12,7 @@ import requests as py_requests
 import secrets
 from ..utils.helpers import response, dict_except, generate_tokens, serialize
 from ..utils.errors import CustomRequestError, catch_exception
-from ..utils.variables import APP_URL, JWT_SECRET, GOOGLE_CLIENT_ID
+from ..utils.variables import APP_URL, JWT_SECRET, GOOGLE_CLIENT_ID, SITE_URL
 from ..utils.mailer import send_email
 from ..models.user import User
 from ..models.db_utils import create_item, get_item_by_filter, update_item
@@ -280,6 +280,23 @@ def check_and_reset_failed_attempts(user: User) -> None:
             )
 
 
+def create_info_based_on_role(session, user_id: str, role: str) -> None:
+    if role == "landlord":
+        from ..models.landlord_info import LandlordInfo
+
+        existing_info = get_item_by_filter(session, LandlordInfo, {"user_id": user_id})
+        if not existing_info:
+            create_item(session, LandlordInfo, {"user_id": user_id})
+            logger.info(f"Created LandlordInfo for user_id: {user_id}")
+    if role == "tenant":
+        from ..models.tenant_info import TenantInfo
+
+        existing_info = get_item_by_filter(session, TenantInfo, {"user_id": user_id})
+        if not existing_info:
+            create_item(session, TenantInfo, {"user_id": user_id})
+            logger.info(f"Created TenantInfo for user_id: {user_id}")
+
+
 # ======================================================
 # AUTHENTICATION ROUTES
 # ======================================================
@@ -442,9 +459,9 @@ def login_page():
         user_data = dict_except(user.to_dict(), "password")
         # Determine onboarding status based on user role
         is_onboarded = (
-            user.landlord_info and user.landlord_info.verification_status == "approved"
+            user.landlord_info and user.landlord_info.is_onboarded
             if user.role == "landlord"
-            else user.tenant_info and user.tenant_info.verification_status == "approved"
+            else user.tenant_info and user.tenant_info.is_onboarded
         )
         resp = make_response(
             response(
@@ -478,7 +495,12 @@ def login_page():
             "LOGIN_SUCCESS", user.email, {"ip": ip_address, "user_agent": user_agent}
         )
 
-        # Send login notification email (non-blocking)
+        reset_token = jwt.encode(
+            {"user_id": user.id, "exp": datetime.utcnow() + timedelta(minutes=3600)},
+            JWT_SECRET,
+            algorithm="HS256",
+        )
+
         try:
             content = {
                 "email": user.email,
@@ -486,6 +508,7 @@ def login_page():
                 "IP": ip_address,
                 "login_time": login_time,
                 "user_agent": user_agent,
+                "security_url": f"{SITE_URL}/auth/reset-password?token={reset_token}",
             }
 
             send_email(
@@ -558,6 +581,9 @@ def handle_signup_page():
         # Create new user
         new_user = create_item(g.session, User, user_data)
         logger.info(f"New user created: {email}")
+
+        # create user info (landlord info / tenant info)
+        create_info_based_on_role(g.session, new_user.id, role)
 
         # Generate verification code
         verification_code = str(random.randint(100000, 999999))
@@ -713,6 +739,33 @@ def google_login():
             max_age=604800,  # 7 days
         )
 
+        # Log successful login and send notification
+        login_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+        ip_address = request.remote_addr
+        user_agent = request.headers.get("User-Agent", "Unknown")
+
+        reset_token = jwt.encode(
+            {"user_id": user.id, "exp": datetime.utcnow() + timedelta(minutes=3600)},
+            JWT_SECRET,
+            algorithm="HS256",
+        )
+
+        try:
+            content = {
+                "email": user.email,
+                "name": f"{user.firstName} {user.lastName}",
+                "IP": ip_address,
+                "login_time": login_time,
+                "user_agent": user_agent,
+                "security_url": f"{SITE_URL}/auth/reset-password?token={reset_token}",
+            }
+
+            send_email(
+                "Recent Login Notification", [user.email], "login_notification", content
+            )
+        except Exception as e:
+            logger.error(f"Failed to send login notification: {str(e)}")
+
         log_security_event("GOOGLE_LOGIN_SUCCESS", email, {"ip": request.remote_addr})
         return resp
 
@@ -775,6 +828,8 @@ def google_signup():
 
         logger.info(f"Creating user with data: {user_data}")
         new_user = create_item(g.session, User, user_data)
+
+        create_info_based_on_role(g.session, new_user.id, role)
 
         # 4. Generate tokens
         access_token, refresh_token = generate_tokens(new_user.to_dict())

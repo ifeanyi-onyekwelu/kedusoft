@@ -7,193 +7,222 @@
   <title>Security Notification - Letsten</title>
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      line-height: 1.6;
-      color: #1a1a1a;
       margin: 0;
       padding: 0;
-      background-color: #ffffff;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: #F8F9FA;
+      color: #1a1a1a;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .email-wrapper {
+    .wrapper {
       width: 100%;
-      background-color: #f9fafb;
-      padding: 20px 0;
+      padding: 60px 0;
     }
 
-    .container {
+    .main-content {
       max-width: 600px;
       margin: 0 auto;
       background-color: #ffffff;
-      border: 1px solid #e5e7eb;
+      border: 1px solid #E5E7EB;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     }
 
     .header {
-      padding: 40px 30px;
+      padding: 48px 48px 32px;
       text-align: center;
-      border-bottom: 1px solid #f3f4f6;
+      background-color: #ffffff;
     }
 
-    /* Logo Styling */
     .logo-img {
-      height: 48px;
+      height: 32px;
       width: auto;
-      margin-bottom: 20px;
+      display: inline-block;
+      margin-bottom: 24px;
     }
 
     .header h1 {
       margin: 0;
-      font-size: 20px;
+      font-size: 24px;
       color: #111827;
-      font-weight: 700;
-      letter-spacing: -0.025em;
+      font-weight: 800;
+      letter-spacing: -0.03em;
     }
 
-    .content {
-      padding: 40px 30px;
+    .body-text {
+      padding: 0 48px 48px;
     }
 
-    .greeting {
+    .intro-p {
+      text-align: center;
       font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 16px;
+      color: #4B5563;
+      margin-bottom: 32px;
     }
 
+    /* ALERT BANNER - Minimalist & Direct */
     .alert-banner {
-      background-color: #fef2f2;
-      border-radius: 6px;
-      padding: 16px;
-      margin-bottom: 30px;
-      color: #991b1b;
+      background-color: #FFF1F2;
+      border-left: 4px solid #E11D48;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 32px;
+      color: #9F1239;
       font-size: 14px;
-      border: 1px solid #fee2e2;
+      font-weight: 500;
+    }
+
+    /* DATA CARD - Professional Layout */
+    .data-card {
+      background-color: #F9FAFB;
+      border: 1px solid #F3F4F6;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 32px;
     }
 
     .data-table {
       width: 100%;
       border-collapse: collapse;
-      margin: 20px 0;
-      background-color: #fcfcfd;
-      border: 1px solid #f3f4f6;
     }
 
     .data-row td {
-      padding: 12px 16px;
-      border-bottom: 1px solid #f3f4f6;
-      font-size: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid #EDF0F3;
+    }
+
+    .data-row:last-child td {
+      border-bottom: none;
     }
 
     .label {
-      color: #6b7280;
-      width: 40%;
-      font-weight: 500;
+      font-size: 11px;
+      color: #9CA3AF;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      width: 100px;
     }
 
     .value {
+      font-size: 14px;
       color: #111827;
       font-weight: 600;
       text-align: right;
     }
 
-    .btn-block {
+    /* ACTION SECTION - Bold & Focused */
+    .action-section {
       text-align: center;
-      margin: 35px 0;
+      background-color: #F3F4F6;
+      margin: 0 -48px -48px;
+      padding: 40px 48px;
+    }
+
+    .action-section p {
+      font-size: 13px;
+      color: #6B7280;
+      margin-bottom: 20px;
+      font-weight: 500;
     }
 
     .btn {
-      display: inline-block;
-      padding: 12px 24px;
       background-color: #008CDB;
       color: #ffffff !important;
+      padding: 16px 40px;
       text-decoration: none;
-      border-radius: 4px;
-      font-weight: 600;
-      font-size: 14px;
+      font-weight: 700;
+      border-radius: 12px;
+      display: inline-block;
+      font-size: 15px;
+      box-shadow: 0 4px 12px rgba(0, 140, 219, 0.2);
     }
 
     .footer {
-      padding: 30px;
-      background-color: #f9fafb;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 40px 20px;
       text-align: center;
       font-size: 12px;
-      color: #9ca3af;
-      border-top: 1px solid #e5e7eb;
+      color: #9CA3AF;
+    }
+
+    .footer a {
+      color: #008CDB;
+      text-decoration: none;
+      font-weight: 600;
     }
 
     @media (max-width: 600px) {
-      .container {
-        border: none;
+
+      .header,
+      .body-text {
+        padding: 32px 24px;
       }
 
-      .data-row td {
-        display: block;
-        width: 100%;
-        text-align: left;
-        padding: 8px 16px;
+      .action-section {
+        margin: 0 -24px -32px;
+        padding: 32px 24px;
       }
 
       .label {
-        padding-bottom: 0;
-      }
-
-      .value {
-        padding-top: 0;
-        border-bottom: none;
+        width: 80px;
       }
     }
   </style>
 </head>
 
 <body>
-  <div class="email-wrapper">
-    <div class="container">
+  <div class="wrapper">
+    <div class="main-content">
       <div class="header">
-        <img src="https://res.cloudinary.com/dhzujlkls/image/upload/v1766829730/logo_frx51w.png" alt="Letsten Logo"
+        <img src="https://res.cloudinary.com/dhzujlkls/image/upload/v1766829730/logo_frx51w.png" alt="Letsten"
           class="logo-img">
         <h1>New Login Detected</h1>
       </div>
 
-      <div class="content">
-        <p class="greeting">Hello {{ name }},</p>
+      <div class="body-text">
+        <p class="intro-p">Hello <strong>{{ name }}</strong>, we noticed a login to your account from a new device.</p>
 
         <div class="alert-banner">
-          <strong>Security Notice:</strong> A new login was recorded for your account. If this was not you, please take
-          action immediately.
+          <strong>Action Required:</strong> If this wasn't you, your account security may be compromised. Please secure
+          your account immediately.
         </div>
 
-        <table class="data-table">
-          <tr class="data-row">
-            <td class="label">Account</td>
-            <td class="value">{{ email }}</td>
-          </tr>
-          <tr class="data-row">
-            <td class="label">Time</td>
-            <td class="value">{{ login_time }}</td>
-          </tr>
-          <tr class="data-row">
-            <td class="label">Location / IP</td>
-            <td class="value">{{ IP }}</td>
-          </tr>
-          <tr class="data-row">
-            <td class="label">Device</td>
-            <td class="value">{{ user_agent }}</td>
-          </tr>
-        </table>
-
-        <div class="btn-block">
-          <a href="#" class="btn">Secure My Account</a>
+        <div class="data-card">
+          <table class="data-table">
+            <tr class="data-row">
+              <td class="label">Time</td>
+              <td class="value">{{ login_time }}</td>
+            </tr>
+            <tr class="data-row">
+              <td class="label">Device</td>
+              <td class="value">{{ user_agent }}</td>
+            </tr>
+            <tr class="data-row">
+              <td class="label">Location</td>
+              <td class="value">{{ IP }}</td>
+            </tr>
+          </table>
         </div>
 
-        <p style="font-size: 13px; color: #6b7280;">
-          This is an automated security measure to keep your account safe. If you have any questions, visit our
-          <a href="#" style="color: #008CDB; text-decoration: underline;">Help Center</a>.
-        </p>
+        <div class="action-section">
+          <p>Was this you? If not, protect your account now.</p>
+          <a href="{{ security_url }}" class="btn">Secure My Account</a>
+          <div style="margin-top: 24px;">
+            <a href="#" style="font-size: 12px; color: #9CA3AF; text-decoration: none;">Help Center</a>
+            <span style="color: #D1D5DB; margin: 0 8px;">•</span>
+            <a href="#" style="font-size: 12px; color: #9CA3AF; text-decoration: none;">Privacy Policy</a>
+          </div>
+        </div>
       </div>
+    </div>
 
-      <div class="footer">
-        <p>&copy; 2025 Letsten. All rights reserved.</p>
-        <p>You are receiving this because you have a Letsten account.</p>
-      </div>
+    <div class="footer">
+      <p>&copy; 2025 Letsten Technologies. All rights reserved.</p>
+      <p>Lagos, Nigeria</p>
     </div>
   </div>
 </body>
