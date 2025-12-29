@@ -6,29 +6,49 @@ import {
   ActionIcon,
   Button,
   Stack,
-  Divider,
   Box,
   Title,
+  Paper,
+  Container,
+  ThemeIcon,
+  Avatar,
+  Divider,
+  rem,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
   IconArrowLeft,
-  IconUser,
   IconHome,
   IconMapPin,
   IconCurrencyNaira,
   IconExternalLink,
-  IconCircleNumber1,
-  IconCircleNumber2,
-  IconCircleNumber3,
+  IconDownload,
+  IconUser,
+  IconBriefcase,
+  IconMail,
+  IconPhone,
+  IconMaximize,
+  IconBed,
+  IconBath,
+  IconFileDescription,
+  IconShieldCheck,
+  IconCheck,
+  IconX,
 } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import { useLandlordOperations } from "../../../../apis/landlordApi";
 import { useLoading } from "../../../../hooks/useLoading";
 import { LoadingSpinner } from "../../../../components/LoadingSpinner";
 import formatAmount from "../../../../utils/helpers";
 import { showNotification } from "../../../../utils/helpers";
+import { TextBounds } from "html2canvas/dist/types/css/layout/text";
+
+// Brand Colors
+const PRIMARY_COLOR = "#290665";
+const ACCENT_BG = "#F3F0FF"; // Light Lavender
 
 export default function ApplicationsDetails() {
   const { applicationId, propertyId } = useParams();
@@ -36,8 +56,11 @@ export default function ApplicationsDetails() {
   const [application, setApplication] = useState<any>(null);
   const { loading, withLoading } = useLoading();
   const [actionLoading, setActionLoading] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const { getApplication, createScreening, rejectApplication } =
     useLandlordOperations();
+
+  const reportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchApplicationDetails();
@@ -55,6 +78,29 @@ export default function ApplicationsDetails() {
         "Error!",
         "Failed to fetch application details"
       );
+    }
+  };
+
+  const handleExportPDF = async () => {
+    if (!reportRef.current) return;
+    setIsExporting(true);
+    try {
+      const canvas = await html2canvas(reportRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#F9FAFB", // Ensure background matches
+      });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`Application_${applicationId}.pdf`);
+    } catch (err) {
+      showNotification("error", "Export Failed", "Could not generate PDF");
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -76,14 +122,14 @@ export default function ApplicationsDetails() {
       await withLoading(createScreening(applicationId!, { bio_data: {} }));
       notifications.show({
         title: "Success",
-        message: "Tenant invited for screening",
+        message: "Tenant invited",
         color: "green",
       });
       fetchApplicationDetails();
     } catch (error) {
       notifications.show({
         title: "Error",
-        message: "Failed to invite for screening",
+        message: "Invite failed",
         color: "red",
       });
     } finally {
@@ -92,382 +138,437 @@ export default function ApplicationsDetails() {
   };
 
   if (loading)
-    return <LoadingSpinner fullScreen label="Loading application details" />;
+    return <LoadingSpinner fullScreen label="Preparing Dossier..." />;
   if (!application) return null;
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       received: "blue",
       "screening-invited": "yellow",
-      "in-progress": "orange",
       completed: "green",
-      approved: "green",
+      approved: "teal",
       rejected: "red",
-      failed: "red",
-      "lease-created": "teal",
     };
     return colors[status] || "gray";
   };
 
-  const SectionHeader = ({
-    icon: Icon,
-    title,
-    step,
-  }: {
-    icon: any;
-    title: string;
-    step: number;
-  }) => (
-    <Group gap="sm" mb="xl">
-      <Box style={{ color: "#290665", opacity: 0.4 }}>
-        {step === 1 && <IconCircleNumber1 size={28} />}
-        {step === 2 && <IconCircleNumber2 size={28} />}
-        {step === 3 && <IconCircleNumber3 size={28} />}
-      </Box>
-      <Text fw={800} size="sm" tt="uppercase" lts="1.5px" c="#290665">
-        {title}
-      </Text>
-    </Group>
-  );
-
-  const DetailItem = ({ label, value }: { label: string; value: any }) => (
-    <Box mb="lg">
-      <Text size="xs" c="dimmed" tt="uppercase" fw={700} mb={4}>
-        {label}
-      </Text>
-      <Text size="sm" fw={600} c="#1A1A1A">
-        {value || "—"}
-      </Text>
-    </Box>
-  );
-
   return (
-    <Box style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 24px" }}>
-      {/* 1. TOP NAV & STATUS */}
-      <Group
-        justify="space-between"
-        mb={60}
-        pb="xl"
-        style={{ borderBottom: "1px solid #f1f3f5" }}
-      >
-        <Group gap="xl">
-          <ActionIcon
-            variant="light"
-            size="xl"
-            radius="md"
-            color="gray"
-            onClick={() => navigate(-1)}
-          >
-            <IconArrowLeft size={22} />
-          </ActionIcon>
-          <Stack gap={2}>
-            <Title
-              order={1}
-              fw={900}
-              style={{ fontSize: "2rem", letterSpacing: "-0.5px" }}
+    <Box bg="#F3F4F6" mih="100vh" py={{ base: 20, md: 40 }}>
+      <Container size="xl">
+        {/* HEADER SECTION */}
+        <Group justify="space-between" align="flex-start" mb={40}>
+          <Group gap="lg">
+            <ActionIcon
+              variant="white"
+              size={42}
+              radius="xl"
+              onClick={() => navigate(-1)}
+              c={PRIMARY_COLOR}
             >
-              Application Review
-            </Title>
-            <Text c="dimmed" size="sm" fw={500}>
-              Reference: {applicationId?.toUpperCase()}
-            </Text>
-          </Stack>
+              <IconArrowLeft size={22} stroke={2} />
+            </ActionIcon>
+            <Stack gap={2}>
+              <Title order={2} fw={800} c={PRIMARY_COLOR}>
+                Application Review
+              </Title>
+              <Text size="sm" c="dimmed" fw={500}>
+                Ref: {applicationId?.split("-")[0].toUpperCase()}
+              </Text>
+            </Stack>
+          </Group>
+
+          <Group gap="sm">
+            <Button
+              variant="default"
+              leftSection={<IconDownload size={16} />}
+              onClick={handleExportPDF}
+              loading={isExporting}
+              radius="md"
+            >
+              Export
+            </Button>
+            <Badge
+              color={getStatusColor(application.status)}
+              variant="filled"
+              size="lg"
+              radius="sm"
+              py="sm"
+              tt="capitalize"
+            >
+              {application.status?.replace("-", " ")}
+            </Badge>
+          </Group>
         </Group>
 
-        <Badge
-          color={getStatusColor(application.status)}
-          size="xl"
-          variant="filled"
-          radius="sm"
-          px="xl"
-          h={45}
-        >
-          {application.status?.replace("-", " ")}
-        </Badge>
-      </Group>
-
-      <Grid gutter={80}>
-        {/* LEFT COLUMN: PRIMARY INFO */}
-        <Grid.Col span={{ base: 12, md: 8 }}>
-          <Stack gap={60}>
-            {/* SECTION: APPLICANT */}
-            <Box>
-              <Group justify="space-between" align="center" mb="xl">
-                <SectionHeader
-                  icon={IconUser}
-                  title="Applicant Identity"
-                  step={1}
-                />
-                <Button
-                  variant="outline"
-                  color="#290665"
-                  size="xs"
-                  radius="md"
-                  rightSection={<IconExternalLink size={14} />}
-                  onClick={() =>
-                    navigate(
-                      `/property-owner/applications/applicants/${application.applicant.id}`
-                    )
-                  }
-                >
-                  View Dossier
-                </Button>
-              </Group>
-
-              <Box
-                style={{ borderLeft: "3px solid #f1f3f5", paddingLeft: "24px" }}
+        <Grid gutter={30} ref={reportRef}>
+          {/* LEFT CONTENT */}
+          <Grid.Col span={{ base: 12, md: 8 }}>
+            <Stack gap={30}>
+              {/* APPLICANT IDENTITY CARD */}
+              <Paper
+                radius="lg"
+                p={{ base: 20, md: 30 }}
+                shadow="sm"
+                withBorder
               >
-                <Grid>
-                  <Grid.Col span={6}>
-                    <DetailItem
-                      label="Full Legal Name"
-                      value={`${application.applicant.firstName} ${application.applicant.lastName}`}
+                <Group justify="space-between" mb={30} align="flex-start">
+                  <Group>
+                    <Avatar
+                      size="lg"
+                      radius="xl"
+                      color="indigo"
+                      name={`${application.applicant.firstName} ${application.applicant.lastName}`}
+                    >
+                      {application.applicant.firstName[0]}
+                      {application.applicant.lastName[0]}
+                    </Avatar>
+                    <Box>
+                      <Text fw={700} size="lg" c={PRIMARY_COLOR}>
+                        {application.applicant.firstName}{" "}
+                        {application.applicant.lastName}
+                      </Text>
+                      <Text
+                        size="xs"
+                        c="dimmed"
+                        tt="uppercase"
+                        fw={700}
+                        lts={1}
+                      >
+                        Primary Applicant
+                      </Text>
+                    </Box>
+                  </Group>
+                  <Button
+                    variant="light"
+                    color="violet"
+                    size="xs"
+                    radius="md"
+                    rightSection={<IconExternalLink size={14} />}
+                    onClick={() =>
+                      navigate(
+                        `/property-owner/applications/applicants/${application.applicant.id}`
+                      )
+                    }
+                  >
+                    View Profile
+                  </Button>
+                </Group>
+
+                <Grid gutter="lg">
+                  <Grid.Col span={{ base: 12, sm: 6 }}>
+                    <DetailBlock
+                      icon={IconBriefcase}
+                      label="Occupation"
+                      value={application.applicant.occupation}
                     />
                   </Grid.Col>
-                  <Grid.Col span={6}>
-                    <DetailItem
+                  <Grid.Col span={{ base: 12, sm: 6 }}>
+                    <DetailBlock
+                      icon={IconMail}
                       label="Email Address"
                       value={application.applicant.email}
                     />
                   </Grid.Col>
-                  <Grid.Col span={6}>
-                    <DetailItem
-                      label="Primary Phone"
+                  <Grid.Col span={{ base: 12, sm: 6 }}>
+                    <DetailBlock
+                      icon={IconPhone}
+                      label="Phone Number"
                       value={application.applicant.phone_number}
                     />
                   </Grid.Col>
-                  <Grid.Col span={6}>
-                    <DetailItem
-                      label="Current Occupation"
-                      value={application.applicant.occupation}
-                    />
-                  </Grid.Col>
-                </Grid>
-              </Box>
-            </Box>
-
-            {/* SECTION: PROPERTY */}
-            <Box>
-              <SectionHeader
-                icon={IconHome}
-                title="Property Assignment"
-                step={2}
-              />
-              <Box
-                style={{ borderLeft: "3px solid #f1f3f5", paddingLeft: "24px" }}
-              >
-                <Text size="xl" fw={800} mb={6} c="#290665">
-                  {application.property?.name}
-                </Text>
-                <Group gap={6} mb="2rem">
-                  <IconMapPin size={16} color="#adb5bd" />
-                  <Text size="sm" c="dimmed" fw={500}>
-                    {[
-                      application.property?.street,
-                      application.property?.city,
-                      application.property?.state,
-                    ]
-                      .filter(Boolean)
-                      .join(", ")}
-                  </Text>
-                </Group>
-
-                <Grid gutter="xl">
-                  <Grid.Col span={3}>
-                    <DetailItem
-                      label="Bedrooms"
-                      value={application.property?.bedrooms}
-                    />
-                  </Grid.Col>
-                  <Grid.Col span={3}>
-                    <DetailItem
-                      label="Bathrooms"
-                      value={application.property?.bathrooms}
-                    />
-                  </Grid.Col>
-                  <Grid.Col span={3}>
-                    <DetailItem
-                      label="Total Area"
-                      value={`${formatAmount(
-                        application.property?.size_sqft
-                      )} sqft`}
-                    />
-                  </Grid.Col>
-                  <Grid.Col span={3}>
-                    <DetailItem
-                      label="Furnishing"
+                  <Grid.Col span={{ base: 12, sm: 6 }}>
+                    <DetailBlock
+                      icon={IconUser}
+                      label="Marital Status"
                       value={
-                        application.property?.furnished
-                          ? "Fully Furnished"
-                          : "Unfurnished"
+                        application.applicant.marital_status || "Not specified"
                       }
                     />
                   </Grid.Col>
                 </Grid>
-              </Box>
-            </Box>
+              </Paper>
 
-            {/* SECTION: MESSAGE */}
-            {application.message && (
-              <Box>
-                <SectionHeader
-                  icon={IconUser}
-                  title="Personal Statement"
-                  step={3}
-                />
-                <Box
-                  p="xl"
-                  style={{
-                    backgroundColor: "#F8F9FE",
-                    borderRadius: "12px",
-                    borderLeft: "4px solid #290665",
-                  }}
+              {/* PROPERTY DETAILS CARD */}
+              <Paper
+                radius="lg"
+                p={{ base: 20, md: 30 }}
+                shadow="sm"
+                withBorder
+              >
+                <Group justify="space-between" mb={20}>
+                  <Group gap="xs">
+                    <ThemeIcon
+                      color="gray"
+                      variant="light"
+                      size="lg"
+                      radius="md"
+                    >
+                      <IconHome size={18} />
+                    </ThemeIcon>
+                    <Text fw={700} c={PRIMARY_COLOR}>
+                      Property Interest
+                    </Text>
+                  </Group>
+                </Group>
+
+                <Box mb={30}>
+                  <Text
+                    size="xl"
+                    fw={800}
+                    c={PRIMARY_COLOR}
+                    style={{ lineHeight: 1.2 }}
+                  >
+                    {application.property?.name}
+                  </Text>
+                  <Group gap={6} c="dimmed" mt={5}>
+                    <IconMapPin size={16} />
+                    <Text size="sm" fw={500}>
+                      {application.property?.street},{" "}
+                      {application.property?.city}
+                    </Text>
+                  </Group>
+                </Box>
+
+                <Paper bg="gray.0" radius="md" p="md" withBorder>
+                  <Grid gutter="md">
+                    <Grid.Col span={3}>
+                      <Stat
+                        icon={IconBed}
+                        label="Beds"
+                        value={application.property?.bedrooms}
+                      />
+                    </Grid.Col>
+                    <Grid.Col span={3}>
+                      <Stat
+                        icon={IconBath}
+                        label="Baths"
+                        value={application.property?.bathrooms}
+                      />
+                    </Grid.Col>
+                    <Grid.Col span={3}>
+                      <Stat
+                        icon={IconMaximize}
+                        label="Size"
+                        value={`${formatAmount(
+                          application.property?.size_sqft
+                        )} sqft`}
+                      />
+                    </Grid.Col>
+                    <Grid.Col span={3}>
+                      <Stat
+                        icon={IconShieldCheck}
+                        label="Furnished"
+                        value={application.property?.furnished ? "Yes" : "No"}
+                      />
+                    </Grid.Col>
+                  </Grid>
+                </Paper>
+              </Paper>
+
+              {/* PERSONAL STATEMENT */}
+              {application.message && (
+                <Paper
+                  radius="lg"
+                  p={30}
+                  bg={ACCENT_BG}
+                  shadow="sm"
+                  style={{ borderLeft: `4px solid ${PRIMARY_COLOR}` }}
                 >
+                  <Group gap="xs" mb="sm">
+                    <IconFileDescription size={18} color={PRIMARY_COLOR} />
+                    <Text
+                      fw={700}
+                      size="xs"
+                      c={PRIMARY_COLOR}
+                      tt="uppercase"
+                      lts={1}
+                    >
+                      Personal Note
+                    </Text>
+                  </Group>
                   <Text
                     size="sm"
-                    c="#4A4A4A"
-                    style={{ lineHeight: 1.6, fontStyle: "italic" }}
+                    c="dark.5"
+                    style={{ lineHeight: 1.7, fontStyle: "italic" }}
                   >
                     "{application.message}"
                   </Text>
-                </Box>
-              </Box>
-            )}
-          </Stack>
-        </Grid.Col>
+                </Paper>
+              )}
+            </Stack>
+          </Grid.Col>
 
-        {/* RIGHT COLUMN: STICKY ACTIONS */}
-        <Grid.Col span={{ base: 12, md: 4 }}>
-          <Stack gap={40} style={{ position: "sticky", top: "20px" }}>
-            {/* ACTION CARD */}
-            <Box
-              p="xl"
-              style={{
-                backgroundColor: "#fff",
-                border: "1px solid #e9ecef",
-                borderRadius: "16px",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
-              }}
-            >
-              <Text
-                fw={900}
-                size="xs"
-                tt="uppercase"
-                lts="1.2px"
-                mb="xl"
-                c="dimmed"
+          {/* RIGHT SIDEBAR (DECISION & FINANCIALS) */}
+          <Grid.Col span={{ base: 12, md: 4 }}>
+            <Stack gap={20} style={{ position: "sticky", top: "20px" }}>
+              {/* DECISION CENTER */}
+              <Paper
+                radius="lg"
+                shadow="md"
+                withBorder
+                style={{ overflow: "hidden" }}
               >
-                Decision Center
-              </Text>
-
-              <Stack gap="md">
-                {application.status === "received" && (
-                  <>
-                    <Button
-                      color="#290665"
-                      h={50}
-                      radius="md"
-                      fullWidth
-                      loading={actionLoading}
-                      onClick={handleInviteForScreening}
-                    >
-                      Invite for Screening
-                    </Button>
-                    <Button
-                      variant="subtle"
-                      color="red"
-                      fullWidth
-                      loading={actionLoading}
-                      onClick={handleRejectApplication}
-                    >
-                      Decline Application
-                    </Button>
-                  </>
-                )}
-
-                {(application.status === "completed" ||
-                  application.status === "approved") && (
-                  <Button
-                    color="green"
-                    h={50}
-                    radius="md"
-                    fullWidth
-                    onClick={() =>
-                      navigate(`/property-owner/leases/create/${applicationId}`)
-                    }
+                <Box bg={PRIMARY_COLOR} p="md">
+                  <Text
+                    c="white"
+                    fw={700}
+                    tt="uppercase"
+                    size="xs"
+                    lts={1.5}
+                    opacity={0.9}
                   >
-                    Generate Lease Agreement
-                  </Button>
-                )}
-
-                {application.status === "screening-invited" && (
-                  <Box
-                    ta="center"
-                    p="md"
-                    style={{ background: "#FFF9DB", borderRadius: "8px" }}
-                  >
-                    <Text size="xs" fw={700} c="#E67700">
-                      AWAITING TENANT RESPONSE
-                    </Text>
-                    <Text size="xs" c="#E67700">
-                      Invitation was sent to applicant.
-                    </Text>
-                  </Box>
-                )}
-              </Stack>
-            </Box>
-
-            {/* FINANCIAL SUMMARY */}
-            <Box px="xl">
-              <Group gap="xs" mb="xl">
-                <IconCurrencyNaira size={20} color="#290665" />
-                <Text fw={800} size="xs" tt="uppercase" lts="1px">
-                  Financial Details
-                </Text>
-              </Group>
-
-              <Stack gap="lg">
-                <Box>
-                  <Text size="xs" c="dimmed" fw={700} mb={4}>
-                    EXPECTED RENT
-                  </Text>
-                  <Text size="26px" fw={900} c="#290665">
-                    ₦{application.property?.rent_amount?.toLocaleString()}
-                    <Text span size="sm" c="dimmed" fw={600} ml={4}>
-                      / {application.property?.payment_structure || "year"}
-                    </Text>
+                    Actions
                   </Text>
                 </Box>
+                <Stack p="lg" gap="md">
+                  {application.status === "received" && (
+                    <>
+                      <Button
+                        fullWidth
+                        size="md"
+                        color={PRIMARY_COLOR}
+                        leftSection={<IconCheck size={18} />}
+                        loading={actionLoading}
+                        onClick={handleInviteForScreening}
+                      >
+                        Accept & Screen
+                      </Button>
+                      <Button
+                        fullWidth
+                        variant="light"
+                        color="red"
+                        leftSection={<IconX size={18} />}
+                        loading={actionLoading}
+                        onClick={handleRejectApplication}
+                      >
+                        Decline
+                      </Button>
+                    </>
+                  )}
+                  {["completed", "approved"].includes(application.status) && (
+                    <Button
+                      fullWidth
+                      size="md"
+                      color="teal"
+                      onClick={() =>
+                        navigate(
+                          `/property-owner/leases/create/${applicationId}`
+                        )
+                      }
+                    >
+                      Generate Lease
+                    </Button>
+                  )}
+                  {!["received", "completed", "approved"].includes(
+                    application.status
+                  ) && (
+                    <Group gap="xs" justify="center" py="sm">
+                      <LoadingSpinner size={16} />
+                      <Text size="sm" c="dimmed">
+                        Processing screening...
+                      </Text>
+                    </Group>
+                  )}
+                </Stack>
+              </Paper>
 
-                <Divider variant="dashed" />
+              {/* FINANCIAL CARD */}
+              <Paper radius="lg" p="lg" shadow="sm" withBorder>
+                <Group gap="xs" mb={20}>
+                  <ThemeIcon color="green" variant="light" size="md">
+                    <IconCurrencyNaira size={16} />
+                  </ThemeIcon>
+                  <Text fw={700} size="sm" c="dark.4">
+                    Financials
+                  </Text>
+                </Group>
 
-                <Grid>
-                  <Grid.Col span={6}>
-                    <Text size="xs" c="dimmed" fw={700} mb={4}>
-                      CAUTION FEE
+                <Stack gap="md">
+                  <Box>
+                    <Text size="xs" c="dimmed" fw={700} mb={4} tt="uppercase">
+                      Rent Value
                     </Text>
-                    <Text size="sm" fw={700}>
-                      ₦
-                      {application.property?.caution_fee?.toLocaleString() ||
-                        "0"}
-                    </Text>
-                  </Grid.Col>
-                  <Grid.Col span={6}>
-                    <Text size="xs" c="dimmed" fw={700} mb={4}>
-                      LEGAL/AGREE
-                    </Text>
-                    <Text size="sm" fw={700}>
-                      ₦
-                      {application.property?.agreement_fee?.toLocaleString() ||
-                        "0"}
-                    </Text>
-                  </Grid.Col>
-                </Grid>
-              </Stack>
-            </Box>
-          </Stack>
-        </Grid.Col>
-      </Grid>
+                    <Group gap={4} align="flex-end">
+                      <Text>
+                        ₦{application.property?.rent_amount?.toLocaleString()}
+                      </Text>
+                      <Text size="xs" c="dimmed" fw={600} mb={3}>
+                        / {application.property?.payment_structure || "year"}
+                      </Text>
+                    </Group>
+                  </Box>
+
+                  <Divider />
+
+                  <Grid>
+                    <Grid.Col span={6}>
+                      <Text size="xs" c="dimmed" fw={700}>
+                        CAUTION
+                      </Text>
+                      <Text size="sm" fw={600}>
+                        ₦
+                        {application.property?.caution_fee?.toLocaleString() ||
+                          "0"}
+                      </Text>
+                    </Grid.Col>
+                    <Grid.Col span={6}>
+                      <Text size="xs" c="dimmed" fw={700}>
+                        LEGAL
+                      </Text>
+                      <Text size="sm" fw={600}>
+                        ₦
+                        {application.property?.agreement_fee?.toLocaleString() ||
+                          "0"}
+                      </Text>
+                    </Grid.Col>
+                  </Grid>
+                </Stack>
+              </Paper>
+            </Stack>
+          </Grid.Col>
+        </Grid>
+      </Container>
     </Box>
   );
 }
+
+// ------ SUB-COMPONENTS ------
+
+const DetailBlock = ({ icon: Icon, label, value }: any) => (
+  <Group gap="md" align="flex-start" wrap="nowrap">
+    <ThemeIcon
+      variant="light"
+      color="gray"
+      size="lg"
+      radius="md"
+      style={{ flexShrink: 0 }}
+    >
+      <Icon size={18} stroke={1.5} color="#4B5563" />
+    </ThemeIcon>
+    <Box style={{ minWidth: 0 }}>
+      <Text size="xs" c="dimmed" fw={700} tt="uppercase" lts={0.5}>
+        {label}
+      </Text>
+      <Text
+        size="sm"
+        fw={600}
+        c="dark.4"
+        style={{ wordBreak: "break-word", lineHeight: 1.4 }}
+      >
+        {value || "—"}
+      </Text>
+    </Box>
+  </Group>
+);
+
+const Stat = ({ icon: Icon, label, value }: any) => (
+  <Stack gap={2} align="center">
+    <Icon size={18} color="#909296" />
+    <Text size="xs" c="dimmed" fw={600}>
+      {label}
+    </Text>
+    <Text size="sm" fw={700} c="dark.6">
+      {value}
+    </Text>
+  </Stack>
+);

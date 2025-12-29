@@ -294,134 +294,137 @@ function Applicants() {
     }
   };
 
-  if (loading)
-    return <LoadingSpinner fullScreen label="Loading secure data..." />;
-
   return (
     <Box p={isMobile ? "md" : "xl"} bg="#fcfcfd" style={{ minHeight: "100vh" }}>
-      <Stack gap="xl">
-        {/* Header Section */}
-        <Group justify="space-between" align="flex-end">
-          <Box>
-            <Title order={2} fw={800} style={{ letterSpacing: "-0.5px" }}>
-              Applicants
-            </Title>
-            <Text size="sm" c="dimmed" fw={500}>
-              Manage your prospective tenant directory
-            </Text>
-          </Box>
-          <Button
-            variant="white"
-            color="gray"
-            leftSection={<IconRefresh size={16} />}
-            onClick={fetchApplicants}
-            size="sm"
-          >
-            Refresh List
-          </Button>
-        </Group>
+      {loading ? (
+        <LoadingSpinner label="Loading secure data..." />
+      ) : (
+        <Stack gap="xl">
+          {/* Header Section */}
+          <Group justify="space-between" align="flex-end">
+            <Box>
+              <Title order={2} fw={800} style={{ letterSpacing: "-0.5px" }}>
+                Applicants
+              </Title>
+              <Text size="sm" c="dimmed" fw={500}>
+                Manage your prospective tenant directory
+              </Text>
+            </Box>
+            <Button
+              variant="white"
+              color="gray"
+              leftSection={<IconRefresh size={16} />}
+              onClick={fetchApplicants}
+              size="sm"
+            >
+              Refresh List
+            </Button>
+          </Group>
 
-        {/* Filter Bar */}
-        <Paper p="md" radius="md" withBorder shadow="none">
-          <Grid align="flex-end">
-            <Grid.Col span={{ base: 12, md: 8 }}>
-              <TextInput
-                placeholder="Search name, email, or phone..."
-                leftSection={<IconSearch size={18} stroke={1.5} />}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                variant="filled"
-              />
-            </Grid.Col>
-            <Grid.Col span={{ base: 12, md: 4 }}>
-              <Select
-                placeholder="Filter status"
-                data={[
-                  { value: "all", label: "All Applicants" },
-                  { value: "verified", label: "Verified Only" },
-                  { value: "unverified", label: "Unverified Only" },
-                ]}
-                value={verificationFilter}
-                onChange={(v) => setVerificationFilter(v === "all" ? null : v)}
-                variant="filled"
-              />
-            </Grid.Col>
-          </Grid>
-        </Paper>
-
-        {/* Content Area */}
-        {filteredApplicants.length > 0 ? (
-          isMobile ? (
-            <Stack gap="md">
-              {filteredApplicants.map((app) => (
-                <ApplicantCard
-                  key={app.id}
-                  applicant={app}
-                  onAction={handleAction}
+          {/* Filter Bar */}
+          <Paper p="md" radius="md" withBorder shadow="none">
+            <Grid align="flex-end">
+              <Grid.Col span={{ base: 12, md: 8 }}>
+                <TextInput
+                  placeholder="Search name, email, or phone..."
+                  leftSection={<IconSearch size={18} stroke={1.5} />}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  variant="filled"
                 />
-              ))}
-            </Stack>
-          ) : (
-            <Paper radius="md" withBorder style={{ overflow: "hidden" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <Box component="thead" bg="gray.0">
-                  <tr>
-                    {[
-                      "Applicant",
-                      "Phone",
-                      "Occupation",
-                      "Applications",
-                      "Security Status",
-                      "Joined Date",
-                      "",
-                    ].map((h) => (
-                      <th
-                        key={h}
-                        style={{
-                          textAlign: "left",
-                          padding: "12px 16px",
-                          fontSize: "12px",
-                          fontWeight: 700,
-                          color: "#495057",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.5px",
-                        }}
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </Box>
-                <tbody>
-                  {filteredApplicants.map((app) => (
-                    <ApplicantTableRow
-                      key={app.id}
-                      applicant={app}
-                      onAction={handleAction}
-                    />
-                  ))}
-                </tbody>
-              </table>
-            </Paper>
-          )
-        ) : (
-          <Paper
-            p={50}
-            radius="md"
-            withBorder
-            style={{ textAlign: "center", borderStyle: "dashed" }}
-          >
-            <IconUsers size={40} color="#adb5bd" stroke={1.5} />
-            <Text fw={600} mt="md">
-              No results found
-            </Text>
-            <Text size="sm" c="dimmed">
-              Try adjusting your search or filters to find what you're looking
-              for.
-            </Text>
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, md: 4 }}>
+                <Select
+                  placeholder="Filter status"
+                  data={[
+                    { value: "all", label: "All Applicants" },
+                    { value: "verified", label: "Verified Only" },
+                    { value: "unverified", label: "Unverified Only" },
+                  ]}
+                  value={verificationFilter}
+                  onChange={(v) =>
+                    setVerificationFilter(v === "all" ? null : v)
+                  }
+                  variant="filled"
+                />
+              </Grid.Col>
+            </Grid>
           </Paper>
-        )}
-      </Stack>
+
+          {/* Content Area */}
+          {filteredApplicants.length > 0 ? (
+            isMobile ? (
+              <Stack gap="md">
+                {filteredApplicants.map((app) => (
+                  <ApplicantCard
+                    key={app.id}
+                    applicant={app}
+                    onAction={handleAction}
+                  />
+                ))}
+              </Stack>
+            ) : (
+              <Paper radius="md" withBorder style={{ overflow: "hidden" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <Box component="thead" bg="gray.0">
+                    <tr>
+                      {[
+                        "Applicant",
+                        "Phone",
+                        "Occupation",
+                        "Applications",
+                        "Security Status",
+                        "Joined Date",
+                        "",
+                      ].map((h) => (
+                        <th
+                          key={h}
+                          style={{
+                            textAlign: "left",
+                            padding: "12px 16px",
+                            fontSize: "12px",
+                            fontWeight: 700,
+                            color: "#495057",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.5px",
+                          }}
+                        >
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </Box>
+                  <tbody>
+                    {filteredApplicants.map((app) => (
+                      <ApplicantTableRow
+                        key={app.id}
+                        applicant={app}
+                        onAction={handleAction}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </Paper>
+            )
+          ) : (
+            <Paper
+              p={50}
+              radius="md"
+              withBorder
+              style={{ textAlign: "center", borderStyle: "dashed" }}
+            >
+              <IconUsers size={40} color="#adb5bd" stroke={1.5} />
+              <Text fw={600} mt="md">
+                No results found
+              </Text>
+              <Text size="sm" c="dimmed">
+                Try adjusting your search or filters to find what you're looking
+                for.
+              </Text>
+            </Paper>
+          )}
+        </Stack>
+      )}
     </Box>
   );
 }

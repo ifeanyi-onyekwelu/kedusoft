@@ -17,6 +17,7 @@ class Screening(BaseModel):
     invitation_date = Column(DateTime)
     screening_date = Column(DateTime)
     status = Column(String(50), default="in-progress")
+    decline_reason = Column(String(500), nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     tenant = relationship("User", foreign_keys=[tenant_id])

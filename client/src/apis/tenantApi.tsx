@@ -199,6 +199,21 @@ export const tenantApi = {
     return response.data;
   },
 
+  async acceptScreeningInvitation(screeningId: string) {
+    const response = await axiosInstance.post(
+      `tenant/screenings/${screeningId}/accept`
+    );
+    return response.data;
+  },
+
+  async declineScreeningInvitation(screeningId: string, reason?: string) {
+    const response = await axiosInstance.post(
+      `tenant/screenings/${screeningId}/decline`,
+      { reason: reason || "" }
+    );
+    return response.data;
+  },
+
   // Recent Activities
   async getRecentActivities(params?: { limit?: number; days?: number }) {
     const queryParams = new URLSearchParams();
@@ -413,6 +428,36 @@ export const useTenantOperations = () => {
     [executeOperation]
   );
 
+  const acceptScreeningInvitation = useCallback(
+    async (screeningId: string) => {
+      return executeOperation(
+        () => tenantApi.acceptScreeningInvitation(screeningId),
+        {
+          customErrorMessage: "Failed to accept screening invitation",
+          onSuccess: () => {
+            console.log("Screening invitation accepted successfully");
+          },
+        }
+      );
+    },
+    [executeOperation]
+  );
+
+  const declineScreeningInvitation = useCallback(
+    async (screeningId: string, reason?: string) => {
+      return executeOperation(
+        () => tenantApi.declineScreeningInvitation(screeningId, reason),
+        {
+          customErrorMessage: "Failed to decline screening invitation",
+          onSuccess: () => {
+            console.log("Screening invitation declined successfully");
+          },
+        }
+      );
+    },
+    [executeOperation]
+  );
+
   // Recent Activities
   const getRecentActivities = useCallback(
     async (params?: { limit?: number; days?: number }) => {
@@ -451,6 +496,8 @@ export const useTenantOperations = () => {
     getScreeningDetails,
     getScreeningNotifications,
     updateScreening,
+    acceptScreeningInvitation,
+    declineScreeningInvitation,
 
     // Recent Activities
     getRecentActivities,

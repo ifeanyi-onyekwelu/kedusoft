@@ -353,6 +353,144 @@ def update_screening_tenant(screening_id):
         raise CustomRequestError("Failed to update screening", 500)
 
 
+@tenant.post("/screenings/<string:screening_id>/accept")
+@catch_exception
+@jwt_required()
+@role_required("tenant")
+def accept_screening_invitation(screening_id):
+    """
+    Tenant accepts screening invitation
+    - Updates screening status to accepted
+    - Notifies landlord
+    """
+    user_id, _, _ = get_logged_in_user()
+
+    # Verify screening exists and belongs to tenant
+    screening = get_item_by_filter(
+        g.session, Screening, {"id": screening_id, "tenant_id": user_id}
+    )
+    if not screening:
+        raise CustomRequestError("Screening not found or not authorized", 404)
+
+    # Can only accept if status is "invited"
+    if screening.status != "invited":
+        raise CustomRequestError("This screening invitation cannot be accepted", 400)
+
+    # Update screening status
+    updated_screening = update_item(
+        g.session,
+        Screening,
+        screening_id,
+        {"status": "accepted"},
+    )
+
+    # Log activity
+    ActivityLogger.log_tenant_activity(
+        g.session,
+        user_id,
+        "screening_accepted",
+        f"Accepted screening invitation for property ID: {screening.property_id}",
+        "screening",
+        screening_id,
+    )
+
+    # Get landlord info to send notification
+    landlord = get_item_by_filter(g.session, User, {"id": screening.landlord_id})
+    template_vars = {
+        "tenant": f"{screening.tenant.first_name} {screening.tenant.last_name}",
+        "property": screening.property.name,
+    }
+
+    if landlord:
+        send_email(
+            subject="Screening Invitation Accepted",
+            recipients=[landlord.email],
+            template_name="screening_invitation_accepted",
+            template_vars=template_vars,
+            template_folder="tenant",
+        )
+
+    return response(
+        "Screening invitation accepted",
+        {"screening": serialize(updated_screening)},
+    )
+
+
+@tenant.post("/screenings/<string:screening_id>/decline")
+@catch_exception
+@jwt_required()
+@role_required("tenant")
+def decline_screening_invitation(screening_id):
+    """
+    Tenant declines screening invitation
+    - Updates screening status to declined
+    - Notifies landlord via professional HTML template
+    """
+    user_id, _, _ = get_logged_in_user()
+    data = request.get_json()
+
+    # Verify screening exists and belongs to tenant
+    screening = get_item_by_filter(
+        g.session, Screening, {"id": screening_id, "tenant_id": user_id}
+    )
+    if not screening:
+        raise CustomRequestError("Screening not found or not authorized", 404)
+
+    # Can only decline if status is "invited"
+    if screening.status != "invited":
+        raise CustomRequestError("This screening invitation cannot be declined", 400)
+
+    reason = data.get("reason", "Not specified")
+
+    # Update screening status
+    updated_screening = update_item(
+        g.session,
+        Screening,
+        screening_id,
+        {"status": "declined", "decline_reason": reason},
+    )
+
+    # Log activity
+    ActivityLogger.log_tenant_activity(
+        g.session,
+        user_id,
+        "screening_declined",
+        f"Declined screening invitation for property ID: {screening.property_id}",
+        "screening",
+        screening_id,
+    )
+
+    # Update application status back to received (so landlord can re-action it if needed)
+    update_item(
+        g.session, Application, screening.application_id, {"status": "received"}
+    )
+
+    # Get landlord info to send notification
+    landlord = get_item_by_filter(g.session, User, {"id": screening.landlord_id})
+
+    if landlord:
+        template_vars = {
+            "landlord_name": landlord.first_name,
+            "tenant_name": f"{screening.tenant.first_name} {screening.tenant.last_name}",
+            "property_name": screening.property.name,
+            "reason": reason,
+            "dashboard_url": f"{SITE_URL}/property-owner/applications",
+        }
+
+        send_email(
+            subject="Screening Invitation Declined",
+            recipients=[landlord.email],
+            template_name="screening_invitation_declined",
+            template_vars=template_vars,
+            template_folder="tenant",
+        )
+
+    return response(
+        "Screening invitation declined",
+        {"screening": serialize(updated_screening)},
+    )
+
+
 ###############################################################################
 # PAYMENT ENDPOINTS
 # Handles payment operations related to screenings and applications

@@ -1362,6 +1362,90 @@ def complete_screening(screening_id):
     )
 
 
+@landlord.post("/applications/<string:application_id>/invite-screening")
+@catch_exception
+@jwt_required()
+@role_required("landlord")
+def invite_for_screening(application_id):
+    """
+    Sends screening invitation to tenant for an approved application
+    - Creates screening record
+    - Sends email invitation to tenant
+    - Updates application status to screening_invited
+    """
+    user_id, _, _ = get_logged_in_user()
+
+    # Verify application exists and belongs to landlord's property
+    application = get_item_by_filter(g.session, Application, {"id": application_id})
+    if not application:
+        raise CustomRequestError("Application not found", 404)
+
+    # Verify property belongs to landlord
+    property = get_item_by_filter(
+        g.session, Property, {"id": application.property_id, "landlord_id": user_id}
+    )
+    if not property:
+        raise CustomRequestError("Not authorized for this property", 403)
+
+    # Check if screening already exists
+    existing_screening = get_item_by_filter(
+        g.session, Screening, {"application_id": application_id}
+    )
+    if existing_screening:
+        raise CustomRequestError("Screening invitation already sent", 400)
+
+    # Get tenant information
+    tenant = get_item_by_filter(g.session, User, {"id": application.tenant_id})
+    if not tenant:
+        raise CustomRequestError("Tenant not found", 404)
+
+    # Create screening record
+    screening_data = {
+        "application_id": application_id,
+        "tenant_id": application.tenant_id,
+        "landlord_id": user_id,
+        "property_id": application.property_id,
+        "invitation_date": datetime.utcnow(),
+        "status": "invited",
+    }
+
+    new_screening = create_item(g.session, Screening, screening_data)
+
+    # Update application status
+    update_item(g.session, Application, application_id, {"status": "screening_invited"})
+
+    # Log activity
+    ActivityLogger.log_landlord_activity(
+        g.session,
+        user_id,
+        "screening_invited",
+        f"Sent screening invitation to {tenant.first_name} {tenant.last_name} for {property.name}",
+        "screening",
+        new_screening.id,
+    )
+
+    # Send email notification
+    template_vars = {
+        "tenant_name": f"{tenant.first_name} {tenant.last_name}",
+        "property_name": property.name,
+        "property_address": f"{property.street}, {property.city}",
+        "action_url": f"{SITE_URL}/tenants/screenings",
+    }
+
+    send_email(
+        subject=f"Screening Invitation for {property.name}",
+        recipients=[tenant.email],
+        template_name="screening_invitation",
+        template_vars=template_vars,
+        template_folder="tenant",
+    )
+
+    return response(
+        "Screening invitation sent successfully",
+        {"screening": serialize(new_screening)},
+    )
+
+
 # ======================================================
 # LEASE MANAGEMENT ROUTES
 # Handles lease creation, signing, and management

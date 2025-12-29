@@ -23,6 +23,7 @@ def send_email(
     template_vars: dict = None,
     body: str = None,
     sender: str = None,
+    template_folder: str = None,
 ) -> bool:
     """
     Send email using SendGrid
@@ -34,6 +35,7 @@ def send_email(
         template_vars: Variables to pass to the template
         body: Raw email body (alternative to template)
         sender: Optional sender override (default: noreply@kedusoft.com)
+        template_folder: Optional folder path inside emails/ directory (e.g., 'landlord' or 'tenant')
 
     Returns:
         bool: True if email sent successfully, False otherwise
@@ -48,11 +50,15 @@ def send_email(
         # Prepare content
         if template_name:
             try:
-                html_content = render_template(
-                    f"emails/{template_name}.html", **(template_vars or {})
-                )
+                # Build template path with optional folder
+                if template_folder:
+                    template_path = f"emails/{template_folder}/{template_name}.html"
+                else:
+                    template_path = f"emails/{template_name}.html"
+
+                html_content = render_template(template_path, **(template_vars or {}))
             except Exception as e:
-                logger.error(f"Error rendering template {template_name}: {e}")
+                logger.error(f"Error rendering template {template_path}: {e}")
                 html_content = body or ""
         else:
             html_content = body or ""

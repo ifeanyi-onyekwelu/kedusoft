@@ -11,17 +11,20 @@ import {
   Title,
   Button,
   Menu,
-  Tabs,
   Stack,
   ThemeIcon,
   Box,
   useMatches,
+  Avatar,
+  ActionIcon,
+  Tabs,
+  Paper,
+  Divider,
 } from "@mantine/core";
 import {
   IconSearch,
   IconRefresh,
   IconEye,
-  IconMessage,
   IconChecks,
   IconClock,
   IconX,
@@ -29,6 +32,8 @@ import {
   IconClipboardCheck,
   IconFileText,
   IconDotsVertical,
+  IconCalendar,
+  IconShieldCheck,
 } from "@tabler/icons-react";
 import EmptyState from "../../../../components/EmptyState";
 import { LoadingSpinner } from "../../../../components/LoadingSpinner";
@@ -38,234 +43,249 @@ import { formatDate } from "../../../../utils/helpers";
 import { useLoading } from "../../../../hooks/useLoading";
 import { notifications } from "@mantine/notifications";
 
-// Simplified Statistics Card Component
-const StatCard = ({
-  icon,
-  label,
-  value,
-  change,
-  changeType,
-  color,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: number;
-  change?: number;
-  changeType?: "increase" | "decrease";
-  color: string;
-}) => (
-  <Card shadow="sm" padding="lg" radius="md" withBorder>
-    <Group justify="space-between" mb="xs">
-      <ThemeIcon color={color} size={40} radius="md">
+// --- Sub-components ---
+
+const StatCard = ({ icon, label, value, change, changeType, color }: any) => (
+  <Paper withBorder p="lg" radius="md" bg="white">
+    <Group justify="space-between" align="flex-start" wrap="nowrap">
+      <Stack gap={2}>
+        <Text size="xs" c="dimmed" fw={700} tt="uppercase" lts="0.5px">
+          {label}
+        </Text>
+        <Text size="xl" fw={800} style={{ lineHeight: 1.2 }}>
+          {value.toLocaleString()}
+        </Text>
+      </Stack>
+      <ThemeIcon color={color} variant="light" size={42} radius="md">
         {icon}
       </ThemeIcon>
-      {change && (
+    </Group>
+    {change && (
+      <Group gap={6} mt="md">
         <Badge
-          color={changeType === "increase" ? "green" : "red"}
-          variant="light"
           size="sm"
+          variant="light"
+          color={changeType === "increase" ? "green" : "red"}
+          radius="sm"
         >
           {changeType === "increase" ? "+" : "-"}
           {change}%
         </Badge>
+        <Text size="xs" c="dimmed">
+          vs last month
+        </Text>
+      </Group>
+    )}
+  </Paper>
+);
+
+const StatusBadge = ({ status }: { status: string }) => {
+  const colors: Record<string, string> = {
+    received: "blue",
+    screening_invited: "orange",
+    screening: "orange",
+    screening_completed: "grape",
+    approved: "green",
+    rejected: "red",
+    lease_created: "teal",
+  };
+
+  const labels: Record<string, string> = {
+    received: "New",
+    screening_invited: "Screening Invited",
+    screening: "Screening Invited",
+    screening_completed: "Screening Done",
+    lease_created: "Lease Active",
+  };
+
+  return (
+    <Badge
+      color={colors[status] || "gray"}
+      variant="dot"
+      size="sm"
+      radius="sm"
+      tt="capitalize"
+    >
+      {labels[status] || status.replace("_", " ")}
+    </Badge>
+  );
+};
+
+const ActionButtons = ({ application, onAction }: any) => {
+  return (
+    <Group gap="xs" wrap="nowrap">
+      <Button
+        variant="subtle"
+        size="xs"
+        color="gray"
+        leftSection={<IconEye size={14} />}
+        onClick={() => onAction("view", application.id)}
+      >
+        View
+      </Button>
+
+      {/* Logic: received -> invite for screening */}
+      {application.status === "received" && (
+        <Button
+          variant="light"
+          size="xs"
+          color="orange"
+          leftSection={<IconShieldCheck size={14} />}
+          onClick={() => onAction("invite", application.id)}
+        >
+          Invite to Screen
+        </Button>
       )}
+
+      {/* Logic: screening_invited -> show status */}
+      {application.status === "screening_invited" && (
+        <Button
+          variant="light"
+          size="xs"
+          color="gray"
+          disabled
+          leftSection={<IconClock size={14} />}
+        >
+          Invited
+        </Button>
+      )}
+
+      {/* Logic: screening done -> show approve */}
+      {application.status === "screening_completed" && (
+        <Button
+          variant="light"
+          size="xs"
+          color="green"
+          leftSection={<IconChecks size={14} />}
+          onClick={() => onAction("approve", application.id)}
+        >
+          Approve
+        </Button>
+      )}
+
+      {/* Default dots menu for secondary actions */}
+      <Menu position="bottom-end" withinPortal shadow="md">
+        <Menu.Target>
+          <ActionIcon variant="subtle" color="gray">
+            <IconDotsVertical size={18} />
+          </ActionIcon>
+        </Menu.Target>
+        <Menu.Dropdown>
+          <Menu.Label>Manage Application</Menu.Label>
+          <Menu.Item
+            color="red"
+            leftSection={<IconX size={14} />}
+            onClick={() => onAction("reject", application.id)}
+          >
+            Reject Application
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
     </Group>
-    <Text size="xs" c="dimmed" tt="uppercase" fw={700}>
-      {label}
-    </Text>
-    <Text size="xl" fw={700}>
-      {value.toLocaleString()}
-    </Text>
+  );
+};
+
+const ApplicationCard = ({ application, onAction }: any) => (
+  <Card withBorder padding="md" radius="md" mb="sm">
+    <Group justify="space-between" mb="xs">
+      <StatusBadge status={application.status} />
+      <Group gap={4} c="dimmed">
+        <IconCalendar size={14} />
+        <Text size="xs">{formatDate(application.created_at)}</Text>
+      </Group>
+    </Group>
+
+    <Group gap="sm" mb="md">
+      <Avatar color="blue" radius="xl" size="md">
+        {application.tenant?.firstName?.[0]}
+      </Avatar>
+      <Box>
+        <Text size="sm" fw={700}>
+          {application.tenant?.firstName} {application.tenant?.lastName}
+        </Text>
+        <Text size="xs" c="dimmed" lineClamp={1}>
+          {application.property?.name}
+        </Text>
+      </Box>
+    </Group>
+
+    <Divider mb="md" variant="dashed" />
+
+    <ActionButtons application={application} onAction={onAction} />
   </Card>
 );
 
-// Mobile Card Component for Applications
-const ApplicationCard = ({
-  application,
-  onAction,
-}: {
-  application: any;
-  onAction: (action: string, id: string) => void;
-}) => {
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      received: "blue",
-      under_review: "yellow",
-      screening: "orange",
-      approved: "green",
-      rejected: "red",
-      lease_created: "teal",
-    };
-    return colors[status] || "gray";
-  };
-
-  return (
-    <Card shadow="sm" padding="md" radius="md" withBorder mb="md">
-      <Stack gap="sm">
-        <Group justify="space-between" align="flex-start">
-          <Box>
-            <Text size="sm" fw={600}>
-              {application.tenant?.firstName} {application.tenant?.lastName}
-            </Text>
-            <Text size="xs" c="dimmed">
-              {application.property?.name}
-            </Text>
-          </Box>
-          <Badge color={getStatusColor(application.status)} variant="light" size="sm">
-            {application.status.replace("_", " ").toUpperCase()}
-          </Badge>
-        </Group>
-
-        <Group gap="xs">
-          <Button
-            variant="light"
-            size="sm"
-            leftSection={<IconEye size={16} />}
-            onClick={() => onAction("view", application.id)}
-            flex={1}
-          >
-            View
-          </Button>
-          <Button
-            variant="light"
-            color="green"
-            size="sm"
-            leftSection={<IconChecks size={16} />}
-            onClick={() => onAction("approve", application.id)}
-            flex={1}
-          >
-            Approve
-          </Button>
-          <Button
-            variant="light"
-            color="red"
-            size="sm"
-            leftSection={<IconX size={16} />}
-            onClick={() => onAction("reject", application.id)}
-            flex={1}
-          >
-            Reject
-          </Button>
-        </Group>
-      </Stack>
-    </Card>
-  );
-};
-
-// Desktop Table Row Component
-const ApplicationTableRow = ({
-  application,
-  onAction,
-}: {
-  application: any;
-  onAction: (action: string, id: string) => void;
-}) => {
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      received: "blue",
-      under_review: "yellow",
-      screening: "orange",
-      approved: "green",
-      rejected: "red",
-      lease_created: "teal",
-    };
-    return colors[status] || "gray";
-  };
-
-  return (
-    <tr className="hover:bg-blue-50 transition-colors border-b border-gray-100">
-      <td className="p-4">
-        <Box>
-          <Text size="sm" fw={600} className="text-gray-900">
-            {application.tenant?.firstName} {application.tenant?.lastName}
-          </Text>
-          <Text size="xs" c="dimmed">
-            {application.tenant?.email}
-          </Text>
-        </Box>
-      </td>
-      <td className="p-4">
-        <Text size="sm" fw={500} className="text-gray-900" lineClamp={1}>
-          {application.property?.name}
+const ApplicationTableRow = ({ application, onAction }: any) => (
+  <Box
+    style={(theme) => ({
+      display: "grid",
+      gridTemplateColumns: "2.5fr 1.5fr 1fr 1fr 2fr",
+      alignItems: "center",
+      padding: "16px",
+      borderBottom: `1px solid ${theme.colors.gray[2]}`,
+      transition: "background-color 0.2s ease",
+      "&:hover": { backgroundColor: theme.colors.gray[0] },
+    })}
+  >
+    <Group gap="sm">
+      <Avatar radius="xl" color="blue" variant="light">
+        {application.tenant?.firstName?.[0]}
+      </Avatar>
+      <Box>
+        <Text size="sm" fw={600} c="dark.4">
+          {application.tenant?.firstName} {application.tenant?.lastName}
         </Text>
-      </td>
-      <td className="p-4">
-        <Badge
-          color={getStatusColor(application.status)}
-          variant="light"
-          size="sm"
-        >
-          {application.status.replace("_", " ").toUpperCase()}
-        </Badge>
-      </td>
-      <td className="p-4">
-        <Text size="sm" c="dimmed">
-          {formatDate(application.created_at)}
+        <Text size="xs" c="dimmed">
+          {application.tenant?.email}
         </Text>
-      </td>
-      <td className="p-4">
-        <Group gap="sm" justify="flex-start">
-          <Button
-            variant="light"
-            size="sm"
-            leftSection={<IconEye size={16} />}
-            onClick={() => onAction("view", application.id)}
-          >
-            View
-          </Button>
-          <Button
-            variant="light"
-            color="green"
-            size="sm"
-            leftSection={<IconChecks size={16} />}
-            onClick={() => onAction("approve", application.id)}
-          >
-            Approve
-          </Button>
-          <Button
-            variant="light"
-            color="red"
-            size="sm"
-            leftSection={<IconX size={16} />}
-            onClick={() => onAction("reject", application.id)}
-          >
-            Reject
-          </Button>
-        </Group>
-      </td>
-    </tr>
-  );
-};
+      </Box>
+    </Group>
+
+    <Text size="sm" fw={500} truncate>
+      {application.property?.name}
+    </Text>
+
+    <StatusBadge status={application.status} />
+
+    <Text size="sm" c="dimmed">
+      {formatDate(application.created_at)}
+    </Text>
+
+    <Group justify="flex-end">
+      <ActionButtons application={application} onAction={onAction} />
+    </Group>
+  </Box>
+);
+
+// --- Main Component ---
 
 function Applications() {
   const navigate = useNavigate();
   const [applications, setApplications] = useState<any[]>([]);
   const [filteredApplications, setFilteredApplications] = useState<any[]>([]);
-  const [pagination, setPagination] = useState<Record<string, number>>({
+  const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
     total: 0,
     pages: 1,
   });
-  const [stats, setStats] = useState<Record<string, number>>({
+  const [stats, setStats] = useState({
     total: 0,
     pending: 0,
     approved: 0,
     rejected: 0,
     screening: 0,
+    received: 0,
   });
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<string>("created_at");
-  const [activeTab, setActiveTab] = useState<string>("all");
-  const [confirmationModal, setConfirmationModal] = useState<{
-    opened: boolean;
-    title: string;
-    message: string;
-    type: "danger" | "warning" | "success" | "info";
-    confirmText: string;
-    action: (() => Promise<void>) | null;
-  }>({
+  const [activeTab, setActiveTab] = useState("all");
+  const [actionLoading, setActionLoading] = useState(false);
+  const { loading, withLoading } = useLoading();
+
+  const isMobile = useMatches({ base: true, sm: true, md: false });
+
+  const [confirmationModal, setConfirmationModal] = useState<any>({
     opened: false,
     title: "",
     message: "",
@@ -273,25 +293,17 @@ function Applications() {
     confirmText: "Confirm",
     action: null,
   });
-  const [actionLoading, setActionLoading] = useState(false);
-  const { loading, withLoading } = useLoading();
-
-  // Use responsive breakpoint
-  const isMobile = useMatches({
-    base: true,
-    sm: true,
-    md: false,
-  });
 
   const {
     getAllApplications,
     getApplicationStats,
     rejectApplication,
     approveApplication,
+    inviteForScreening,
   } = useLandlordOperations();
 
   const fetchApplications = async (page = 1) => {
-    const { applications } = await withLoading(
+    const data = await withLoading(
       getAllApplications({
         page,
         limit: pagination.limit,
@@ -299,74 +311,105 @@ function Applications() {
       })
     );
 
-    setApplications(applications);
-    setFilteredApplications(applications);
-    setPagination({
-      page,
-      limit: pagination.limit,
-      total: applications["total"] || 0,
-      pages: applications["pages"] || 1,
-    });
+    if (data) {
+      setApplications(data.applications || []);
+      setFilteredApplications(data.applications || []);
+      setPagination({
+        page,
+        limit: pagination.limit,
+        total: data.total || 0,
+        pages: data.pages || 1,
+      });
+    }
   };
 
   const fetchStats = async () => {
     const response = await getApplicationStats();
-    setStats(response);
+    if (response) setStats(response);
   };
 
   const fetchAll = async () => {
     await Promise.all([fetchApplications(), fetchStats()]);
   };
 
-  // Filter applications based on search and status
   useEffect(() => {
     let filtered = applications;
-
     if (searchQuery) {
+      const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
         (app) =>
-          app.tenant?.firstName
-            ?.toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          app.tenant?.lastName
-            ?.toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          app.tenant?.email
-            ?.toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          app.property?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+          app.tenant?.firstName?.toLowerCase().includes(query) ||
+          app.tenant?.lastName?.toLowerCase().includes(query) ||
+          app.tenant?.email?.toLowerCase().includes(query) ||
+          app.property?.name?.toLowerCase().includes(query)
       );
     }
-
-    if (statusFilter) {
-      filtered = filtered.filter((app) => app.status === statusFilter);
-    }
-
     setFilteredApplications(filtered);
-  }, [applications, searchQuery, statusFilter]);
+  }, [applications, searchQuery]);
 
   useEffect(() => {
     fetchAll();
-  }, []);
+  }, [statusFilter]);
 
-  const handlePageChange = (page: number) => {
-    fetchApplications(page);
-  };
+  const handlePageChange = (page: number) => fetchApplications(page);
 
-  const showConfirmation = (
-    title: string,
-    message: string,
-    type: "danger" | "warning" | "success" | "info",
-    confirmText: string,
-    action: () => Promise<void>
-  ) => {
+  const handleAction = async (action: string, applicationId: string) => {
+    const app = applications.find((a) => a.id === applicationId);
+    if (!app) return;
+
+    if (action === "view") {
+      navigate(
+        `/property-owner/applications/${applicationId}/${app.property_id}`
+      );
+      return;
+    }
+
+    // Dynamic Configuration based on workflow
+    const config: Record<string, any> = {
+      invite: {
+        title: "Invite for Screening",
+        message: `Send background check invitation to ${app.tenant?.firstName}?`,
+        type: "warning",
+        confirmText: "Send Invitation",
+        handler: () => inviteForScreening(applicationId),
+      },
+      approve: {
+        title: "Approve Application",
+        message: `Are you sure you want to approve ${app.tenant?.firstName}'s application for ${app.property?.name}?`,
+        type: "success",
+        confirmText: "Approve",
+        handler: () =>
+          approveApplication(applicationId, {
+            notes: "Approved after screening",
+          }),
+      },
+      reject: {
+        title: "Reject Application",
+        message: `Are you sure you want to decline this application?`,
+        type: "danger",
+        confirmText: "Reject",
+        handler: () => rejectApplication(applicationId),
+      },
+    };
+
+    const selected = config[action];
+    if (!selected) return;
+
     setConfirmationModal({
       opened: true,
-      title,
-      message,
-      type,
-      confirmText,
-      action,
+      title: selected.title,
+      message: selected.message,
+      type: selected.type,
+      confirmText: selected.confirmText,
+      action: async () => {
+        await selected.handler();
+        notifications.show({
+          title: "Success",
+          message: `Application has been updated.`,
+          color: "green",
+        });
+        await fetchAll();
+      },
     });
   };
 
@@ -376,7 +419,6 @@ function Applications() {
       try {
         await confirmationModal.action();
         setConfirmationModal({ ...confirmationModal, opened: false });
-        await fetchAll(); // Refresh data
       } catch (error) {
         console.error("Action failed:", error);
       } finally {
@@ -385,141 +427,44 @@ function Applications() {
     }
   };
 
-  const handleAction = async (action: string, applicationId: string) => {
-    const application = applications.find((app) => app.id === applicationId);
-    if (!application) return;
-
-    switch (action) {
-      case "view":
-        navigate(
-          `/property-owner/applications/${applicationId}/${application.property_id}`
-        );
-        break;
-
-      case "reject":
-        showConfirmation(
-          "Reject Application",
-          `Are you sure you want to reject ${application.tenant?.firstName} ${application.tenant?.lastName}'s application? This action cannot be undone.`,
-          "warning",
-          "Reject Application",
-          async () => {
-            await rejectApplication(applicationId);
-            notifications.show({
-              title: "Application Rejected",
-              message: `${application.tenant?.firstName} ${application.tenant?.lastName}'s application has been rejected.`,
-              color: "green",
-            });
-            await fetchApplications(pagination.page);
-          }
-        );
-        break;
-
-      case "approve":
-        showConfirmation(
-          "Approve Application",
-          `Are you sure you want to approve ${application.tenant?.firstName} ${application.tenant?.lastName}'s application for ${application.property?.name}?`,
-          "success",
-          "Approve Application",
-          async () => {
-            try {
-              await approveApplication(applicationId, {
-                notes: "Application approved",
-              });
-
-              notifications.show({
-                title: "Application Approved",
-                message: `${application.tenant?.firstName} ${application.tenant?.lastName}'s application has been approved.`,
-                color: "green",
-              });
-
-              await fetchApplications(pagination.page);
-            } catch (error) {
-              notifications.show({
-                title: "Error",
-                message: "Failed to approve application. Please try again.",
-                color: "red",
-              });
-              console.error("Error approving application:", error);
-            }
-          }
-        );
-        break;
-
-      default:
-        console.log(`Unknown action: ${action} for application: ${applicationId}`);
-    }
-  };
-
-  const handleTabChange = (value: string | null) => {
-    const tabValue = value || "all";
-    setActiveTab(tabValue);
-    setStatusFilter(tabValue === "all" ? null : tabValue);
-  };
-
-  const handleRefresh = () => {
-    fetchAll();
-  };
-
-  if (loading)
-    return <LoadingSpinner fullScreen label="Fetching applications" />;
-
   return (
-    <div className="space-y-6 p-3 sm:p-6 bg-gray-50 min-h-screen">
+    <div className="space-y-6 p-4 sm:p-8 bg-gray-50 min-h-screen">
       {/* Header */}
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <Box>
-            <Title order={2} className="text-gray-900">
-              Applications Management
-            </Title>
-            <Text size="sm" c="dimmed">
-              Manage and track all property applications
-            </Text>
-          </Box>
-          <Group gap="sm">
-            <Button
-              leftSection={<IconRefresh size={16} />}
-              variant="light"
-              onClick={handleRefresh}
-              loading={loading}
-              size={isMobile ? "sm" : "md"}
-            >
-              {isMobile ? "" : "Refresh"}
-            </Button>
-          </Group>
-        </div>
-      </div>
+      <Group justify="space-between" align="flex-end">
+        <Box>
+          <Title order={2} fw={800} c="dark.6">
+            Applications
+          </Title>
+          <Text size="sm" c="dimmed">
+            Review and manage incoming tenant applications
+          </Text>
+        </Box>
+        <Button
+          leftSection={<IconRefresh size={16} />}
+          variant="white"
+          onClick={fetchAll}
+          loading={loading}
+        >
+          Refresh
+        </Button>
+      </Group>
 
-      {/* Statistics Dashboard */}
+      {/* Stats */}
       <Grid>
         <Grid.Col span={{ base: 12, sm: 6, lg: 3 }}>
           <StatCard
             icon={<IconUsers size={20} />}
-            label="Total Applications"
+            label="Total"
             value={stats.total}
-            change={12}
-            changeType="increase"
             color="blue"
           />
         </Grid.Col>
         <Grid.Col span={{ base: 12, sm: 6, lg: 3 }}>
           <StatCard
             icon={<IconClock size={20} />}
-            label="Pending Review"
-            value={stats.pending}
-            change={5}
-            changeType="decrease"
+            label="New / Pending"
+            value={stats.received + stats.pending}
             color="yellow"
-          />
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, sm: 6, lg: 3 }}>
-          <StatCard
-            icon={<IconChecks size={20} />}
-            label="Approved"
-            value={stats.approved}
-            change={8}
-            changeType="increase"
-            color="green"
           />
         </Grid.Col>
         <Grid.Col span={{ base: 12, sm: 6, lg: 3 }}>
@@ -527,161 +472,156 @@ function Applications() {
             icon={<IconClipboardCheck size={20} />}
             label="In Screening"
             value={stats.screening}
-            change={3}
-            changeType="increase"
             color="orange"
+          />
+        </Grid.Col>
+        <Grid.Col span={{ base: 12, sm: 6, lg: 3 }}>
+          <StatCard
+            icon={<IconChecks size={20} />}
+            label="Approved"
+            value={stats.approved}
+            color="green"
           />
         </Grid.Col>
       </Grid>
 
-      {/* Main Content - Full Width */}
-      <div>
-        <Card shadow="sm" padding="lg" radius="md" withBorder mb="md">
-          {/* Filters and Search */}
-          <Card shadow="sm" padding="lg" radius="md" withBorder mb="md">
-            <Stack gap="md">
-              <Group justify="space-between" align="flex-start">
-                <Title order={4}>Applications</Title>
-              </Group>
-
-              {/* Search Controls */}
-              <Group gap="sm" align="flex-end">
+      {/* Main List */}
+      <Paper withBorder radius="md" bg="white">
+        <Stack gap={0}>
+          {/* Toolbar */}
+          <Box p="md">
+            <Grid align="center">
+              <Grid.Col span={{ base: 12, md: 4 }}>
                 <TextInput
-                  placeholder="Search applications..."
+                  placeholder="Search by name, email or property..."
                   leftSection={<IconSearch size={16} />}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  style={{ flex: 1, minWidth: 200 }}
-                  size={isMobile ? "sm" : "md"}
+                />
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, md: 8 }}>
+                <Tabs
+                  value={activeTab}
+                  onChange={(v) => {
+                    setActiveTab(v || "all");
+                    setStatusFilter(v === "all" ? null : v);
+                  }}
+                >
+                  <Tabs.List
+                    justify={isMobile ? "center" : "flex-end"}
+                    style={{ borderBottom: "none" }}
+                  >
+                    <Tabs.Tab value="all">All</Tabs.Tab>
+                    <Tabs.Tab value="received">New</Tabs.Tab>
+                    <Tabs.Tab value="screening">Screening</Tabs.Tab>
+                    <Tabs.Tab value="approved">Approved</Tabs.Tab>
+                    <Tabs.Tab value="rejected">Rejected</Tabs.Tab>
+                  </Tabs.List>
+                </Tabs>
+              </Grid.Col>
+            </Grid>
+          </Box>
+
+          <Divider />
+
+          {/* Content */}
+          <Box p={isMobile ? "md" : 0}>
+            {loading ? (
+              <Box py={50}>
+                <LoadingSpinner label="Loading applications..." />
+              </Box>
+            ) : filteredApplications.length > 0 ? (
+              <>
+                {isMobile ? (
+                  <Stack gap="sm">
+                    {filteredApplications.map((app) => (
+                      <ApplicationCard
+                        key={app.id}
+                        application={app}
+                        onAction={handleAction}
+                      />
+                    ))}
+                  </Stack>
+                ) : (
+                  <Box style={{ overflowX: "auto" }}>
+                    <Box style={{ minWidth: 900 }}>
+                      <Box
+                        bg="gray.0"
+                        style={(theme) => ({
+                          display: "grid",
+                          gridTemplateColumns: "2.5fr 1.5fr 1fr 1fr 2fr",
+                          padding: "12px 16px",
+                          borderBottom: `1px solid ${theme.colors.gray[2]}`,
+                        })}
+                      >
+                        {[
+                          "Applicant",
+                          "Property",
+                          "Status",
+                          "Date",
+                          "Actions",
+                        ].map((h) => (
+                          <Text
+                            key={h}
+                            size="xs"
+                            fw={700}
+                            c="dimmed"
+                            tt="uppercase"
+                            ta={h === "Actions" ? "right" : "left"}
+                          >
+                            {h}
+                          </Text>
+                        ))}
+                      </Box>
+                      {filteredApplications.map((app) => (
+                        <ApplicationTableRow
+                          key={app.id}
+                          application={app}
+                          onAction={handleAction}
+                        />
+                      ))}
+                    </Box>
+                  </Box>
+                )}
+              </>
+            ) : (
+              <Box py={100}>
+                <EmptyState>
+                  <Stack align="center" gap="xs">
+                    <ThemeIcon
+                      size={60}
+                      radius="xl"
+                      variant="light"
+                      color="gray"
+                    >
+                      <IconFileText size={30} />
+                    </ThemeIcon>
+                    <Title order={4}>No applications found</Title>
+                    <Text c="dimmed" size="sm">
+                      Try adjusting your search or filters
+                    </Text>
+                  </Stack>
+                </EmptyState>
+              </Box>
+            )}
+          </Box>
+
+          {/* Pagination */}
+          {pagination.pages > 1 && (
+            <Box p="md" style={{ borderTop: "1px solid #eee" }}>
+              <Group justify="center">
+                <Pagination
+                  total={pagination.pages}
+                  value={pagination.page}
+                  onChange={handlePageChange}
+                  radius="md"
                 />
               </Group>
-
-              {/* Status Tabs */}
-              <Tabs value={activeTab} onChange={handleTabChange}>
-                <Tabs.List>
-                  <Tabs.Tab value="all">All ({stats.total})</Tabs.Tab>
-                  <Tabs.Tab value="received">
-                    Received ({stats.received || stats.total})
-                  </Tabs.Tab>
-                  <Tabs.Tab value="screening">
-                    Screening ({stats.screening})
-                  </Tabs.Tab>
-                  <Tabs.Tab value="approved">
-                    Approved ({stats.approved})
-                  </Tabs.Tab>
-                  <Tabs.Tab value="rejected">
-                    Rejected ({stats.rejected})
-                  </Tabs.Tab>
-                </Tabs.List>
-              </Tabs>
-            </Stack>
-          </Card>
-
-          {/* Applications Display */}
-          {loading ? (
-            <LoadingSpinner label="Fetching Applications" />
-          ) : filteredApplications.length > 0 ? (
-            <>
-              {/* Mobile Card View */}
-              {isMobile ? (
-                <Stack gap="md">
-                  {filteredApplications.map((application) => (
-                    <ApplicationCard
-                      key={application.id}
-                      application={application}
-                      onAction={handleAction}
-                    />
-                  ))}
-                </Stack>
-              ) : (
-                /* Desktop Table View */
-                <Card shadow="sm" padding={0} radius="md" withBorder>
-                  <Box style={{ overflowX: "auto" }}>
-                    <table className="w-full">
-                      <thead className="bg-gray-100 border-b border-gray-200">
-                        <tr>
-                          <th className="text-left p-4 font-semibold text-gray-700 text-sm uppercase tracking-wide">
-                            Applicant
-                          </th>
-                          <th className="text-left p-4 font-semibold text-gray-700 text-sm uppercase tracking-wide">
-                            Property
-                          </th>
-                          <th className="text-left p-4 font-semibold text-gray-700 text-sm uppercase tracking-wide">
-                            Status
-                          </th>
-                          <th className="text-left p-4 font-semibold text-gray-700 text-sm uppercase tracking-wide">
-                            Date
-                          </th>
-                          <th className="text-left p-4 font-semibold text-gray-700 text-sm uppercase tracking-wide">
-                            Actions
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredApplications.map((application) => (
-                          <ApplicationTableRow
-                            key={application.id}
-                            application={application}
-                            onAction={handleAction}
-                          />
-                        ))}
-                      </tbody>
-                    </table>
-                  </Box>
-                </Card>
-              )}
-
-              {/* Pagination */}
-              <Card padding="lg" radius="md" withBorder mt="md">
-                <Pagination.Root
-                  total={pagination.pages}
-                  onChange={handlePageChange}
-                  size={isMobile ? "sm" : "md"}
-                >
-                  <Group gap={5} justify="center">
-                    <Pagination.First />
-                    <Pagination.Previous />
-                    <Pagination.Items />
-                    <Pagination.Next />
-                    <Pagination.Last />
-                  </Group>
-                </Pagination.Root>
-              </Card>
-            </>
-          ) : (
-            <EmptyState>
-              <div className="text-center py-12">
-                <IconFileText
-                  size={48}
-                  className="mx-auto text-gray-400 mb-4"
-                />
-                <Title order={3} className="text-gray-700 mb-2">
-                  No Applications Found
-                </Title>
-                <Text c="dimmed" mb="lg">
-                  {searchQuery || statusFilter
-                    ? "No applications match your current filters"
-                    : "You haven't received any applications yet"}
-                </Text>
-                {(searchQuery || statusFilter) && (
-                  <Button
-                    variant="light"
-                    onClick={() => {
-                      setSearchQuery("");
-                      setStatusFilter(null);
-                      setActiveTab("all");
-                    }}
-                  >
-                    Clear Filters
-                  </Button>
-                )}
-              </div>
-            </EmptyState>
+            </Box>
           )}
-        </Card>
-      </div>
+        </Stack>
+      </Paper>
 
-      {/* Confirmation Modal */}
       <ConfirmationModal
         opened={confirmationModal.opened}
         onClose={() =>

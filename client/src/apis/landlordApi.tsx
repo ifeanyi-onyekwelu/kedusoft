@@ -146,6 +146,13 @@ export const landlordApi = {
     return response.data;
   },
 
+  async inviteForScreening(applicationId: string) {
+    const response = await axiosInstance.post(
+      `/property-owner/applications/${applicationId}/invite-screening`
+    );
+    return response.data;
+  },
+
   async completeScreening(screeningId: string, status: string) {
     const response = await axiosInstance.patch(
       `/property-owner/screenings/${screeningId}/complete`,
@@ -709,6 +716,21 @@ export const useLandlordOperations = () => {
     [executeOperation]
   );
 
+  const inviteForScreening = useCallback(
+    async (applicationId: string) => {
+      return executeOperation(
+        () => landlordApi.inviteForScreening(applicationId),
+        {
+          customErrorMessage: "Failed to send screening invitation",
+          onSuccess: () => {
+            console.log("Screening invitation sent successfully");
+          },
+        }
+      );
+    },
+    [executeOperation]
+  );
+
   // Lease Operations
   const createLease = useCallback(
     async (applicationId: string, leaseData: any) => {
@@ -905,6 +927,7 @@ export const useLandlordOperations = () => {
     getScreeningDetails,
     reviewScreening,
     completeScreening,
+    inviteForScreening,
 
     // Lease operations
     createLease,
