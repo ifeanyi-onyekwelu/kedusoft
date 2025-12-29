@@ -4,6 +4,7 @@ import {
   IconTrendingDown,
   IconChevronRight,
 } from "@tabler/icons-react";
+import { FaNairaSign } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 
 interface Statistic {
@@ -38,7 +39,6 @@ const StatisticsCard = ({
         backgroundColor: "white",
         height: "100%",
         cursor: link ? "pointer" : "default",
-        // Soft, modern shadow instead of a border to separate it from the background
         boxShadow:
           "0 1px 3px rgba(0,0,0,0.05), 0 10px 15px -5px rgba(0,0,0,0.05)",
         transition: "transform 0.2s ease, box-shadow 0.2s ease",

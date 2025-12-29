@@ -62,8 +62,6 @@ const LandlordDashboard = () => {
   const [dateRange, setDateRange] = useState<
     "today" | "week" | "month" | "year"
   >("week");
-  // const [currentStats, setCurrentStats] = useState<any>(null);
-  // const [previousStats, setPreviousStats] = useState<any>(null);
 
   const [statistics, setStatistics] = useState<
     Array<{
@@ -296,14 +294,6 @@ const LandlordDashboard = () => {
       console.error("Error fetching dashboard data:", error);
       // Handle error state if needed
     }
-  };
-
-  const fetchFinancialOverview = async () => {
-    // Removed - not needed in simplified dashboard
-  };
-
-  const fetchPropertyPerformance = async () => {
-    // Removed - not needed in simplified dashboard
   };
 
   const fetchRecentActivities = async () => {
