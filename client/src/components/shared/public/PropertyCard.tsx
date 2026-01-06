@@ -227,7 +227,7 @@ const PropertyCard = ({ propertyData }: { propertyData: Property }) => {
           </div>
 
           <Link
-            to="/listings/${propertyData.id}"
+            to={`/listings/${propertyData.id}`}
             className="px-5 rounded-sm bg-gradient-to-br from-secondary to-accent text-white py-1"
           >
             VIEW
