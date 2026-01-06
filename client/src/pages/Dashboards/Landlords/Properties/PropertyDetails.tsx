@@ -36,7 +36,7 @@ import {
   Title,
   Container,
 } from "@mantine/core";
-import { LoadingSpinner } from "../../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../../components/LoadingSpinner";
 import { ErrorState } from "../../../../components/ErrorState";
 
 function PropertyDetails() {
@@ -61,7 +61,7 @@ function PropertyDetails() {
     if (id) fetchDetails();
   }, [id]);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <BrandedLoader />;
   if (error || !propertyData?.property)
     return (
       <ErrorState

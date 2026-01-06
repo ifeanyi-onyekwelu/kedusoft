@@ -22,7 +22,7 @@ import {
 } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 import { useLandlordOperations } from "../../../../apis/landlordApi";
-import { LoadingSpinner } from "../../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../../components/LoadingSpinner";
 import { notifications } from "@mantine/notifications";
 
 function PropertyViewsAnalytics() {
@@ -111,7 +111,7 @@ function PropertyViewsAnalytics() {
 
   if (loading) {
     return (
-      <LoadingSpinner fullScreen label="Fetching property view analytics" />
+      <BrandedLoader fullScreen label="Fetching property view analytics" />
     );
   }
 

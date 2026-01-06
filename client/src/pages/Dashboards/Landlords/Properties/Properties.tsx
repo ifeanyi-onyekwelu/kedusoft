@@ -38,7 +38,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useLandlordOperations } from "../../../../apis/landlordApi";
 import { useLoading } from "../../../../hooks/useLoading";
-import { LoadingSpinner } from "../../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../../components/LoadingSpinner";
 import { ErrorState } from "../../../../components/ErrorState";
 import formatAmount from "../../../../utils/helpers";
 import { motion } from "framer-motion";
@@ -113,7 +113,7 @@ const LandlordProperties = () => {
     },
   ];
 
-  if (loading) return <LoadingSpinner fullScreen />;
+  if (loading) return <BrandedLoader fullScreen />;
   if (error)
     return (
       <ErrorState loading={loading} message={error} onRetry={fetchProperties} />

@@ -39,7 +39,7 @@ import {
   IconFileText,
 } from "@tabler/icons-react";
 import { useLandlordOperations } from "../../../../apis/landlordApi";
-import { LoadingSpinner } from "../../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../../components/LoadingSpinner";
 
 interface Screening {
   id: string;
@@ -701,7 +701,7 @@ const LandlordScreenings: React.FC = () => {
   };
 
   if (loading) {
-    return <LoadingSpinner />;
+    return <BrandedLoader />;
   }
 
   const tabCounts = getTabCounts();

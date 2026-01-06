@@ -32,7 +32,7 @@ import {
   IconUpload,
 } from "@tabler/icons-react";
 import { useTenantOperations } from "../../../../apis/tenantApi";
-import { LoadingSpinner } from "../../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../../components/LoadingSpinner";
 
 interface Screening {
   id: string;
@@ -526,7 +526,7 @@ const TenantScreenings: React.FC = () => {
   };
 
   if (loading) {
-    return <LoadingSpinner />;
+    return <BrandedLoader />;
   }
 
   const tabCounts = getTabCounts();

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { forgotPasswordApi } from "../../apis/authApi";
 import { IconAt, IconArrowLeft, IconCheck } from "@tabler/icons-react";
 import { useLoading } from "../../hooks/useLoading";
-import { LoadingSpinner } from "../../components/LoadingSpinner";
+import { BrandedLoader } from "../../components/LoadingSpinner";
 
 function ForgotPassword() {
   const [errorMsg, setErrorMsg] = useState<string>("");
@@ -41,7 +41,7 @@ function ForgotPassword() {
   };
 
   if (loading) {
-    return <LoadingSpinner fullScreen label="Sending reset link..." />;
+    return <BrandedLoader fullScreen label="Sending reset link..." />;
   }
 
   return (

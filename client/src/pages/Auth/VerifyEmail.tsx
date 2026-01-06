@@ -1,7 +1,7 @@
 import { useState, FormEvent, useRef, KeyboardEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { IconArrowLeft, IconMail } from "@tabler/icons-react";
-import { LoadingSpinner } from "../../components/LoadingSpinner";
+import { BrandedLoader } from "../../components/LoadingSpinner";
 import { useAuthOperations } from "../../apis/authApi";
 import { useUser } from "../../context/UserContext";
 import { useLoading } from "../../hooks/useLoading";
@@ -95,7 +95,7 @@ function VerifyEmail() {
   };
 
   if (loading) {
-    return <LoadingSpinner fullScreen label="Verifying your email..." />;
+    return <BrandedLoader fullScreen label="Verifying your email..." />;
   }
 
   return (

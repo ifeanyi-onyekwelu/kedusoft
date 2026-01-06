@@ -43,7 +43,7 @@ import {
   IconPencil,
 } from "@tabler/icons-react";
 import { useTenantOperations } from "../../../../apis/tenantApi";
-import { LoadingSpinner } from "../../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../../components/LoadingSpinner";
 
 interface Lease {
   id: string;
@@ -590,7 +590,7 @@ const TenantLeases: React.FC = () => {
   };
 
   if (loading) {
-    return <LoadingSpinner />;
+    return <BrandedLoader />;
   }
 
   const tabCounts = getTabCounts();

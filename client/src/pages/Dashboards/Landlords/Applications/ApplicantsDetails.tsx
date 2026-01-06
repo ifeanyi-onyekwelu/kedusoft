@@ -34,7 +34,7 @@ import {
   Container,
 } from "@mantine/core";
 import { formatDate } from "../../../../utils/helpers";
-import { LoadingSpinner } from "../../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../../components/LoadingSpinner";
 import { useLoading } from "../../../../hooks/useLoading";
 import { useLandlordOperations } from "../../../../apis/landlordApi";
 
@@ -91,7 +91,7 @@ function ApplicantDetails() {
     }
   };
 
-  if (loading || !applicantData) return <LoadingSpinner fullScreen />;
+  if (loading || !applicantData) return <BrandedLoader fullScreen />;
 
   const { applicant, applications } = applicantData;
 

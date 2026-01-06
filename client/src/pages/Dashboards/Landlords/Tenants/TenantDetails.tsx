@@ -13,7 +13,7 @@ import { useLandlordOperations } from "../../../../apis/landlordApi";
 import { ErrorState } from "../../../../components/ErrorState";
 import formatAmount, { formatDate } from "../../../../utils/helpers";
 import { Menu, ActionIcon } from "@mantine/core";
-import { LoadingSpinner } from "../../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../../components/LoadingSpinner";
 
 function TenantDetails() {
   const { id } = useParams<{ id: string }>();
@@ -57,7 +57,7 @@ function TenantDetails() {
   };
   const handleBack = () => navigate(-1);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <BrandedLoader />;
   if (error)
     return (
       <ErrorState

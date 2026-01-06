@@ -35,7 +35,7 @@ import {
   IconAlertCircle,
 } from "@tabler/icons-react";
 import EmptyState from "../../../../components/EmptyState";
-import { LoadingSpinner } from "../../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../../components/LoadingSpinner";
 import { useLandlordOperations } from "../../../../apis/landlordApi";
 import { formatDate } from "../../../../utils/helpers";
 import { useLoading } from "../../../../hooks/useLoading";
@@ -297,7 +297,7 @@ function Applicants() {
   return (
     <Box p={isMobile ? "md" : "xl"} bg="#fcfcfd" style={{ minHeight: "100vh" }}>
       {loading ? (
-        <LoadingSpinner label="Loading secure data..." />
+        <BrandedLoader />
       ) : (
         <Stack gap="xl">
           {/* Header Section */}

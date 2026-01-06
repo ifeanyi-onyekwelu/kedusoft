@@ -30,7 +30,7 @@ import EnhancedStatisticsCard from "../../../../components/shared/Dashboard/Enha
 import EnhancedPropertyFilters from "../../../../components/shared/Dashboard/EnhancedPropertyFilters";
 import EnhancedPropertyTable from "../../../../components/shared/Dashboard/EnhancedPropertyTable";
 import PropertyAnalytics from "../../../../components/shared/Dashboard/PropertyAnalytics";
-import { LoadingSpinner } from "../../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../../components/LoadingSpinner";
 import EmptyState from "../../../../components/EmptyState";
 
 const LandlordProperties = () => {
@@ -67,7 +67,7 @@ const LandlordProperties = () => {
   };
 
   if (loading) {
-    return <LoadingSpinner />;
+    return <BrandedLoader />;
   }
 
   if (error) {

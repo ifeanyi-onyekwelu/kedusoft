@@ -6,7 +6,7 @@ import { LandlordStatisticsGrid } from "../../../../components/dashboard/Statist
 import { RecentApplications } from "../../../../components/dashboard/RecentApplications";
 import { RecentActivities } from "../../../../components/dashboard/RecentActivities";
 import { useLoading } from "../../../../hooks/useLoading";
-import { LoadingSpinner } from "../../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../../components/LoadingSpinner";
 import {
   IconHome,
   IconUsers,
@@ -341,7 +341,7 @@ const LandlordDashboard = () => {
     fetchAllData();
   }, [dateRange]); // Re-fetch when date range changes
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <BrandedLoader />;
 
   return (
     <div className="bg-gray-50">

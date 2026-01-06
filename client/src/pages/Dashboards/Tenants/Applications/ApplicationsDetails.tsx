@@ -51,7 +51,7 @@ import { getApplication, deleteApplication } from "../../../../apis/tenantApi";
 import { formatDate } from "../../../../utils/helpers";
 import { useLoading } from "../../../../hooks/useLoading";
 import { ErrorState } from "../../../../components/ErrorState";
-import { LoadingSpinner } from "../../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../../components/LoadingSpinner";
 
 // Withdrawal Confirmation Modal Component
 interface WithdrawModalProps {
@@ -174,7 +174,7 @@ function ApplicationsDetails() {
   }, [applicationId]);
 
   if (loading) {
-    return <LoadingSpinner label="Loading application details..." />;
+    return <BrandedLoader />;
   }
 
   if (error) {

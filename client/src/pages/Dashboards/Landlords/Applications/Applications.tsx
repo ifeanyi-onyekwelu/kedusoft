@@ -36,7 +36,7 @@ import {
   IconShieldCheck,
 } from "@tabler/icons-react";
 import EmptyState from "../../../../components/EmptyState";
-import { LoadingSpinner } from "../../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../../components/LoadingSpinner";
 import ConfirmationModal from "../../../../components/modals/ConfirmationModal";
 import { useLandlordOperations } from "../../../../apis/landlordApi";
 import { formatDate } from "../../../../utils/helpers";
@@ -528,7 +528,7 @@ function Applications() {
           <Box p={isMobile ? "md" : 0}>
             {loading ? (
               <Box py={50}>
-                <LoadingSpinner label="Loading applications..." />
+                <BrandedLoader />
               </Box>
             ) : filteredApplications.length > 0 ? (
               <>

@@ -4,7 +4,7 @@ import { useState, FormEvent } from "react";
 import { useAuthOperations } from "../../apis/authApi";
 import { IconAt, IconLock, IconEye, IconEyeOff } from "@tabler/icons-react";
 import { jwtDecode } from "jwt-decode";
-import { LoadingSpinner } from "../../components/LoadingSpinner";
+import { BrandedLoader } from "../../components/LoadingSpinner";
 import { SocialAuthButtons } from "../../components/SocailAuthButtons";
 import { useLoading } from "../../hooks/useLoading";
 
@@ -108,7 +108,7 @@ function LoginPage() {
   };
 
   if (loading) {
-    return <LoadingSpinner label="Signing you in..." fullScreen />;
+    return <BrandedLoader fullScreen />;
   }
 
   return (

@@ -9,7 +9,7 @@ import {
   IconEye,
   IconEyeOff,
 } from "@tabler/icons-react";
-import { LoadingSpinner } from "../../components/LoadingSpinner";
+import { BrandedLoader } from "../../components/LoadingSpinner";
 import { SocialAuthButtons } from "../../components/SocailAuthButtons";
 import { useLoading } from "../../hooks/useLoading";
 
@@ -101,7 +101,7 @@ function SignupPage() {
   };
 
   if (loading) {
-    return <LoadingSpinner fullScreen label="Creating your account..." />;
+    return <BrandedLoader fullScreen label="Creating your account..." />;
   }
 
   const getRoleLabel = () => {

@@ -29,7 +29,7 @@ import {
   IconCheck,
 } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
-import { LoadingSpinner } from "../../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../../components/LoadingSpinner";
 import EmptyState from "../../../../components/EmptyState";
 
 interface MaintenanceRequest {
@@ -138,7 +138,7 @@ function Maintenance() {
   };
 
   if (loading) {
-    return <LoadingSpinner />;
+    return <BrandedLoader />;
   }
 
   const pendingCount = requests.filter((r) => r.status === "pending").length;

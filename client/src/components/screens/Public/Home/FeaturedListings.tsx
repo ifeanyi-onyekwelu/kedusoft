@@ -3,7 +3,7 @@ import PropertyCard from "../../../shared/public/PropertyCard";
 import { getFeaturedProperties } from "../../../../apis/publicApi";
 import { useState, useEffect } from "react";
 import { useLoading } from "../../../../hooks/useLoading";
-import { LoadingSpinner } from "../../../LoadingSpinner";
+import { BrandedLoader } from "../../../LoadingSpinner";
 import { ErrorState } from "../../../ErrorState";
 import { useNavigate } from "react-router-dom";
 
@@ -36,11 +36,11 @@ const FeaturedListings = () => {
     fetchProperties();
   }, []);
 
-  if (loading) return <LoadingSpinner />;
   if (error)
     return (
       <ErrorState message={error} loading={loading} onRetry={fetchProperties} />
     );
+
   if (properties.length === 0) return null;
 
   return (

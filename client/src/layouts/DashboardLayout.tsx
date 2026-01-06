@@ -5,7 +5,7 @@ import Header from "../components/shared/Dashboard/Navbar";
 import Footer from "../components/shared/Dashboard/Footer";
 import { useDisclosure } from "@mantine/hooks";
 import { useUser } from "../context/UserContext";
-import { LoadingSpinner } from "../components/LoadingSpinner";
+import { BrandedLoader } from "../components/LoadingSpinner";
 
 type LayoutProps = {
   role: "tenant" | "landlord" | "admin";
@@ -18,7 +18,7 @@ const DashboardLayout: React.FC<LayoutProps> = ({ role }) => {
 
   if (!user) {
     return (
-      <LoadingSpinner
+      <BrandedLoader
         loading={!user}
         label="Powering up your dashboard"
         fullScreen

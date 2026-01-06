@@ -9,7 +9,7 @@ import { FaCity, FaHouse } from "react-icons/fa6";
 import { usePublicOperations } from "@/apis/publicApi";
 import { useLoading } from "@/hooks/useLoading";
 import { ErrorState } from "@/components/ErrorState";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { BrandedLoader } from "@/components/LoadingSpinner";
 
 interface City {
   city: string;
@@ -208,8 +208,6 @@ function PropertiesByCities() {
 
         {error ? (
           <ErrorState message={error} onRetry={handleRetry} loading={loading} />
-        ) : loading ? (
-          <LoadingSpinner label="Loading cities" />
         ) : cities.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-600">No cities available</p>

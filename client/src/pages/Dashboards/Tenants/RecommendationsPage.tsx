@@ -3,7 +3,7 @@ import { useTenantOperations } from "../../../apis/tenantApi";
 import PropertyCard from "../../../components/shared/Dashboard/PropertyCard";
 import { useLoading } from "../../../hooks/useLoading";
 import { ErrorState } from "../../../components/ErrorState";
-import { LoadingSpinner } from "../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../components/LoadingSpinner";
 import EmptyState from "../../../components/EmptyState";
 import { Stack, Text, Title, Button, ThemeIcon, Box } from "@mantine/core";
 import {
@@ -86,7 +86,7 @@ export default function RecommendationsPage() {
     fetchRecommendations(1);
   };
 
-  if (loading && !recommendations) return <LoadingSpinner />;
+  if (loading && !recommendations) return <BrandedLoader />;
 
   if (error) {
     return (

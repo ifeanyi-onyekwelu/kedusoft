@@ -10,7 +10,7 @@ import {
   IconCheck,
 } from "@tabler/icons-react";
 import { useLoading } from "../../hooks/useLoading";
-import { LoadingSpinner } from "../../components/LoadingSpinner";
+import { BrandedLoader } from "../../components/LoadingSpinner";
 
 function ResetPassword() {
   const navigate = useNavigate();
@@ -111,7 +111,7 @@ function ResetPassword() {
 
   // Loading state
   if (isTokenValid === null) {
-    return <LoadingSpinner fullScreen label="Verifying reset link..." />;
+    return <BrandedLoader fullScreen label="Verifying reset link..." />;
   }
 
   // Invalid token state
@@ -193,7 +193,7 @@ function ResetPassword() {
   }
 
   if (loading) {
-    return <LoadingSpinner fullScreen label="Resetting password..." />;
+    return <BrandedLoader fullScreen label="Resetting password..." />;
   }
 
   // Reset form

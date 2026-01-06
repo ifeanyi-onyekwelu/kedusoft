@@ -11,7 +11,7 @@ import {
 } from "@tabler/icons-react";
 import EmptyState from "../../../../components/EmptyState";
 import { useLoading } from "../../../../hooks/useLoading";
-import { LoadingSpinner } from "../../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../../components/LoadingSpinner";
 import EnhancedTenantFilters from "../../../../components/shared/Dashboard/EnhancedTenantFilters";
 import EnhancedTenantTable from "../../../../components/shared/Dashboard/EnhancedTenantTable";
 import TenantAnalytics from "../../../../components/shared/Dashboard/TenantAnalytics";
@@ -94,7 +94,7 @@ function Tenants() {
 
   const processedTenants = getProcessedTenants(filters);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <BrandedLoader />;
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">

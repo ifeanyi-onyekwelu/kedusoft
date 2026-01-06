@@ -3,7 +3,7 @@ import { getLikedProperties } from "../../../apis/tenantApi";
 import PropertyCard from "../../../components/shared/Dashboard/PropertyCard";
 import { useLoading } from "../../../hooks/useLoading";
 import { ErrorState } from "../../../components/ErrorState";
-import { LoadingSpinner } from "../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../components/LoadingSpinner";
 import EmptyState from "../../../components/EmptyState";
 import { useNavigate } from "react-router-dom";
 import { IconSearch, IconHeartOff } from "@tabler/icons-react";
@@ -28,7 +28,7 @@ export default function LikedPropertiesPage() {
     fetchLikedProperties();
   }, []);
 
-  if (loading) return <LoadingSpinner label="Fetching your favorites" />;
+  if (loading) return <BrandedLoader />;
 
   if (error) {
     return (

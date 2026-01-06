@@ -41,7 +41,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useLandlordOperations } from "../../../../apis/landlordApi";
 import { useLoading } from "../../../../hooks/useLoading";
-import { LoadingSpinner } from "../../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../../components/LoadingSpinner";
 import formatAmount from "../../../../utils/helpers";
 import { showNotification } from "../../../../utils/helpers";
 import { TextBounds } from "html2canvas/dist/types/css/layout/text";
@@ -137,8 +137,7 @@ export default function ApplicationsDetails() {
     }
   };
 
-  if (loading)
-    return <LoadingSpinner fullScreen label="Preparing Dossier..." />;
+  if (loading) return <BrandedLoader fullScreen label="Preparing Dossier..." />;
   if (!application) return null;
 
   const getStatusColor = (status: string) => {
@@ -463,7 +462,7 @@ export default function ApplicationsDetails() {
                     application.status
                   ) && (
                     <Group gap="xs" justify="center" py="sm">
-                      <LoadingSpinner size={16} />
+                      <BrandedLoader size={16} />
                       <Text size="sm" c="dimmed">
                         Processing screening...
                       </Text>

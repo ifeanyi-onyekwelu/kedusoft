@@ -25,7 +25,7 @@ import {
 } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 import { useLandlordOperations } from "../../../../apis/landlordApi";
-import { LoadingSpinner } from "../../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../../components/LoadingSpinner";
 import EmptyState from "../../../../components/EmptyState";
 
 interface Transaction {
@@ -166,7 +166,7 @@ function Transactions() {
   };
 
   if (loading) {
-    return <LoadingSpinner fullScreen />;
+    return <BrandedLoader fullScreen />;
   }
 
   return (

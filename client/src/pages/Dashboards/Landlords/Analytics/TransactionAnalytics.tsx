@@ -24,7 +24,7 @@ import {
 } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 import { useLandlordOperations } from "../../../../apis/landlordApi";
-import { LoadingSpinner } from "../../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../../components/LoadingSpinner";
 import { notifications } from "@mantine/notifications";
 
 function TransactionAnalytics() {
@@ -126,7 +126,7 @@ function TransactionAnalytics() {
   };
 
   if (loading) {
-    return <LoadingSpinner />;
+    return <BrandedLoader />;
   }
 
   const currentBalance = transactionData?.current?.total_balance || 0;

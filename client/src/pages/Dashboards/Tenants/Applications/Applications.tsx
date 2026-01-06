@@ -41,7 +41,7 @@ import {
 import EmptyState from "../../../../components/EmptyState";
 import { ErrorState } from "../../../../components/ErrorState";
 import { useLoading } from "../../../../hooks/useLoading";
-import { LoadingSpinner } from "../../../../components/LoadingSpinner";
+import { BrandedLoader } from "../../../../components/LoadingSpinner";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDate } from "../../../../utils/helpers";
 
@@ -498,12 +498,7 @@ function Applications() {
   ];
 
   if (loading) {
-    return (
-      <LoadingSpinner
-        label="Fetching applications please wait...."
-        fullScreen
-      />
-    );
+    return <BrandedLoader fullScreen />;
   }
 
   if (error) {
