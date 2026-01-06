@@ -101,7 +101,7 @@ function SignupPage() {
   };
 
   if (loading) {
-    return <BrandedLoader fullScreen label="Creating your account..." />;
+    return <BrandedLoader fullScreen />;
   }
 
   const getRoleLabel = () => {

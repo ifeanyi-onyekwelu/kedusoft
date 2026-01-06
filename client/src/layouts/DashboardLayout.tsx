@@ -17,13 +17,7 @@ const DashboardLayout: React.FC<LayoutProps> = ({ role }) => {
   const { user } = useUser();
 
   if (!user) {
-    return (
-      <BrandedLoader
-        loading={!user}
-        label="Powering up your dashboard"
-        fullScreen
-      />
-    );
+    return <BrandedLoader fullScreen />;
   }
 
   return (

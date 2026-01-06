@@ -137,7 +137,7 @@ export default function ApplicationsDetails() {
     }
   };
 
-  if (loading) return <BrandedLoader fullScreen label="Preparing Dossier..." />;
+  if (loading) return <BrandedLoader fullScreen />;
   if (!application) return null;
 
   const getStatusColor = (status: string) => {
@@ -462,7 +462,7 @@ export default function ApplicationsDetails() {
                     application.status
                   ) && (
                     <Group gap="xs" justify="center" py="sm">
-                      <BrandedLoader size={16} />
+                      <BrandedLoader />
                       <Text size="sm" c="dimmed">
                         Processing screening...
                       </Text>

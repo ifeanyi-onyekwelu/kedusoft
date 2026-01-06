@@ -95,7 +95,7 @@ function VerifyEmail() {
   };
 
   if (loading) {
-    return <BrandedLoader fullScreen label="Verifying your email..." />;
+    return <BrandedLoader fullScreen />;
   }
 
   return (

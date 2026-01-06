@@ -111,7 +111,7 @@ function ResetPassword() {
 
   // Loading state
   if (isTokenValid === null) {
-    return <BrandedLoader fullScreen label="Verifying reset link..." />;
+    return <BrandedLoader fullScreen />;
   }
 
   // Invalid token state
@@ -193,7 +193,7 @@ function ResetPassword() {
   }
 
   if (loading) {
-    return <BrandedLoader fullScreen label="Resetting password..." />;
+    return <BrandedLoader fullScreen />;
   }
 
   // Reset form

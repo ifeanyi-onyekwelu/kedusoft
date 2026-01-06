@@ -41,7 +41,7 @@ function ForgotPassword() {
   };
 
   if (loading) {
-    return <BrandedLoader fullScreen label="Sending reset link..." />;
+    return <BrandedLoader fullScreen />;
   }
 
   return (

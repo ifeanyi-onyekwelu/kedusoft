@@ -110,9 +110,7 @@ function PropertyViewsAnalytics() {
   };
 
   if (loading) {
-    return (
-      <BrandedLoader fullScreen label="Fetching property view analytics" />
-    );
+    return <BrandedLoader fullScreen />;
   }
 
   const totalViews = viewsData?.total_views || 0;
