@@ -7,7 +7,7 @@ import { useTenantOperations } from "../../apis/tenantApi";
 import useAuth from "../../hooks/useAuth";
 import { useLoading } from "../../hooks/useLoading";
 import { ErrorState } from "../../components/ErrorState";
-import { LoadingSpinner } from "../../components/LoadingSpinner";
+import { BrandedLoader } from "@/components/LoadingSpinner";
 import ShareListingModal from "../../components/screens/Public/ShareListingModal";
 import { ScheduleTourModal } from "../../components/screens/Public/ScheduleTourModal";
 import { ApplyModal } from "../../components/screens/Public/ApplyModal";
@@ -87,8 +87,7 @@ function PropertyDetailsComponent() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  if (loading)
-    return <LoadingSpinner fullScreen label="Fetching property details" />;
+  if (loading) return <BrandedLoader fullScreen />;
   if (error)
     return (
       <ErrorState onRetry={fetchProperty} message={error} loading={loading} />

@@ -1,12 +1,13 @@
 import { motion } from "framer-motion";
 import { Carousel } from "@mantine/carousel";
-import { Text, Loader } from "@mantine/core";
+import { Text, Loader, Skeleton } from "@mantine/core";
 import { useState, useEffect, useCallback } from "react";
 import PropertyCard from "../../../shared/public/PropertyCard";
 import { useUserState } from "../../../../hooks/useUserState";
 import { usePublicOperations } from "../../../../apis/publicApi";
 import { useLoading } from "../../../../hooks/useLoading";
 import "@mantine/carousel/styles.css";
+import { PropertyCardSkeleton } from "@/components/common/PropertyCardSkeleton";
 
 function Popular() {
   const { userState, loading: userStateLoading } = useUserState();
@@ -93,10 +94,18 @@ function Popular() {
   if (userStateLoading || loading) {
     return (
       <div className="relative h-fit bg-white py-10">
-        <div className="max-w-window mx-auto p-8 flex justify-center items-center min-h-96">
-          <div className="text-center">
-            <Loader size="lg" className="mb-4" />
-            <Text>Loading popular properties near you...</Text>
+        <div className="max-w-window mx-auto p-8">
+          {/* Header Skeleton */}
+          <div className="space-y-3 mb-14">
+            <Skeleton height={35} width={300} />
+            <Skeleton height={20} width={200} />
+          </div>
+
+          {/* Skeletons Grid (Mimicking 3 columns on desktop) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <PropertyCardSkeleton />
+            <PropertyCardSkeleton />
+            <PropertyCardSkeleton />
           </div>
         </div>
       </div>
