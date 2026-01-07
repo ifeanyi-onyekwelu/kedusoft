@@ -1094,19 +1094,14 @@ def delete_recommendation(recommendation_id):
 @role_required("tenant")
 def get_recommended_properties():
     """
-    Get property recommendations based on user's preferences using advanced algorithm
+    Get property recommendations based on user's preferences
     """
     from sqlalchemy import and_, or_, func, case
-    from ..models import Category
 
     user_id, _, _ = get_logged_in_user()
 
-    # Get user's latest recommendation preferences
-    user_recommendation = (
-        g.session.query(Recommendation)
-        .filter(Recommendation.user_id == user_id)
-        .order_by(Recommendation.created_at.desc())
-        .first()
+    user_recommendation = get_item_by_filter(
+        g.session, Recommendation, {"user_id": user_id}
     )
 
     if not user_recommendation:
@@ -1114,38 +1109,54 @@ def get_recommended_properties():
             "No preferences found. Please complete onboarding first.", 404
         )
 
-    # Get pagination parameters
+    # Pagination
     page = int(request.args.get("page", 1))
     per_page = min(int(request.args.get("per_page", 20)), 50)
     offset = (page - 1) * per_page
 
-    # Base query for available properties
-    base_query = g.session.query(Property).filter(
-        Property.is_available == True,
-        Property.deleted == False,
-        Property.is_verified == True,
-        Property.flagged == False,
+    # Base query (ONLY availability filters)
+    query = g.session.query(Property).filter(
+        Property.is_available.is_(True),
+        Property.deleted.is_(False),
+        Property.flagged.is_(False),
     )
 
-    # Build scoring algorithm with weighted factors
+    # --------------------
+    # SCORING LOGIC
+    # --------------------
     score_conditions = []
 
-    # 1. Budget Match (40% weight) - Most Important
+    # 1. Budget (40%)
     budget_score = (
         case(
-            (Property.rent_amount >= user_recommendation.min_budget, 100),
-            (Property.rent_amount <= user_recommendation.max_budget, 100),
-            (Property.rent_amount > user_recommendation.max_budget, 70),
-            (Property.rent_amount <= user_recommendation.max_budget * 1.2, 70),
-            (Property.rent_amount < user_recommendation.min_budget, 60),
-            (Property.rent_amount >= user_recommendation.min_budget * 0.8, 60),
+            (
+                and_(
+                    Property.rent_amount >= user_recommendation.min_budget,
+                    Property.rent_amount <= user_recommendation.max_budget,
+                ),
+                100,
+            ),
+            (
+                and_(
+                    Property.rent_amount > user_recommendation.max_budget,
+                    Property.rent_amount <= user_recommendation.max_budget * 1.2,
+                ),
+                70,
+            ),
+            (
+                and_(
+                    Property.rent_amount < user_recommendation.min_budget,
+                    Property.rent_amount >= user_recommendation.min_budget * 0.8,
+                ),
+                60,
+            ),
             else_=0,
         )
         * 0.4
     )
     score_conditions.append(budget_score)
 
-    # 2. Location Match (25% weight)
+    # 2. Location (25%)
     if user_recommendation.preferred_locations:
         location_conditions = []
         for location in user_recommendation.preferred_locations:
@@ -1158,10 +1169,16 @@ def get_recommended_properties():
                 ]
             )
 
-        location_score = case((or_(*location_conditions), 100), else_=0) * 0.25
+        location_score = (
+            case(
+                (or_(*location_conditions), 100),
+                else_=0,
+            )
+            * 0.25
+        )
         score_conditions.append(location_score)
 
-    # 3. Bedrooms Match (15% weight)
+    # 3. Bedrooms (15%)
     if user_recommendation.preferred_bedrooms:
         bedroom_score = (
             case(
@@ -1182,7 +1199,7 @@ def get_recommended_properties():
         )
         score_conditions.append(bedroom_score)
 
-    # 4. Bathrooms Match (10% weight)
+    # 4. Bathrooms (10%)
     if user_recommendation.preferred_bathrooms:
         bathroom_score = (
             case(
@@ -1201,11 +1218,10 @@ def get_recommended_properties():
             )
             * 0.1
         )
-
         score_conditions.append(bathroom_score)
 
-    # 5. Furnished Preference (5% weight)
-    if user_recommendation.preferred_furnished:
+    # 5. Furnished (5%)
+    if user_recommendation.preferred_furnished is not None:
         furnished_score = (
             case(
                 (
@@ -1218,62 +1234,40 @@ def get_recommended_properties():
         )
         score_conditions.append(furnished_score)
 
-    # 6. Amenities Match (5% weight)
+    # 6. Amenities (5%)
     if user_recommendation.preferred_amenities:
-        # This is a simplified amenities check - can be enhanced with JSON operations
         amenities_score = (
             case(
-                (
-                    Property.amenities.isnot(None),
-                    50,
-                ),  # Basic score if property has amenities
+                (Property.amenities.isnot(None), 50),
                 else_=0,
             )
             * 0.05
         )
         score_conditions.append(amenities_score)
 
-    # Calculate total score
-    total_score = sum(score_conditions) if score_conditions else func.random() * 100
+    # Final score
+    total_score = sum(score_conditions)
 
-    # Apply filters and sorting
-    query = base_query.filter(
-        # Budget filter (allow some flexibility)
-        or_(
-            and_(
-                Property.rent_amount >= user_recommendation.min_budget * 0.8,
-                Property.rent_amount <= user_recommendation.max_budget * 1.2,
-            ),
-            Property.is_featured == True,  # Always include featured properties
+    # --------------------
+    # DEBUG (SAFE)
+    # --------------------
+    debug_results = query.add_column(total_score.label("score")).limit(5).all()
+
+    for prop, score in debug_results:
+        logging.info(
+            f"[DEBUG] Property {prop.id} | rent={prop.rent_amount} | score={float(score)}"
         )
-    )
 
-    # Add location filter if specified
-    if user_recommendation.preferred_locations:
-        location_filters = []
-        for location in user_recommendation.preferred_locations:
-            location_filters.extend(
-                [
-                    func.lower(Property.city).contains(func.lower(location)),
-                    func.lower(Property.area).contains(func.lower(location)),
-                    func.lower(Property.state).contains(func.lower(location)),
-                ]
-            )
-
-        query = query.filter(or_(*location_filters))
-
-    # Get total count for pagination
+    # --------------------
+    # ORDER + PAGINATION
+    # --------------------
     total_count = query.count()
 
-    # Apply scoring, ordering, and pagination
     properties = (
         query.add_column(total_score.label("recommendation_score"))
         .order_by(
-            # Primary sort by score (descending)
             total_score.desc(),
-            # Secondary sort by featured status
             Property.is_featured.desc(),
-            # Tertiary sort by creation date (newest first)
             Property.created_at.desc(),
         )
         .offset(offset)
@@ -1281,26 +1275,15 @@ def get_recommended_properties():
         .all()
     )
 
-    # Format response with score
+    # Response formatting
     recommended_properties = []
-    for property_data, score in properties:
-        property_dict = serialize(property_data)
-        property_dict["recommendation_score"] = round(float(score), 2)
-        property_dict["match_reason"] = _generate_match_reason(
-            property_data, user_recommendation, score
+    for property_obj, score in properties:
+        data = serialize(property_obj)
+        data["recommendation_score"] = round(float(score), 2)
+        data["match_reason"] = _generate_match_reason(
+            property_obj, user_recommendation, score
         )
-        recommended_properties.append(property_dict)
-
-    # Log recommendation activity
-    if recommended_properties:
-        ActivityLogger.log_tenant_activity(
-            g.session,
-            user_id,
-            "recommendations_viewed",
-            f"Viewed {len(recommended_properties)} recommended properties",
-            "recommendation",
-            user_recommendation.recommendation_id,
-        )
+        recommended_properties.append(data)
 
     return response(
         "Property recommendations retrieved successfully",
@@ -1311,13 +1294,6 @@ def get_recommended_properties():
                 "per_page": per_page,
                 "total": total_count,
                 "pages": (total_count + per_page - 1) // per_page,
-            },
-            "preferences_used": {
-                "budget_range": f"₦{user_recommendation.min_budget:,.0f} - ₦{user_recommendation.max_budget:,.0f}",
-                "locations": user_recommendation.preferred_locations,
-                "bedrooms": user_recommendation.preferred_bedrooms,
-                "bathrooms": user_recommendation.preferred_bathrooms,
-                "furnished": user_recommendation.preferred_furnished,
             },
         },
     )
