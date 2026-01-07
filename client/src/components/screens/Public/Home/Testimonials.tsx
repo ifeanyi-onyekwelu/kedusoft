@@ -72,7 +72,6 @@ const Testimonials = () => {
             slideSize={{ base: "100%", sm: "50%" }}
             slideGap="xl"
             height="100%"
-            withIndicators
             styles={{
               indicator: {
                 backgroundColor: "#5f3dc4",

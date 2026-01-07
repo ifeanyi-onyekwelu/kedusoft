@@ -34,7 +34,7 @@ export default function WelcomePage() {
                 className="font-syne text-primary uppercase tracking-[0.2em] font-bold"
                 size="xl"
               >
-                Letsten
+                KeduSoft
               </Text>
             </Stack>
           </motion.div>

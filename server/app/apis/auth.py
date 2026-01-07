@@ -455,14 +455,18 @@ def login_page():
             except Exception as e:
                 logger.error(f"Failed to reset login attempts for {email}: {str(e)}")
 
+        create_info_based_on_role(g.session, user.id, user.role)
+
         # Create response
         user_data = dict_except(user.to_dict(), "password")
+
         # Determine onboarding status based on user role
-        is_onboarded = (
-            user.landlord_info and user.landlord_info.is_onboarded
-            if user.role == "landlord"
-            else user.tenant_info and user.tenant_info.is_onboarded
-        )
+        if user.role == "landlord":
+            is_onboarded = bool(user.landlord_info and user.landlord_info.is_onboarded)
+        else:
+            is_onboarded = bool(user.tenant_info and user.tenant_info.is_onboarded)
+
+        logging.info(f"Is onboarded: { is_onboarded}")
         resp = make_response(
             response(
                 "Login successful",
