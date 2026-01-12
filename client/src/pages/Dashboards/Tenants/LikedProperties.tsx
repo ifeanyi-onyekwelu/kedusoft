@@ -40,42 +40,46 @@ export default function LikedPropertiesPage() {
     );
   }
 
+  const empty = (
+    <EmptyState>
+      <Stack align="center" gap="lg" className="text-center">
+        {/* Modern Icon Presentation */}
+        <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mb-2">
+          <IconHeartOff size={40} stroke={1.5} className="text-slate-400" />
+        </div>
+
+        <div className="max-w-md space-y-2">
+          <Title
+            order={2}
+            className="text-2xl font-bold text-gray-900 tracking-tight"
+          >
+            No liked properties yet
+          </Title>
+          <Text size="sm" className="text-gray-500 leading-relaxed">
+            When you find a property you love, tap the heart icon to save it
+            here. It's the easiest way to keep track of your top choices.
+          </Text>
+        </div>
+
+        <Button
+          onClick={() => navigate("/properties/search")}
+          variant="filled"
+          color="dark"
+          size="md"
+          radius="md"
+          leftSection={<IconSearch size={18} />}
+          className="bg-gray-900 hover:bg-black px-8 mt-2 transition-transform active:scale-95"
+        >
+          Browse Properties
+        </Button>
+      </Stack>
+    </EmptyState>
+  );
+
   return (
     <div className="px-6 space-y-10 py-5">
       {likedProperties.length === 0 ? (
-        <EmptyState>
-          <Stack align="center" gap="lg" className="text-center">
-            {/* Modern Icon Presentation */}
-            <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mb-2">
-              <IconHeartOff size={40} stroke={1.5} className="text-slate-400" />
-            </div>
-
-            <div className="max-w-md space-y-2">
-              <Title
-                order={2}
-                className="text-2xl font-bold text-gray-900 tracking-tight"
-              >
-                No liked properties yet
-              </Title>
-              <Text size="sm" className="text-gray-500 leading-relaxed">
-                When you find a property you love, tap the heart icon to save it
-                here. It's the easiest way to keep track of your top choices.
-              </Text>
-            </div>
-
-            <Button
-              onClick={() => navigate("/properties/search")}
-              variant="filled"
-              color="dark"
-              size="md"
-              radius="md"
-              leftSection={<IconSearch size={18} />}
-              className="bg-gray-900 hover:bg-black px-8 mt-2 transition-transform active:scale-95"
-            >
-              Browse Properties
-            </Button>
-          </Stack>
-        </EmptyState>
+        empty
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {likedProperties &&

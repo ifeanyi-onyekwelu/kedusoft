@@ -117,7 +117,7 @@ function Header() {
   // MVP Navigation Links
   const navLinks = [
     { label: "Sellers", path: "/listings?type=sale" },
-    { label: "Listings", path: "/listings?type=rent" },
+    { label: "Rentals", path: "/listings?type=rent" },
     { label: "Shortlet", path: "/listings?type=shortlet" },
     { label: "Services", path: "/services" },
     { label: "How It Works", path: "/how-it-works" },

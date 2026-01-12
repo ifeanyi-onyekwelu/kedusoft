@@ -202,31 +202,6 @@ export default function RecommendationsPage() {
 
               {/* Property Card */}
               <PropertyCard propertyData={property} />
-
-              {/* Match Reasons */}
-              {Array.isArray(property.match_reason) &&
-                property.match_reason.length > 0 && (
-                  <div className="px-4 pb-4 pt-2">
-                    <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
-                      <div className="text-xs font-semibold text-blue-700 mb-2">
-                        Why this matches
-                      </div>
-
-                      <div className="flex flex-wrap gap-2">
-                        {property.match_reason
-                          .slice(0, 3)
-                          .map((reason, index) => (
-                            <span
-                              key={index}
-                              className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-md"
-                            >
-                              {reason}
-                            </span>
-                          ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
             </div>
           ))}
         </div>

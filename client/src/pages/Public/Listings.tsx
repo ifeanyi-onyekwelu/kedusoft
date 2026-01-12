@@ -176,13 +176,8 @@ export const PropertyMapPage: React.FC<PropertyMapPageProps> = () => {
     );
   }
 
-  /**
-   * MAIN VIEW
-   * Renders the PropertyMapView component with initial data
-   * Takes full screen height with proper overflow handling
-   */
   return (
-    <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
+    <div className="h-screen bg-gray-50 flex flex-col overflow-hidden no-scroll-bar">
       {/* Map View - Takes remaining height */}
       <div className="flex-1 overflow-hidden">
         {/* PropertyMapView Component with all necessary props */}

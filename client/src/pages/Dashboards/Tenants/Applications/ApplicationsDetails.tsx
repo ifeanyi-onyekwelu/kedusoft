@@ -21,14 +21,18 @@ import {
   IconBath,
   IconRuler,
   IconTrash,
+  IconClock,
+  IconInfoCircle,
+  IconChevronRight,
+  IconHomeHeart,
+  IconFileDescription,
+  IconNotes,
 } from "@tabler/icons-react";
 import {
   Badge,
   Card,
   Group,
   Text,
-  Timeline,
-  ThemeIcon,
   Stack,
   Grid,
   Alert,
@@ -44,6 +48,9 @@ import {
   Center,
   Modal,
   Box,
+  Container,
+  rem,
+  Progress,
 } from "@mantine/core";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
@@ -75,10 +82,11 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
     title="Withdraw Application"
     centered
     size="md"
+    radius="md"
   >
-    <Box className="space-y-4">
+    <Stack gap="lg">
       <Alert
-        icon={<IconAlertCircle size={16} />}
+        icon={<IconAlertCircle size={20} />}
         title="Are you sure?"
         color="red"
         variant="light"
@@ -88,18 +96,24 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
       </Alert>
 
       {application && (
-        <div className="bg-gray-50 p-3 rounded-lg">
-          <Text size="sm" fw={500}>
-            {application.property?.name}
-          </Text>
-          <Text size="sm" c="dimmed">
+        <Paper withBorder p="md" style={{ borderLeft: `4px solid #fb7185` }}>
+          <Group gap="xs" mb={4}>
+            <IconHomeHeart size={18} color="#fb7185" />
+            <Text size="sm" fw={600}>
+              {application.property?.name}
+            </Text>
+          </Group>
+          <Text size="sm" c="dimmed" mb={4}>
             {application.property?.address}
           </Text>
-          <Text size="xs" c="dimmed" mt={4}>
-            Applied:{" "}
-            {formatDate(application.date_applied || application.created_at)}
-          </Text>
-        </div>
+          <Group gap="xs">
+            <IconCalendar size={14} color="gray" />
+            <Text size="xs" c="dimmed">
+              Applied:{" "}
+              {formatDate(application.date_applied || application.created_at)}
+            </Text>
+          </Group>
+        </Paper>
       )}
 
       <Text size="sm" c="dimmed">
@@ -107,22 +121,464 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
         you won't be able to recover it.
       </Text>
 
-      <Group justify="flex-end" mt="xl">
-        <Button variant="outline" onClick={onClose}>
+      <Group justify="flex-end" mt="md">
+        <Button variant="outline" onClick={onClose} radius="sm">
           Cancel
         </Button>
         <Button
           color="red"
           onClick={onConfirm}
           loading={loading}
-          leftSection={<IconTrash size={16} />}
+          leftSection={<IconTrash size={18} />}
+          radius="sm"
         >
           Withdraw Application
         </Button>
       </Group>
-    </Box>
+    </Stack>
   </Modal>
 );
+
+// Status Timeline Component
+const StatusTimeline = ({ application }: { application: any }) => {
+  const getTimelineData = () => {
+    const baseTimeline = [
+      {
+        title: "Application Submitted",
+        description: `Applied on ${formatDate(
+          application.date_applied || application.created_at
+        )}`,
+        icon: IconClipboardCheck,
+        color: "#fb7185",
+        completed: true,
+      },
+      {
+        title: "Application Viewed",
+        description: application.viewed_at
+          ? `Viewed on ${formatDate(application.viewed_at)}`
+          : "Awaiting landlord review",
+        icon: IconEye,
+        color: application.viewed_at ? "#10b981" : "gray",
+        completed: !!application.viewed_at,
+      },
+      {
+        title: "Under Review",
+        description: "Landlord is reviewing your application",
+        icon: IconProgress,
+        color: ["under-review", "in-progress", "accepted", "rejected"].includes(
+          application.status
+        )
+          ? "#f59e0b"
+          : "gray",
+        completed: [
+          "under-review",
+          "in-progress",
+          "accepted",
+          "rejected",
+        ].includes(application.status),
+      },
+      {
+        title: "Final Decision",
+        description:
+          application.status === "accepted" || application.status === "approved"
+            ? "Congratulations! Application approved"
+            : application.status === "rejected"
+            ? "Application was not approved"
+            : "Awaiting final decision",
+        icon:
+          application.status === "accepted" || application.status === "approved"
+            ? IconCheck
+            : application.status === "rejected"
+            ? IconX
+            : IconProgress,
+        color:
+          application.status === "accepted" || application.status === "approved"
+            ? "#10b981"
+            : application.status === "rejected"
+            ? "#ef4444"
+            : "gray",
+        completed: ["accepted", "approved", "rejected"].includes(
+          application.status
+        ),
+      },
+    ];
+
+    return baseTimeline;
+  };
+
+  const timelineData = getTimelineData();
+  const completedCount = timelineData.filter((item) => item.completed).length;
+  const totalSteps = timelineData.length;
+
+  return (
+    <Stack gap="md">
+      <Group justify="space-between" mb="sm">
+        <Text fw={600}>Application Progress</Text>
+        <Badge color="blue" variant="light">
+          {completedCount} of {totalSteps} steps
+        </Badge>
+      </Group>
+
+      <Progress.Root size={24}>
+        <Progress.Section
+          value={(completedCount / totalSteps) * 100}
+          color="#fb7185"
+        >
+          <Progress.Label>
+            {Math.round((completedCount / totalSteps) * 100)}%
+          </Progress.Label>
+        </Progress.Section>
+      </Progress.Root>
+
+      <Stack gap="lg" mt="md">
+        {timelineData.map((item, index) => (
+          <Group
+            key={index}
+            gap="md"
+            wrap="nowrap"
+            style={{ position: "relative" }}
+          >
+            <div style={{ position: "relative", flexShrink: 0 }}>
+              <Center
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: "50%",
+                  backgroundColor: item.completed ? item.color : "#f8f9fa",
+                  border: `2px solid ${
+                    item.completed ? item.color : "#e9ecef"
+                  }`,
+                  color: item.completed ? "white" : "#adb5bd",
+                  zIndex: 2,
+                  position: "relative",
+                }}
+              >
+                {React.createElement(item.icon, { size: 20 })}
+              </Center>
+              {index < timelineData.length - 1 && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 40,
+                    left: 19,
+                    width: 2,
+                    height: 24,
+                    backgroundColor: item.completed ? item.color : "#e9ecef",
+                    zIndex: 1,
+                  }}
+                />
+              )}
+            </div>
+            <div style={{ flex: 1 }}>
+              <Text fw={600} size="sm" mb={2}>
+                {item.title}
+              </Text>
+              <Text size="sm" c="dimmed">
+                {item.description}
+              </Text>
+            </div>
+          </Group>
+        ))}
+      </Stack>
+    </Stack>
+  );
+};
+
+// Property Details Component
+const PropertyDetailsCard = ({ application }: { application: any }) => (
+  <Card withBorder padding="xl" radius="md">
+    <Stack gap="lg">
+      <Group justify="space-between">
+        <div>
+          <Text size="lg" fw={700} mb={4}>
+            Property Details
+          </Text>
+          <Text size="sm" c="dimmed">
+            Your selected rental property
+          </Text>
+        </div>
+        <ActionIcon
+          component={Link}
+          to={`/listings/${application.property?.id}`}
+          variant="subtle"
+          size="lg"
+          color="blue"
+          radius="md"
+        >
+          <IconEye size={22} />
+        </ActionIcon>
+      </Group>
+
+      <Card.Section>
+        {application?.property?.cover_image ? (
+          <Image
+            src={application.property.cover_image}
+            alt={application.property.name}
+            height={220}
+            style={{ objectFit: "cover" }}
+          />
+        ) : (
+          <Center
+            style={{
+              height: 220,
+              backgroundColor: "#f8f9fa",
+              display: "flex",
+              flexDirection: "column",
+              gap: "md",
+            }}
+          >
+            <IconHome size={64} color="#d1d5db" />
+            <Text c="dimmed" size="sm">
+              No property image available
+            </Text>
+          </Center>
+        )}
+      </Card.Section>
+
+      <Stack gap="md">
+        <div>
+          <Text size="xl" fw={700} mb={2}>
+            {application.property?.name}
+          </Text>
+          <Group gap="xs">
+            <IconMapPin size={18} color="#6b7280" />
+            <Text size="sm" c="dimmed">
+              {application.property?.address}
+            </Text>
+          </Group>
+        </div>
+
+        <Paper withBorder p="md" radius="sm">
+          <SimpleGrid cols={3} spacing="md">
+            <div style={{ textAlign: "center" }}>
+              <Group justify="center" gap="xs" mb={2}>
+                <IconBed size={20} color="#3b82f6" />
+                <Text size="xl" fw={700}>
+                  {application.property?.bedrooms || "-"}
+                </Text>
+              </Group>
+              <Text size="xs" c="dimmed">
+                Bedrooms
+              </Text>
+            </div>
+
+            <div style={{ textAlign: "center" }}>
+              <Group justify="center" gap="xs" mb={2}>
+                <IconBath size={20} color="#10b981" />
+                <Text size="xl" fw={700}>
+                  {application.property?.bathrooms || "-"}
+                </Text>
+              </Group>
+              <Text size="xs" c="dimmed">
+                Bathrooms
+              </Text>
+            </div>
+
+            <div style={{ textAlign: "center" }}>
+              <Group justify="center" gap="xs" mb={2}>
+                <IconRuler size={20} color="#f59e0b" />
+                <Text size="xl" fw={700}>
+                  {application.property?.size_sqft ||
+                  application.property?.square_feet
+                    ? `${
+                        application.property.size_sqft ||
+                        application.property.square_feet
+                      }`
+                    : "-"}
+                </Text>
+              </Group>
+              <Text size="xs" c="dimmed">
+                Sq ft
+              </Text>
+            </div>
+          </SimpleGrid>
+        </Paper>
+
+        {application.property?.rent_amount && (
+          <Paper
+            withBorder
+            p="lg"
+            radius="sm"
+            style={{ backgroundColor: "#fef2f2", borderColor: "#fecaca" }}
+          >
+            <Group justify="space-between" align="center">
+              <div>
+                <Text size="sm" c="#dc2626" fw={600} mb={4}>
+                  Monthly Rent
+                </Text>
+                <Text size="28px" fw={800} c="#dc2626">
+                  ${application.property.rent_amount.toLocaleString()}
+                  <Text span size="sm" c="#dc2626" ml={2}>
+                    /month
+                  </Text>
+                </Text>
+              </div>
+              {application.property?.payment_structure && (
+                <Badge
+                  color="red"
+                  variant="light"
+                  size="lg"
+                  radius="sm"
+                  style={{ fontWeight: 600 }}
+                >
+                  {application.property.payment_structure}
+                </Badge>
+              )}
+            </Group>
+          </Paper>
+        )}
+      </Stack>
+    </Stack>
+  </Card>
+);
+
+// Application Info Card
+const ApplicationInfoCard = ({ application }: { application: any }) => {
+  const getStatusBadge = (status: string) => {
+    const statusConfig: Record<string, { color: string; text: string }> = {
+      pending: { color: "orange", text: "Pending Review" },
+      "in-progress": { color: "blue", text: "Under Review" },
+      "under-review": { color: "blue", text: "Under Review" },
+      accepted: { color: "green", text: "Approved" },
+      approved: { color: "green", text: "Approved" },
+      rejected: { color: "red", text: "Rejected" },
+      screened: { color: "indigo", text: "Screened" },
+      unscreened: { color: "violet", text: "Screening Required" },
+      viewed: { color: "gray", text: "Viewed" },
+    };
+
+    const config = statusConfig[status?.toLowerCase()] || {
+      color: "gray",
+      text: status,
+    };
+
+    return (
+      <Badge
+        color={config.color}
+        size="lg"
+        radius="sm"
+        style={{ fontWeight: 600 }}
+      >
+        {config.text}
+      </Badge>
+    );
+  };
+
+  return (
+    <Card withBorder padding="lg" radius="md">
+      <Stack gap="lg">
+        <Group justify="space-between" align="center">
+          <Text size="lg" fw={700}>
+            Application Information
+          </Text>
+          {getStatusBadge(application.status)}
+        </Group>
+
+        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
+          <Stack gap="md">
+            <div>
+              <Group gap="xs" mb={4}>
+                <IconClipboardCheck size={18} color="#6b7280" />
+                <Text size="sm" fw={600}>
+                  Application ID
+                </Text>
+              </Group>
+              <Text size="sm" c="dimmed">
+                {application?.application_id}
+              </Text>
+            </div>
+
+            <div>
+              <Group gap="xs" mb={4}>
+                <IconCalendar size={18} color="#6b7280" />
+                <Text size="sm" fw={600}>
+                  Date Applied
+                </Text>
+              </Group>
+              <Text size="sm" c="dimmed">
+                {formatDate(application.date_applied || application.created_at)}
+              </Text>
+            </div>
+
+            <div>
+              <Group gap="xs" mb={4}>
+                <IconClock size={18} color="#6b7280" />
+                <Text size="sm" fw={600}>
+                  Last Updated
+                </Text>
+              </Group>
+              <Text size="sm" c="dimmed">
+                {formatDate(application.updated_at)}
+              </Text>
+            </div>
+          </Stack>
+
+          <Stack gap="md">
+            {application.viewed_at && (
+              <div>
+                <Group gap="xs" mb={4}>
+                  <IconEye size={18} color="#6b7280" />
+                  <Text size="sm" fw={600}>
+                    Date Viewed
+                  </Text>
+                </Group>
+                <Text size="sm" c="dimmed">
+                  {formatDate(application.viewed_at)}
+                </Text>
+              </div>
+            )}
+
+            <div>
+              <Group gap="xs" mb={4}>
+                <IconHome size={18} color="#6b7280" />
+                <Text size="sm" fw={600}>
+                  Property Type
+                </Text>
+              </Group>
+              <Text size="sm" c="dimmed">
+                {application?.category?.name || "Not specified"}
+              </Text>
+            </div>
+
+            {application.property?.furnished && (
+              <div>
+                <Group gap="xs" mb={4}>
+                  <IconBed size={18} color="#6b7280" />
+                  <Text size="sm" fw={600}>
+                    Furnishing
+                  </Text>
+                </Group>
+                <Text size="sm" c="dimmed">
+                  {application.property.furnished.charAt(0).toUpperCase() +
+                    application.property.furnished.slice(1)}
+                </Text>
+              </div>
+            )}
+          </Stack>
+        </SimpleGrid>
+
+        {application.message && (
+          <Paper
+            withBorder
+            p="md"
+            radius="sm"
+            style={{ backgroundColor: "#f0f9ff" }}
+          >
+            <Group gap="xs" mb={8}>
+              <IconNotes size={18} color="#0ea5e9" />
+              <Text size="sm" fw={600} c="#0ea5e9">
+                Your Message to Landlord
+              </Text>
+            </Group>
+            <Text size="sm" style={{ lineHeight: 1.6 }}>
+              {application.message}
+            </Text>
+          </Paper>
+        )}
+      </Stack>
+    </Card>
+  );
+};
 
 function ApplicationsDetails() {
   const params = useParams();
@@ -139,7 +595,6 @@ function ApplicationsDetails() {
   const fetchApplicationDetails = async () => {
     try {
       const response = await withLoading(getApplication(applicationId!));
-      console.log("Application Details Response:", response);
       setApplication(response.application || response);
     } catch (error: any) {
       setError(error.message || "Failed to fetch application details");
@@ -152,11 +607,6 @@ function ApplicationsDetails() {
     setWithdrawLoading(true);
     try {
       await withLoading(deleteApplication(applicationId));
-
-      // Show success message (you can add a toast notification here)
-      console.log("Application withdrawn successfully");
-
-      // Redirect back to applications list
       navigate("/tenants/applications");
     } catch (error: any) {
       console.error("Failed to withdraw application:", error);
@@ -197,334 +647,8 @@ function ApplicationsDetails() {
     );
   }
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig: Record<string, { color: string; text: string }> = {
-      pending: { color: "orange", text: "Pending Review" },
-      "in-progress": { color: "blue", text: "Under Review" },
-      "under-review": { color: "blue", text: "Under Review" },
-      accepted: { color: "green", text: "Approved" },
-      approved: { color: "green", text: "Approved" },
-      rejected: { color: "red", text: "Rejected" },
-      screened: { color: "indigo", text: "Screened" },
-      unscreened: { color: "violet", text: "Screening Required" },
-      viewed: { color: "gray", text: "Viewed" },
-    };
-
-    const config = statusConfig[status?.toLowerCase()] || {
-      color: "gray",
-      text: status,
-    };
-
-    return (
-      <Badge color={config.color} variant="light" size="lg">
-        {config.text}
-      </Badge>
-    );
-  };
-
-  const getTimelineData = () => {
-    const baseTimeline = [
-      {
-        title: "Application Submitted",
-        description: `Applied on ${formatDate(
-          application.date_applied || application.created_at
-        )}`,
-        icon: IconClipboardCheck,
-        color: "#0ea5e9",
-        completed: true,
-      },
-      {
-        title: "Application Viewed",
-        description: application.viewed_at
-          ? `Viewed on ${formatDate(application.viewed_at)}`
-          : "Waiting for landlord to view",
-        icon: IconEye,
-        color: application.viewed_at ? "#0ea5e9" : "gray",
-        completed: !!application.viewed_at,
-      },
-      {
-        title: "Under Review",
-        description: "Landlord reviewing your application",
-        icon: IconProgress,
-        color: ["under-review", "in-progress", "accepted", "rejected"].includes(
-          application.status
-        )
-          ? "#0ea5e9"
-          : "gray",
-        completed: [
-          "under-review",
-          "in-progress",
-          "accepted",
-          "rejected",
-        ].includes(application.status),
-      },
-      {
-        title: "Final Decision",
-        description:
-          application.status === "accepted" || application.status === "approved"
-            ? "Application approved!"
-            : application.status === "rejected"
-            ? "Application rejected"
-            : "Awaiting final decision",
-        icon:
-          application.status === "accepted" || application.status === "approved"
-            ? IconCheck
-            : application.status === "rejected"
-            ? IconX
-            : IconProgress,
-        color:
-          application.status === "accepted" || application.status === "approved"
-            ? "green"
-            : application.status === "rejected"
-            ? "red"
-            : "gray",
-        completed: ["accepted", "approved", "rejected"].includes(
-          application.status
-        ),
-      },
-    ];
-
-    return baseTimeline;
-  };
-
-  const getNextSteps = () => {
-    const steps = [];
-
-    if (application.status === "pending") {
-      steps.push({
-        title: "Wait for Review",
-        description:
-          "Your application is waiting to be reviewed by the landlord",
-        action: null,
-      });
-    }
-
-    if (
-      application.status === "under-review" ||
-      application.status === "in-progress"
-    ) {
-      steps.push({
-        title: "Under Review",
-        description: "The landlord is currently reviewing your application",
-        action: null,
-      });
-    }
-
-    if (
-      application.status === "accepted" ||
-      application.status === "approved"
-    ) {
-      steps.push({
-        title: "Congratulations!",
-        description:
-          "Your application has been approved. Next steps will be communicated soon.",
-        action: {
-          label: "View Property",
-          link: `/properties/${application.property?.id}`,
-          color: "green",
-        },
-      });
-    }
-
-    if (application.status === "rejected") {
-      steps.push({
-        title: "Explore Other Options",
-        description: "Don't give up! Check out other available properties",
-        action: {
-          label: "Browse Properties",
-          link: "/listings",
-          color: "blue",
-        },
-      });
-    }
-
-    // Always show contact option
-    steps.push({
-      title: "Contact Landlord",
-      description: "Have questions? Reach out to the property owner",
-      action: {
-        label: "Send Message",
-        link: "#contact",
-        color: "blue",
-      },
-    });
-
-    return steps;
-  };
-
-  const getProgressPercentage = () => {
-    const completedSteps = getTimelineData().filter(
-      (item) => item.completed
-    ).length;
-    const totalSteps = getTimelineData().length;
-    return (completedSteps / totalSteps) * 100;
-  };
-
-  const PropertyDetailsCard = () => (
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
-      <Group justify="space-between" mb="md">
-        <Text size="xl" fw={600}>
-          Property Details
-        </Text>
-        <ActionIcon
-          component={Link}
-          to={`/listings/${application.property?.id}`}
-          variant="light"
-          size="lg"
-          target="_blank"
-        >
-          <IconEye size={20} />
-        </ActionIcon>
-      </Group>
-
-      <div className="flex flex-col md:flex-row gap-6">
-        {/* Property Image */}
-        <div className="flex-shrink-0">
-          {application?.property?.cover_image ? (
-            <Image
-              src={application.property.cover_image}
-              alt={application.property.name}
-              radius="md"
-              className="object-cover h-36"
-            />
-          ) : (
-            <div className="w-70 h-50 bg-gray-100 rounded-lg flex items-center justify-center">
-              <IconHome size={48} className="text-gray-400" />
-            </div>
-          )}
-        </div>
-
-        {/* Property Info */}
-        <div className="flex-1">
-          <Group gap="xs" mb="sm">
-            <IconMapPin size={18} className="text-gray-500" />
-            <Text size="lg" fw={500}>
-              {application.property?.name}
-            </Text>
-          </Group>
-
-          <Text size="sm" c="dimmed" mb="md">
-            {application.property?.address}
-          </Text>
-
-          {/* Property Features */}
-          <SimpleGrid cols={3} spacing="md" mb="md">
-            <div className="text-center">
-              <Group justify="center" gap="xs" mb={4}>
-                <IconBed size={18} className="text-blue-600" />
-                <Text size="lg" fw={600}>
-                  {application.property?.bedrooms || "N/A"}
-                </Text>
-              </Group>
-              <Text size="xs" c="dimmed">
-                Bedrooms
-              </Text>
-            </div>
-
-            <div className="text-center">
-              <Group justify="center" gap="xs" mb={4}>
-                <IconBath size={18} className="text-green-600" />
-                <Text size="lg" fw={600}>
-                  {application.property?.bathrooms || "N/A"}
-                </Text>
-              </Group>
-              <Text size="xs" c="dimmed">
-                Bathrooms
-              </Text>
-            </div>
-
-            <div className="text-center">
-              <Group justify="center" gap="xs" mb={4}>
-                <IconRuler size={18} className="text-orange-600" />
-                <Text size="lg" fw={600}>
-                  {application.property?.size_sqft ||
-                  application.property?.square_feet
-                    ? `${
-                        application.property.size_sqft ||
-                        application.property.square_feet
-                      } sqft`
-                    : "N/A"}
-                </Text>
-              </Group>
-              <Text size="xs" c="dimmed">
-                Size
-              </Text>
-            </div>
-          </SimpleGrid>
-
-          {/* Additional Details */}
-          <SimpleGrid cols={2} spacing="sm">
-            <Group gap="xs">
-              <Text size="sm" fw={500}>
-                Type:
-              </Text>
-              <Text size="sm" c="dimmed">
-                {application?.category?.name}
-              </Text>
-            </Group>
-
-            <Group gap="xs">
-              <Text size="sm" fw={500}>
-                Furnished:
-              </Text>
-              <Text size="sm" c="dimmed">
-                {application.property?.furnished
-                  ? application.property.furnished.charAt(0).toUpperCase() +
-                    application.property.furnished.slice(1)
-                  : "No"}
-              </Text>
-            </Group>
-
-            {application.property?.parking_type && (
-              <Group gap="xs">
-                <Text size="sm" fw={500}>
-                  Parking:
-                </Text>
-                <Text size="sm" c="dimmed">
-                  {application.property.parking_type}
-                </Text>
-              </Group>
-            )}
-
-            {application.property?.year_built && (
-              <Group gap="xs">
-                <Text size="sm" fw={500}>
-                  Year Built:
-                </Text>
-                <Text size="sm" c="dimmed">
-                  {application.property.year_built}
-                </Text>
-              </Group>
-            )}
-          </SimpleGrid>
-
-          {/* Rent Information */}
-          {application.property?.rent_amount && (
-            <Paper withBorder p="md" mt="md" className="bg-blue-50/50">
-              <Group justify="space-between">
-                <div>
-                  <Text size="sm" fw={500} c="#fb7185">
-                    Rent
-                  </Text>
-                  <Text size="xl" fw={700} c="#fb7185">
-                    ${application.property.rent_amount.toLocaleString()}
-                  </Text>
-                </div>
-                {application.property?.payment_structure && (
-                  <Badge color="#fb7185" variant="light">
-                    {application.property.payment_structure}
-                  </Badge>
-                )}
-              </Group>
-            </Paper>
-          )}
-        </div>
-      </div>
-    </Card>
-  );
-
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div style={{ backgroundColor: "#f9fafb", minHeight: "100vh" }}>
       {/* Withdrawal Confirmation Modal */}
       <WithdrawModal
         opened={withdrawModalOpen}
@@ -535,377 +659,197 @@ function ApplicationsDetails() {
       />
 
       {/* Header */}
-      <div className="bg-white shadow-sm border-b rounded-lg mb-6">
-        <div className="max-w-window mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+      <Box
+        style={{ backgroundColor: "white", borderBottom: "1px solid #e5e7eb" }}
+      >
+        <Container size="xl" py="lg">
+          <Group justify="space-between" wrap="wrap" gap="md">
+            <Group gap="md">
               <Button
                 component={Link}
                 to="/tenants/applications"
-                variant="subtle"
+                variant="light"
                 leftSection={<IconArrowLeft size={20} />}
                 color="#fb7185"
+                size="sm"
+                radius="md"
               >
                 Back to Applications
               </Button>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">
+                <Text size="28px" fw={800}>
                   Application Details
-                </h1>
-                <p className="text-sm text-gray-600">
-                  Application ID: {application?.application_id}
-                </p>
+                </Text>
+                <Group gap="xs">
+                  <IconFileDescription size={16} color="#6b7280" />
+                  <Text size="sm" c="dimmed">
+                    Application ID: {application?.application_id}
+                  </Text>
+                </Group>
               </div>
-            </div>
-            <div className="flex gap-3 items-center">
-              {getStatusBadge(application.status)}
+            </Group>
+            <Group gap="md">
               <RingProgress
-                size={60}
-                thickness={4}
-                roundCaps
-                sections={[{ value: getProgressPercentage(), color: "blue" }]}
+                size={80}
+                thickness={6}
+                sections={[
+                  {
+                    value: 100,
+                    color: [
+                      "viewed",
+                      "under-review",
+                      "in-progress",
+                      "accepted",
+                      "approved",
+                      "rejected",
+                    ].includes(application.status)
+                      ? 50
+                      : ["accepted", "approved", "rejected"].includes(
+                          application.status
+                        )
+                      ? 100
+                      : 25,
+                    color: "#fb7185",
+                  },
+                ]}
                 label={
                   <Center>
-                    <Text size="xs" c="blue" fw={700}>
-                      {Math.round(getProgressPercentage())}%
+                    <Text size="lg" c="#fb7185" fw={800}>
+                      {[
+                        "viewed",
+                        "under-review",
+                        "in-progress",
+                        "accepted",
+                        "approved",
+                        "rejected",
+                      ].includes(application.status)
+                        ? 50
+                        : ["accepted", "approved", "rejected"].includes(
+                            application.status
+                          )
+                        ? 100
+                        : 25}
+                      %
                     </Text>
                   </Center>
                 }
               />
-            </div>
-          </div>
-        </div>
-      </div>
+            </Group>
+          </Group>
+        </Container>
+      </Box>
 
-      <div className="max-w-window mx-auto">
-        <Grid>
+      <Container size="xl" py="xl">
+        <Grid gutter="xl">
           {/* Main Content */}
           <Grid.Col span={{ base: 12, lg: 8 }}>
-            <Stack gap="lg">
+            <Stack gap="xl">
               {/* Property Overview */}
-              <PropertyDetailsCard />
+              <PropertyDetailsCard application={application} />
 
               {/* Application Progress */}
-              <Card shadow="sm" padding="lg" radius="md" withBorder>
-                <Group justify="space-between" mb="md">
-                  <Text size="lg" fw={600}>
-                    Application Progress
-                  </Text>
-                  <Badge
-                    color={
-                      application.status === "accepted" ||
-                      application.status === "approved"
-                        ? "green"
-                        : application.status === "rejected"
-                        ? "red"
-                        : "blue"
-                    }
-                    variant="light"
-                    size="lg"
-                  >
-                    {application.status === "accepted" ||
-                    application.status === "approved"
-                      ? "Approved"
-                      : application.status === "rejected"
-                      ? "Rejected"
-                      : "In Progress"}
-                  </Badge>
-                </Group>
-
-                <Timeline
-                  active={getTimelineData().findIndex(
-                    (item) => !item.completed
-                  )}
-                  bulletSize={24}
-                  color="#0ea5e9"
-                >
-                  {getTimelineData().map((item, index) => (
-                    <Timeline.Item
-                      key={index}
-                      bullet={
-                        <ThemeIcon
-                          size={24}
-                          variant={item.completed ? "filled" : "light"}
-                          color={item.color}
-                          radius="xl"
-                        >
-                          {item.icon &&
-                            React.createElement(item.icon, { size: 12 })}
-                        </ThemeIcon>
-                      }
-                      title={item.title}
-                    >
-                      <Text size="sm" c="dimmed" mt={4}>
-                        {item.description}
-                      </Text>
-                    </Timeline.Item>
-                  ))}
-                </Timeline>
+              <Card withBorder padding="xl" radius="md">
+                <StatusTimeline application={application} />
               </Card>
 
-              {/* Application Details Tabs */}
-              <Card shadow="sm" padding="lg" radius="md" withBorder>
-                <Tabs defaultValue="details">
-                  <Tabs.List>
-                    <Tabs.Tab
-                      value="details"
-                      leftSection={<IconFileText size={16} />}
+              {/* Application Details */}
+              <ApplicationInfoCard application={application} />
+
+              {/* Documents Section */}
+              <Card withBorder padding="xl" radius="md">
+                <Stack gap="lg">
+                  <Group justify="space-between">
+                    <div>
+                      <Text size="lg" fw={700} mb={4}>
+                        Supporting Documents
+                      </Text>
+                      <Text size="sm" c="dimmed">
+                        Upload additional documents to strengthen your
+                        application
+                      </Text>
+                    </div>
+                    <Button
+                      leftSection={<IconUpload size={18} />}
+                      color="blue"
+                      radius="md"
                     >
-                      Application Details
-                    </Tabs.Tab>
-                    <Tabs.Tab
-                      value="documents"
-                      leftSection={<IconUpload size={16} />}
-                    >
-                      Documents
-                    </Tabs.Tab>
-                    <Tabs.Tab
-                      value="communication"
-                      leftSection={<IconMessage size={16} />}
-                    >
-                      Contact
-                    </Tabs.Tab>
-                  </Tabs.List>
+                      Upload New
+                    </Button>
+                  </Group>
 
-                  <Tabs.Panel value="details" pt="md">
-                    <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
-                      <Stack gap="md">
-                        <div>
-                          <Text size="sm" c="dimmed" mb={4}>
-                            Date Applied
-                          </Text>
-                          <Group gap="xs">
-                            <IconCalendar size={16} className="text-gray-500" />
-                            <Text size="sm" fw={500}>
-                              {formatDate(
-                                application.date_applied ||
-                                  application.created_at
-                              )}
-                            </Text>
-                          </Group>
-                        </div>
+                  <Divider />
 
-                        <div>
-                          <Text size="sm" c="dimmed" mb={4}>
-                            Last Updated
-                          </Text>
-                          <Text size="sm" fw={500}>
-                            {formatDate(application.updated_at)}
-                          </Text>
-                        </div>
-                      </Stack>
-
-                      <Stack gap="md">
-                        <div>
-                          <Text size="sm" c="dimmed" mb={4}>
-                            Application Status
-                          </Text>
-                          {getStatusBadge(application.status)}
-                        </div>
-
-                        {application.viewed_at && (
-                          <div>
-                            <Text size="sm" c="dimmed" mb={4}>
-                              Date Viewed
-                            </Text>
-                            <Text size="sm" fw={500}>
-                              {formatDate(application.viewed_at)}
-                            </Text>
-                          </div>
-                        )}
-                      </Stack>
-                    </SimpleGrid>
-
-                    {application.message && (
-                      <Paper withBorder p="md" mt="md" className="bg-gray-50">
-                        <Text size="sm" c="dimmed" mb={4}>
-                          Your Message to Landlord
-                        </Text>
-                        <Text size="sm">{application.message}</Text>
-                      </Paper>
-                    )}
-                  </Tabs.Panel>
-
-                  <Tabs.Panel value="documents" pt="md">
+                  {application.documents && application.documents.length > 0 ? (
                     <Stack gap="md">
-                      <Group justify="space-between">
-                        <div>
-                          <Text size="sm" fw={500} mb={4}>
-                            Application Documents
-                          </Text>
-                          <Text size="sm" c="dimmed">
-                            Upload additional documents to support your
-                            application
-                          </Text>
-                        </div>
-                        <Button
-                          leftSection={<IconUpload size={16} />}
-                          variant="light"
+                      {application.documents.map((doc: any, index: number) => (
+                        <Paper
+                          key={doc.id || index}
+                          withBorder
+                          p="md"
+                          radius="sm"
+                          style={{ transition: "all 0.2s" }}
+                          className="hover:border-blue-300"
                         >
-                          Upload Document
-                        </Button>
-                      </Group>
-
-                      <Divider />
-
-                      {application.documents &&
-                      application.documents.length > 0 ? (
-                        <Stack gap="xs">
-                          {application.documents.map(
-                            (doc: any, index: number) => (
-                              <Paper key={doc.id || index} p="sm" withBorder>
-                                <Group justify="space-between">
-                                  <Group gap="sm">
-                                    <IconFileText
-                                      size={20}
-                                      className="text-blue-600"
-                                    />
-                                    <div>
-                                      <Text size="sm" fw={500}>
-                                        {doc.name || `Document ${index + 1}`}
-                                      </Text>
-                                      <Text size="xs" c="dimmed">
-                                        {doc.uploaded_at
-                                          ? `Uploaded ${formatDate(
-                                              doc.uploaded_at
-                                            )}`
-                                          : "Recently uploaded"}
-                                      </Text>
-                                    </div>
-                                  </Group>
-                                  <ActionIcon variant="light" color="blue">
-                                    <IconDownload size={16} />
-                                  </ActionIcon>
-                                </Group>
-                              </Paper>
-                            )
-                          )}
-                        </Stack>
-                      ) : (
-                        <Paper p="xl" withBorder className="text-center">
-                          <IconFileText
-                            size={48}
-                            className="text-gray-400 mx-auto mb-3"
-                          />
-                          <Text size="sm" c="dimmed">
+                          <Group justify="space-between">
+                            <Group gap="md">
+                              <Center
+                                style={{
+                                  width: 48,
+                                  height: 48,
+                                  borderRadius: 8,
+                                  backgroundColor: "#eff6ff",
+                                }}
+                              >
+                                <IconFileText size={24} color="#3b82f6" />
+                              </Center>
+                              <div>
+                                <Text fw={600} size="sm">
+                                  {doc.name || `Document ${index + 1}`}
+                                </Text>
+                                <Text size="xs" c="dimmed">
+                                  {doc.uploaded_at
+                                    ? `Uploaded ${formatDate(doc.uploaded_at)}`
+                                    : "Recently uploaded"}
+                                </Text>
+                              </div>
+                            </Group>
+                            <Button
+                              variant="light"
+                              color="blue"
+                              leftSection={<IconDownload size={16} />}
+                              size="sm"
+                              radius="sm"
+                            >
+                              Download
+                            </Button>
+                          </Group>
+                        </Paper>
+                      ))}
+                    </Stack>
+                  ) : (
+                    <Center
+                      style={{
+                        height: 200,
+                        border: "2px dashed #d1d5db",
+                        borderRadius: 8,
+                        backgroundColor: "#f9fafb",
+                      }}
+                    >
+                      <Stack align="center" gap="md">
+                        <IconFileText size={48} color="#9ca3af" />
+                        <div>
+                          <Text c="dimmed" ta="center" mb={4}>
                             No documents uploaded yet
                           </Text>
-                          <Text size="xs" c="dimmed" mt={4}>
+                          <Text size="sm" c="dimmed" ta="center">
                             Upload supporting documents to improve your
                             application
                           </Text>
-                        </Paper>
-                      )}
-                    </Stack>
-                  </Tabs.Panel>
-
-                  <Tabs.Panel value="communication" pt="md">
-                    <Stack gap="md">
-                      <Alert
-                        icon={<IconAlertCircle size={16} />}
-                        color="blue"
-                        variant="light"
-                        title="Contact Information"
-                      >
-                        Use the information below to contact the property owner
-                        directly.
-                      </Alert>
-
-                      {application.landlord ||
-                      application.property?.landlord ? (
-                        <Paper p="md" withBorder>
-                          <Group justify="space-between" align="flex-start">
-                            <div>
-                              <Text fw={600} mb="xs">
-                                Property Owner
-                              </Text>
-                              <Text size="sm" mb="xs">
-                                {application.landlord?.name ||
-                                  application.property?.landlord?.name ||
-                                  "Landlord"}
-                              </Text>
-                              {application.landlord?.email ||
-                              application.property?.landlord?.email ? (
-                                <Group gap="xs" mb={4}>
-                                  <IconMail
-                                    size={14}
-                                    className="text-gray-500"
-                                  />
-                                  <Text size="sm" c="dimmed">
-                                    {application.landlord?.email ||
-                                      application.property?.landlord?.email}
-                                  </Text>
-                                </Group>
-                              ) : null}
-                              {application.landlord?.phone ||
-                              application.property?.landlord?.phone ? (
-                                <Group gap="xs">
-                                  <IconPhone
-                                    size={14}
-                                    className="text-gray-500"
-                                  />
-                                  <Text size="sm" c="dimmed">
-                                    {application.landlord?.phone ||
-                                      application.property?.landlord?.phone}
-                                  </Text>
-                                </Group>
-                              ) : null}
-                            </div>
-                            <Group gap="xs">
-                              {(application.landlord?.phone ||
-                                application.property?.landlord?.phone) && (
-                                <Tooltip label="Call landlord">
-                                  <ActionIcon
-                                    variant="light"
-                                    color="blue"
-                                    component="a"
-                                    href={`tel:${
-                                      application.landlord?.phone ||
-                                      application.property?.landlord?.phone
-                                    }`}
-                                  >
-                                    <IconPhone size={16} />
-                                  </ActionIcon>
-                                </Tooltip>
-                              )}
-                              {(application.landlord?.email ||
-                                application.property?.landlord?.email) && (
-                                <Tooltip label="Email landlord">
-                                  <ActionIcon
-                                    variant="light"
-                                    color="blue"
-                                    component="a"
-                                    href={`mailto:${
-                                      application.landlord?.email ||
-                                      application.property?.landlord?.email
-                                    }`}
-                                  >
-                                    <IconMail size={16} />
-                                  </ActionIcon>
-                                </Tooltip>
-                              )}
-                              <Tooltip label="Send message">
-                                <ActionIcon variant="light" color="blue">
-                                  <IconMessage size={16} />
-                                </ActionIcon>
-                              </Tooltip>
-                            </Group>
-                          </Group>
-                        </Paper>
-                      ) : (
-                        <Paper p="md" withBorder className="text-center">
-                          <IconUser
-                            size={32}
-                            className="text-gray-400 mx-auto mb-3"
-                          />
-                          <Text size="sm" c="dimmed">
-                            Contact information not available
-                          </Text>
-                        </Paper>
-                      )}
-                    </Stack>
-                  </Tabs.Panel>
-                </Tabs>
+                        </div>
+                      </Stack>
+                    </Center>
+                  )}
+                </Stack>
               </Card>
             </Stack>
           </Grid.Col>
@@ -913,155 +857,221 @@ function ApplicationsDetails() {
           {/* Sidebar */}
           <Grid.Col span={{ base: 12, lg: 4 }}>
             <Stack gap="lg">
-              {/* Next Steps */}
-              <Card shadow="sm" padding="lg" radius="md" withBorder>
-                <Text size="lg" fw={600} mb="md">
-                  Next Steps
-                </Text>
-                <Stack gap="md">
-                  {getNextSteps().map((step, index) => (
-                    <div key={index}>
-                      <Text size="sm" fw={500} mb="xs">
-                        {step.title}
-                      </Text>
-                      <Text size="xs" c="dimmed" mb="sm">
-                        {step.description}
-                      </Text>
-                      {step.action && (
+              {/* Contact Information */}
+              <Card withBorder padding="xl" radius="md">
+                <Stack gap="lg">
+                  <div>
+                    <Text size="lg" fw={700} mb={4}>
+                      Contact Information
+                    </Text>
+                    <Text size="sm" c="dimmed">
+                      Reach out to the property owner
+                    </Text>
+                  </div>
+
+                  {application.landlord || application.property?.landlord ? (
+                    <Stack gap="md">
+                      <Paper withBorder p="lg" radius="sm">
+                        <Stack gap="md">
+                          <div>
+                            <Text fw={700} mb={8}>
+                              Property Owner
+                            </Text>
+                            <Text size="sm" mb={12}>
+                              {application.landlord?.name ||
+                                application.property?.landlord?.name ||
+                                "Landlord"}
+                            </Text>
+                          </div>
+
+                          <Stack gap="sm">
+                            {(application.landlord?.email ||
+                              application.property?.landlord?.email) && (
+                              <Group gap="md">
+                                <Center
+                                  style={{
+                                    width: 40,
+                                    height: 40,
+                                    borderRadius: 8,
+                                    backgroundColor: "#f0f9ff",
+                                  }}
+                                >
+                                  <IconMail size={20} color="#0ea5e9" />
+                                </Center>
+                                <div style={{ flex: 1 }}>
+                                  <Text size="xs" c="dimmed">
+                                    Email
+                                  </Text>
+                                  <Text size="sm" fw={500}>
+                                    {application.landlord?.email ||
+                                      application.property?.landlord?.email}
+                                  </Text>
+                                </div>
+                              </Group>
+                            )}
+
+                            {(application.landlord?.phone ||
+                              application.property?.landlord?.phone) && (
+                              <Group gap="md">
+                                <Center
+                                  style={{
+                                    width: 40,
+                                    height: 40,
+                                    borderRadius: 8,
+                                    backgroundColor: "#f0fdf4",
+                                  }}
+                                >
+                                  <IconPhone size={20} color="#10b981" />
+                                </Center>
+                                <div style={{ flex: 1 }}>
+                                  <Text size="xs" c="dimmed">
+                                    Phone
+                                  </Text>
+                                  <Text size="sm" fw={500}>
+                                    {application.landlord?.phone ||
+                                      application.property?.landlord?.phone}
+                                  </Text>
+                                </div>
+                              </Group>
+                            )}
+                          </Stack>
+                        </Stack>
+                      </Paper>
+
+                      <Group grow>
+                        {(application.landlord?.phone ||
+                          application.property?.landlord?.phone) && (
+                          <Button
+                            variant="light"
+                            color="green"
+                            leftSection={<IconPhone size={18} />}
+                            component="a"
+                            href={`tel:${
+                              application.landlord?.phone ||
+                              application.property?.landlord?.phone
+                            }`}
+                            radius="sm"
+                          >
+                            Call
+                          </Button>
+                        )}
                         <Button
-                          component={Link}
-                          to={step.action.link}
-                          color={step.action.color}
                           variant="light"
-                          fullWidth
-                          size="sm"
+                          color="blue"
+                          leftSection={<IconMessage size={18} />}
+                          radius="sm"
                         >
-                          {step.action.label}
+                          Message
                         </Button>
-                      )}
-                    </div>
-                  ))}
+                      </Group>
+                    </Stack>
+                  ) : (
+                    <Paper withBorder p="xl" radius="sm">
+                      <Stack align="center" gap="md">
+                        <IconUser size={48} color="#9ca3af" />
+                        <div>
+                          <Text c="dimmed" ta="center">
+                            Contact information not available
+                          </Text>
+                        </div>
+                      </Stack>
+                    </Paper>
+                  )}
                 </Stack>
               </Card>
 
               {/* Quick Actions */}
-              <Card shadow="sm" padding="lg" radius="md" withBorder>
-                <Text size="lg" fw={600} mb="md">
-                  Quick Actions
-                </Text>
-                <Stack gap="sm">
-                  <Button
-                    component={Link}
-                    to={`/properties/${application.property?.id}`}
-                    leftSection={<IconEye size={16} />}
-                    variant="light"
-                    fullWidth
-                  >
-                    View Property Details
-                  </Button>
-
-                  <Button
-                    component={Link}
-                    to="/listings"
-                    leftSection={<IconBuildingStore size={16} />}
-                    variant="light"
-                    fullWidth
-                  >
-                    Browse Similar Properties
-                  </Button>
-
-                  <Button
-                    leftSection={<IconDownload size={16} />}
-                    variant="light"
-                    fullWidth
-                  >
-                    Download Application PDF
-                  </Button>
-
-                  {(application.landlord?.phone ||
-                    application.property?.landlord?.phone) && (
+              <Card withBorder padding="xl" radius="md">
+                <Stack gap="lg">
+                  <Text size="lg" fw={700}>
+                    Quick Actions
+                  </Text>
+                  <Stack gap="sm">
                     <Button
-                      component="a"
-                      href={`tel:${
-                        application.landlord?.phone ||
-                        application.property?.landlord?.phone
-                      }`}
-                      leftSection={<IconPhone size={16} />}
+                      component={Link}
+                      to={`/properties/${application.property?.id}`}
                       variant="light"
-                      color="green"
+                      color="blue"
+                      leftSection={<IconEye size={18} />}
+                      rightSection={<IconChevronRight size={16} />}
                       fullWidth
+                      justify="space-between"
+                      radius="sm"
+                      style={{ padding: "12px 16px" }}
                     >
-                      Call Landlord
+                      View Property Details
                     </Button>
-                  )}
 
-                  {/* Withdraw Application Button */}
-                  <Button
-                    leftSection={<IconTrash size={16} />}
-                    variant="light"
-                    color="red"
-                    fullWidth
-                    onClick={() => setWithdrawModalOpen(true)}
-                  >
-                    Withdraw Application
-                  </Button>
+                    <Button
+                      component={Link}
+                      to="/listings"
+                      variant="light"
+                      color="gray"
+                      leftSection={<IconBuildingStore size={18} />}
+                      rightSection={<IconChevronRight size={16} />}
+                      fullWidth
+                      justify="space-between"
+                      radius="sm"
+                      style={{ padding: "12px 16px" }}
+                    >
+                      Browse Properties
+                    </Button>
+
+                    <Button
+                      variant="light"
+                      color="blue"
+                      leftSection={<IconDownload size={18} />}
+                      fullWidth
+                      radius="sm"
+                      style={{ padding: "12px 16px" }}
+                    >
+                      Download Application PDF
+                    </Button>
+
+                    <Divider />
+
+                    <Button
+                      variant="light"
+                      color="red"
+                      leftSection={<IconTrash size={18} />}
+                      fullWidth
+                      radius="sm"
+                      style={{ padding: "12px 16px" }}
+                      onClick={() => setWithdrawModalOpen(true)}
+                    >
+                      Withdraw Application
+                    </Button>
+                  </Stack>
                 </Stack>
               </Card>
 
-              {/* Application Summary */}
-              <Card shadow="sm" padding="lg" radius="md" withBorder>
-                <Text size="lg" fw={600} mb="md">
-                  Application Summary
-                </Text>
-                <Stack gap="xs">
-                  <Group justify="space-between">
-                    <Text size="sm" c="dimmed">
-                      Status
-                    </Text>
-                    {getStatusBadge(application.status)}
-                  </Group>
-                  <Group justify="space-between">
-                    <Text size="sm" c="dimmed">
-                      Date Applied
-                    </Text>
-                    <Text size="sm" fw={500}>
-                      {formatDate(
-                        application.date_applied || application.created_at
-                      )}
+              {/* Help Section */}
+              <Card
+                withBorder
+                padding="xl"
+                radius="md"
+                style={{ backgroundColor: "#f0f9ff" }}
+              >
+                <Stack gap="md">
+                  <Group gap="sm">
+                    <IconInfoCircle size={24} color="#0ea5e9" />
+                    <Text size="lg" fw={700} c="#0c4a6e">
+                      Need Help?
                     </Text>
                   </Group>
-                  {application.viewed_at && (
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">
-                        Date Viewed
-                      </Text>
-                      <Text size="sm" fw={500}>
-                        {formatDate(application.viewed_at)}
-                      </Text>
-                    </Group>
-                  )}
-                  <Group justify="space-between">
-                    <Text size="sm" c="dimmed">
-                      Last Updated
-                    </Text>
-                    <Text size="sm" fw={500}>
-                      {formatDate(application.updated_at)}
-                    </Text>
-                  </Group>
-                  <Group justify="space-between">
-                    <Text size="sm" c="dimmed">
-                      Property Type
-                    </Text>
-                    <Text size="sm" fw={500}>
-                      {application?.category?.name}
-                    </Text>
-                  </Group>
+                  <Text size="sm" c="#0369a1">
+                    If you have questions about your application status or need
+                    assistance, our support team is here to help.
+                  </Text>
+                  <Button variant="light" color="blue" fullWidth radius="sm">
+                    Contact Support
+                  </Button>
                 </Stack>
               </Card>
             </Stack>
           </Grid.Col>
         </Grid>
-      </div>
+      </Container>
     </div>
   );
 }

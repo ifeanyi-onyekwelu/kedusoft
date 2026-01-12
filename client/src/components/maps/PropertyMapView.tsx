@@ -1,28 +1,11 @@
-/**
- * PropertyMapView Component
- *
- * This component provides a comprehensive property viewing experience with:
- * - A split-screen layout: property list on left, interactive map on right
- * - Advanced filtering system (location, price range, listing type, category, bedrooms)
- * - Real-time property fetching based on map bounds and filters
- * - Interactive property selection and hover states synchronized between list and map
- * - Debounced API calls to optimize performance and reduce server load
- *
- * The component manages the coordination between the property list and map,
- * ensuring smooth user experience with efficient data fetching.
- */
-
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { InteractivePropertyMap } from "./InteractivePropertyMap";
-import { PropertyCard } from "../PropertyCard";
+import PropertyCard from "../screens/Public/PropertyCard.tsx";
 import { useDebounce } from "../../hooks/useDebounce";
 import { usePublicOperations } from "../../apis/publicApi";
 import { useLoading } from "../../hooks/useLoading";
 
-/**
- * Interface for map geographical boundaries
- * Used to fetch properties within the visible map area
- */
+
 interface MapBounds {
   north: number; // Northern latitude boundary
   south: number; // Southern latitude boundary
@@ -30,9 +13,7 @@ interface MapBounds {
   west: number; // Western longitude boundary
 }
 
-/**
- * Props for PropertyMapView component
- */
+
 interface PropertyMapViewProps {
   initialProperties?: Property[];
   onPropertySelect?: (property: Property) => void;
@@ -127,11 +108,6 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
     return parseInt(numbers).toLocaleString();
   };
 
-  /**
-   * Removes commas from formatted numbers for API calls
-   * Example: "1,000,000" -> "1000000"
-   * API expects plain numeric strings without formatting
-   */
   const removeCommas = (value: string) => {
     return value.replace(/,/g, "");
   };
@@ -149,18 +125,6 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
   // ============================================================================
   // DATA FETCHING
   // ============================================================================
-
-  /**
-   * Fetches properties from the API based on map bounds and active filters
-   *
-   * This function is called when:
-   * - Map is panned or zoomed (bounds change)
-   * - User applies new filters
-   * - Component first loads
-   *
-   * @param bounds - Optional map boundaries to constrain property search
-   * @param searchFilters - Optional filter object (price, bedrooms, etc.)
-   */
   const fetchProperties = useCallback(
     async (bounds?: MapBounds, searchFilters?: any) => {
       try {
@@ -203,22 +167,10 @@ export const PropertyMapView: React.FC<PropertyMapViewProps> = ({
     [] // Empty dependency array - function stable across renders
   );
 
-  // ============================================================================
-  // EVENT HANDLERS
-  // ============================================================================
-
-  /**
-   * Called when user pans or zooms the map
-   * Updates current bounds which triggers property fetch after debounce
-   */
   const handleMapBoundsChange = useCallback((bounds: MapBounds) => {
     setCurrentBounds(bounds);
   }, []);
 
-  /**
-   * Called when user clicks a property (in list or on map)
-   * Updates selection state and notifies parent component
-   */
   const handlePropertySelect = useCallback(
     (property: Property) => {
       setSelectedProperty(property);
