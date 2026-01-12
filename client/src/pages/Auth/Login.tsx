@@ -32,14 +32,13 @@ function LoginPage() {
 
   type Role = "tenant" | "landlord" | "admin";
 
-  const navigateBasedOnRole = (role: Role) => {
+  const navigateBasedOnRole = (role: Role, args?: any) => {
     const routes = {
       tenant: "/tenants",
       landlord: "/property-owner",
-      agent: "/property-owner", // Agents use same dashboard as landlords
       admin: "/admin",
     };
-    navigate((routes[role] as string) || "/");
+    navigate((routes[role] as string) || "/", args);
   };
 
   const validateEmail = (email: string) => {
@@ -79,7 +78,7 @@ function LoginPage() {
       const { accessToken, is_email_verified, is_onboarded } = response;
 
       const decoded: any = jwtDecode(accessToken);
-      const { role } = decoded;
+      const { role, firstName } = decoded;
 
       login(accessToken, role);
 
@@ -100,7 +99,14 @@ function LoginPage() {
       if (next) {
         navigate(next, { replace: true });
       } else {
-        navigateBasedOnRole(role);
+        navigateBasedOnRole(role, {
+          state: {
+            showWelcome: true,
+            userAction: "login",
+            firstName: firstName,
+            timestamp: new Date().toISOString()
+          }
+        });
       }
     } catch (error: any) {
       setErrorMsg(error?.message || "Login failed. Please try again.");
@@ -108,7 +114,7 @@ function LoginPage() {
   };
 
   if (loading) {
-    return <BrandedLoader fullScreen />;
+    return <BrandedLoader fullScreen label="Unlocking the gates..." />;
   }
 
   return (

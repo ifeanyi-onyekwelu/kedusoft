@@ -1,13 +1,13 @@
 import React from "react";
 
-export function BrandedLoader({ fullScreen = true }) {
+export function BrandedLoader({ fullScreen = true, label= "Opening the doors" }) {
   return (
     <div
       className={`${
         fullScreen ? "fixed inset-0" : "w-full py-12"
       } flex items-center justify-center bg-white z-50`}
     >
-      <div className="flex flex-col items-center max-w-xs w-full px-6">
+      <div className="flex flex-col items-center max-w-6xl px-6">
         {/* Step 1: Soft Logo Animation */}
         <div className="relative mb-8 animate-pulse transition-transform duration-1000 ease-in-out hover:scale-105">
           {/* We use the full logo but keep it centered and clean */}
@@ -27,8 +27,8 @@ export function BrandedLoader({ fullScreen = true }) {
         </div>
 
         {/* Step 3: Subtle Status Text */}
-        <span className="mt-4 text-[10px] uppercase tracking-[0.2em] text-gray-400 font-semibold">
-          Opening the doors...{" "}
+        <span className="mt-4 text-xs uppercase tracking-[0.2em] text-gray-400 font-semibold text-center">
+          {label}
         </span>
       </div>
 

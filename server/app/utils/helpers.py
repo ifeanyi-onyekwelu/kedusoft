@@ -30,7 +30,7 @@ def get_logged_in_user():
 def generate_tokens(user):
     accessToken = create_access_token(
         identity=str(user["id"]),
-        additional_claims={"role": user["role"]},
+        additional_claims={"role": user["role"], "firstName": user['firstName']},
         expires_delta=timedelta(days=1),
         fresh=True,
     )
