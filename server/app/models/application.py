@@ -10,10 +10,10 @@ class Application(BaseModel):
 
     id = Column(String(50), primary_key=True, default=generate_id)
     property_id = Column(String(50), ForeignKey("properties.id"))
-    applicant_id = Column(String(50), ForeignKey("users.id"))  # Changed from tenant_id
+    applicant_id = Column(String(50), ForeignKey("users.id"))
     tenant_id = Column(
         String(50), ForeignKey("users.id")
-    )  # Kept for backward compatibility
+    )
 
     # Application details
     employment_status = Column(

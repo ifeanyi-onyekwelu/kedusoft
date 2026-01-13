@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import { getLikedProperties } from "../../../apis/tenantApi";
-import PropertyCard from "../../../components/shared/Dashboard/PropertyCard";
-import { useLoading } from "../../../hooks/useLoading";
-import { ErrorState } from "../../../components/ErrorState";
-import { BrandedLoader } from "../../../components/LoadingSpinner";
-import EmptyState from "../../../components/EmptyState";
+import { getLikedProperties } from "@/apis/tenantApi";
+import PropertyCard from "@/components/shared/Dashboard/PropertyCard";
+import { useLoading } from "@/hooks/useLoading";
+import { ErrorState } from "@/components/ErrorState";
+import { BrandedLoader } from "@/components/LoadingSpinner";
+import EmptyState from "@/components/EmptyState";
 import { useNavigate } from "react-router-dom";
-import { IconSearch, IconHeartOff } from "@tabler/icons-react";
+import {IconHeart, IconSearch, IconStar} from "@tabler/icons-react";
 import { Button, Text, Title, Stack } from "@mantine/core";
+import {ThemeIcon, Box} from "@mantine/core"
 
 export default function LikedPropertiesPage() {
   const [likedProperties, setLikedProperties] = useState<Property[]>([]);
@@ -19,7 +20,7 @@ export default function LikedPropertiesPage() {
     try {
       const response = await withLoading(getLikedProperties());
       setLikedProperties(response.properties);
-    } catch (err) {
+    } catch {
       setError("Failed to load liked properties");
     }
   };
@@ -28,7 +29,7 @@ export default function LikedPropertiesPage() {
     fetchLikedProperties();
   }, []);
 
-  if (loading) return <BrandedLoader />;
+  if (loading) return <BrandedLoader inDashboard={true} label={"Have you liked any property? Let's see"} />;
 
   if (error) {
     return (
@@ -40,54 +41,76 @@ export default function LikedPropertiesPage() {
     );
   }
 
-  const empty = (
-    <EmptyState>
-      <Stack align="center" gap="lg" className="text-center">
-        {/* Modern Icon Presentation */}
-        <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mb-2">
-          <IconHeartOff size={40} stroke={1.5} className="text-slate-400" />
-        </div>
+  if (!likedProperties || likedProperties.length === 0) {
+    return (
+        <div className="px-4 py-6">
+          <EmptyState>
+            <Stack align="center" gap="xl" className="max-w-md">
+              {/* Icon Composition: Favorites/Wishlist focus */}
+              <Box className="relative">
+                <ThemeIcon
+                    size={80}
+                    radius="24px"
+                    variant="light"
+                    color="rose"
+                    className="bg-rose-50 border border-rose-100"
+                >
+                  <IconHeart size={40} stroke={1.5} className="text-rose-600" />
+                </ThemeIcon>
+                <div className="absolute -top-2 -right-2 bg-white p-1.5 rounded-lg shadow-sm border border-slate-100">
+                  <IconStar size={16} className="text-amber-500" fill="currentColor" />
+                </div>
+              </Box>
 
-        <div className="max-w-md space-y-2">
-          <Title
-            order={2}
-            className="text-2xl font-bold text-gray-900 tracking-tight"
-          >
-            No liked properties yet
-          </Title>
-          <Text size="sm" className="text-gray-500 leading-relaxed">
-            When you find a property you love, tap the heart icon to save it
-            here. It's the easiest way to keep track of your top choices.
-          </Text>
-        </div>
+              {/* Text Content */}
+              <Stack gap="xs" align="center" className="text-center">
+                <Title
+                    order={2}
+                    className="text-slate-900 tracking-tight font-extrabold"
+                >
+                  Your Wishlist is Empty
+                </Title>
+                <Text
+                    size="lg"
+                    className="text-slate-500 leading-relaxed font-medium"
+                >
+                  See a place you like? Tap the heart icon on any property to
+                  save it here for later comparison.
+                </Text>
+              </Stack>
 
-        <Button
-          onClick={() => navigate("/properties/search")}
-          variant="filled"
-          color="dark"
-          size="md"
-          radius="md"
-          leftSection={<IconSearch size={18} />}
-          className="bg-gray-900 hover:bg-black px-8 mt-2 transition-transform active:scale-95"
-        >
-          Browse Properties
-        </Button>
-      </Stack>
-    </EmptyState>
-  );
+              {/* Action Area */}
+              <Stack gap="sm" className="w-full sm:w-auto">
+                <Button
+                    onClick={() => navigate("/listings")}
+                    size="lg"
+                    radius="xl"
+                    className="bg-slate-900 hover:bg-slate-800 transition-all px-8"
+                    leftSection={<IconSearch size={18} />}
+                >
+                  Explore Listings
+                </Button>
+                <Text
+                    size="xs"
+                    className="text-slate-400 font-bold uppercase tracking-widest text-center"
+                >
+                  Don't miss out on your perfect home
+                </Text>
+              </Stack>
+            </Stack>
+          </EmptyState>
+        </div>
+    );
+  }
 
   return (
     <div className="px-6 space-y-10 py-5">
-      {likedProperties.length === 0 ? (
-        empty
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {likedProperties &&
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {likedProperties &&
             likedProperties?.map((item) => (
-              <PropertyCard key={item.id} propertyData={item} />
+                <PropertyCard key={item.id} propertyData={item} />
             ))}
-        </div>
-      )}
+      </div>
     </div>
   );
 }

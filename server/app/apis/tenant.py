@@ -654,10 +654,14 @@ def delete_application_tenant(application_id):
     """Delete/Cancel a property application"""
     user_id, _, _ = get_logged_in_user()
     application = get_item_by_filter(
-        g.session, Application, application_id, {"tenant_id": user_id}
+        g.session, Application, {"applicant_id": user_id, "id": application_id},
     )
+
+    if not application:
+        raise CustomRequestError(f"Application not found", 404)
+
     delete_item(g.session, Application, application_id)
-    return response("Application deleted successfully", {"application": application})
+    return response("Application deleted successfully", {"application": application.to_dict()})
 
 
 @tenant.route("/properties/<string:property_id>/applications", methods=["POST"])

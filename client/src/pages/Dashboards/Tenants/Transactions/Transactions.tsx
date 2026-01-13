@@ -10,6 +10,11 @@ import {
   Paper,
   Badge,
   SimpleGrid,
+  Stack,
+  Box,
+  ThemeIcon,
+  Text,
+    Title
 } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import {
@@ -18,7 +23,7 @@ import {
   IconClock,
   IconSearch,
   IconRefresh,
-  IconX,
+  IconX, IconReceipt2, IconWallet, IconArrowLeft,
 } from "@tabler/icons-react";
 import { motion, AnimatePresence } from "framer-motion";
 import UniversalStatCard from "../../../../components/shared/Dashboard/UniversalStatCard";
@@ -173,6 +178,68 @@ function Transactions() {
       setFilterStatus(filterKey);
     }
   };
+
+  if (!transactions || transactions.length === 0) {
+    return (
+        <div className="px-4 py-6">
+          <EmptyState>
+            <Stack align="center" gap="xl" className="max-w-md">
+              {/* Icon Composition: Financial/Transaction focus */}
+              <Box className="relative">
+                <ThemeIcon
+                    size={80}
+                    radius="24px"
+                    variant="light"
+                    color="violet"
+                    className="bg-violet-50 border border-violet-100"
+                >
+                  <IconReceipt2 size={40} stroke={1.5} className="text-violet-600" />
+                </ThemeIcon>
+                <div className="absolute -top-2 -right-2 bg-white p-1.5 rounded-lg shadow-sm border border-slate-100">
+                  <IconWallet size={16} className="text-amber-500" />
+                </div>
+              </Box>
+
+              {/* Text Content */}
+              <Stack gap="xs" align="center" className="text-center">
+                <Title
+                    order={2}
+                    className="text-slate-900 tracking-tight font-extrabold"
+                >
+                  No Transactions Found
+                </Title>
+                <Text
+                    size="lg"
+                    className="text-slate-500 leading-relaxed font-medium"
+                >
+                  You haven't made any payments yet. Once you pay your rent or
+                  security deposit, your full transaction history will appear here.
+                </Text>
+              </Stack>
+
+              {/* Action Area */}
+              <Stack gap="sm" className="w-full sm:w-auto">
+                <Button
+                    onClick={() => navigate("/tenants")}
+                    size="lg"
+                    radius="xl"
+                    className="bg-slate-900 hover:bg-slate-800 transition-all px-8"
+                    leftSection={<IconArrowLeft size={18} />}
+                >
+                  Back to Dashboard
+                </Button>
+                <Text
+                    size="xs"
+                    className="text-slate-400 font-bold uppercase tracking-widest text-center"
+                >
+                  Secure payments powered by [Provider Name]
+                </Text>
+              </Stack>
+            </Stack>
+          </EmptyState>
+        </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">

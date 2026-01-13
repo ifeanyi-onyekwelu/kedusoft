@@ -13,7 +13,7 @@ import {
   Modal,
   Box,
   Text,
-  Alert,
+  Alert, Stack, ThemeIcon, Title,
 } from "@mantine/core";
 import {
   IconSearch,
@@ -32,18 +32,20 @@ import {
   IconTrash,
   IconMessage,
   IconUser,
-  IconAlertCircle,
+  IconAlertCircle, IconClipboardText, IconPlus,
 } from "@tabler/icons-react";
 import {
   getAllApplications,
   deleteApplication,
-} from "../../../../apis/tenantApi";
+} from "@/apis/tenantApi.tsx";
 import EmptyState from "../../../../components/EmptyState";
-import { ErrorState } from "../../../../components/ErrorState";
-import { useLoading } from "../../../../hooks/useLoading";
-import { BrandedLoader } from "../../../../components/LoadingSpinner";
+import { ErrorState } from "@/components/ErrorState.tsx";
+import { useLoading } from "@/hooks/useLoading.tsx";
+import { BrandedLoader } from "@/components/LoadingSpinner.tsx";
 import { motion, AnimatePresence } from "framer-motion";
-import { formatDate } from "../../../../utils/helpers";
+import { formatDate } from "@/utils/helpers.tsx";
+import toast from 'react-hot-toast';
+import {useNavigate} from "react-router-dom";
 
 // Define the Application type based on your API response
 interface Application {
@@ -353,6 +355,7 @@ function Applications() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>("newest");
+  const navigate = useNavigate()
 
   // Modal states
   const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
@@ -367,12 +370,10 @@ function Applications() {
       const response = await withLoading(getAllApplications());
       const { applications, status_counts } = response;
 
-      console.log("Applications Response:", applications);
-
       setStatusCounts(status_counts);
       setApplications(applications);
-    } catch (error) {
-      setError("Failed to fetch applications. Please try again later.");
+    } catch {
+      toast.error("Failed to fetch applications");
     }
   };
 
@@ -440,6 +441,7 @@ function Applications() {
       setWithdrawModalOpen(false);
       setSelectedApplication(null);
     } catch (error) {
+      toast.error("Failed to withdraw applications. Please try again later.");
       console.error("Failed to withdraw application:", error);
     }
   };
@@ -498,7 +500,7 @@ function Applications() {
   ];
 
   if (loading) {
-    return <BrandedLoader fullScreen />;
+    return <BrandedLoader inDashboard={true} label="Getting your applications..." />;
   }
 
   if (error) {
@@ -508,6 +510,68 @@ function Applications() {
         onRetry={fetchApplications}
         loading={loading}
       />
+    );
+  }
+
+  if (!applications || !applications.length) {
+    return (
+        <div className="px-4 py-6">
+          <EmptyState>
+            <Stack align="center" gap="xl" className="max-w-md">
+              {/* Icon Composition: Swapped for File/Application focus */}
+              <Box className="relative">
+                <ThemeIcon
+                    size={80}
+                    radius="24px"
+                    variant="light"
+                    color="indigo"
+                    className="bg-indigo-50 border border-indigo-100"
+                >
+                  <IconClipboardText size={40} stroke={1.5} className="text-indigo-600" />
+                </ThemeIcon>
+                <div className="absolute -top-2 -right-2 bg-white p-1.5 rounded-lg shadow-sm border border-slate-100">
+                  <IconPlus size={16} className="text-emerald-500" stroke={3} />
+                </div>
+              </Box>
+
+              {/* Text Content */}
+              <Stack gap="xs" align="center" className="text-center">
+                <Title
+                    order={2}
+                    className="text-slate-900 tracking-tight font-extrabold"
+                >
+                  No Applications Yet
+                </Title>
+                <Text
+                    size="lg"
+                    className="text-slate-500 leading-relaxed font-medium"
+                >
+                  Your property journey starts here. Once you find a place you love,
+                  your application progress will appear in this dashboard.
+                </Text>
+              </Stack>
+
+              {/* Action Area */}
+              <Stack gap="sm" className="w-full sm:w-auto">
+                <Button
+                    onClick={() => navigate("/listings")}
+                    size="lg"
+                    radius="xl"
+                    className="bg-slate-900 hover:bg-slate-800 transition-all px-8"
+                    leftSection={<IconSearch size={18} />}
+                >
+                  Browse Properties
+                </Button>
+                <Text
+                    size="xs"
+                    className="text-slate-400 font-bold uppercase tracking-widest text-center"
+                >
+                  Find your next dream home
+                </Text>
+              </Stack>
+            </Stack>
+          </EmptyState>
+        </div>
     );
   }
 
@@ -739,44 +803,44 @@ function Applications() {
 
         {/* Empty State */}
         {sortedAndFilteredApplications.length === 0 && (
-          <div className="py-12">
-            <EmptyState>
-              <motion.div
-                className="space-y-4 flex flex-col justify-center items-center text-center"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                  <IconHome size={32} className="text-gray-400" />
-                </div>
-                <h2 className="text-2xl font-semibold text-gray-800">
-                  No Applications Found
-                </h2>
-                <p className="text-gray-500 max-w-md">
-                  {searchQuery || filterStatus
-                    ? "Try adjusting your search or filters to find what you're looking for."
-                    : "You haven't submitted any applications yet. Start by browsing available properties."}
-                </p>
-                <Group>
-                  {(searchQuery || filterStatus) && (
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setSearchQuery("");
-                        setFilterStatus(null);
-                      }}
-                    >
-                      Clear Filters
+            <div className="py-12">
+              <EmptyState>
+                <motion.div
+                    className="space-y-4 flex flex-col justify-center items-center text-center"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                    <IconHome size={32} className="text-gray-400" />
+                  </div>
+                  <h2 className="text-2xl font-semibold text-gray-800">
+                    No Applications Found
+                  </h2>
+                  <p className="text-gray-500 max-w-md">
+                    {searchQuery || filterStatus
+                        ? "Try adjusting your search or filters to find what you're looking for."
+                        : "You haven't submitted any applications yet. Start by browsing available properties."}
+                  </p>
+                  <Group>
+                    {(searchQuery || filterStatus) && (
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                              setSearchQuery("");
+                              setFilterStatus(null);
+                            }}
+                        >
+                          Clear Filters
+                        </Button>
+                    )}
+                    <Button component="a" href="/listings">
+                      Browse Properties
                     </Button>
-                  )}
-                  <Button component="a" href="/listings">
-                    Browse Properties
-                  </Button>
-                </Group>
-              </motion.div>
-            </EmptyState>
-          </div>
+                  </Group>
+                </motion.div>
+              </EmptyState>
+            </div>
         )}
       </Paper>
     </div>

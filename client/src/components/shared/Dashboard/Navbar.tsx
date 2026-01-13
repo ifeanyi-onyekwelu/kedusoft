@@ -91,7 +91,12 @@ const Header = ({ role, toggle }: HeaderProps) => {
       logout();
       await apiLogout();
       toast.success("You have been logged out successfully")
-      navigate("/auth/login", { replace: true });
+      navigate("/auth/login", {
+        state: {
+          message: "👋 You've been logged out successfully. See you next time!"
+        },
+        replace: true
+      });
     } catch (err) {
       toast.success("Error logging out")
     }

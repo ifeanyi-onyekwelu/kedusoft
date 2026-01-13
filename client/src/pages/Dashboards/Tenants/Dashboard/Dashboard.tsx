@@ -1,8 +1,6 @@
 import {
   IconFileStack,
-  IconHome,
   IconSearch,
-  IconBell,
   IconCreditCard,
   IconMessageCircle,
   IconBrain,
@@ -11,7 +9,6 @@ import {
   IconClock,
   IconCheck,
   IconAlertCircle,
-  IconCalendarEvent,
   IconChevronRight,
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
@@ -30,14 +27,12 @@ import {
   Title,
   ThemeIcon,
 } from "@mantine/core";
-import { useLoading } from "@/hooks/useLoading";
 import { useTenantOperations } from "@/apis/tenantApi";
 import StatisticsCard from "@/components/shared/Dashboard/StatisticsCard";
 import {
   ActivityItemSkeleton,
   StatCardSkeleton,
 } from "@/components/skeletons/DashboardSkeletons";
-import { ErrorState } from "@/components/ErrorState";
 import Header from "@/components/shared/Dashboard/Header";
 import EnhancedRecommendations from "@/components/dashboard/EnhancedRecommendation";
 
@@ -51,7 +46,6 @@ interface DashboardStats {
   savedProperties: number;
 }
 
-// Helper functions for activity formatting
 const formatActivityType = (activityType: string): string => {
   const activityMap: Record<string, string> = {
     property_application_submitted: "Application submitted",
@@ -99,7 +93,6 @@ const Dashboard = () => {
   // Loading states
   const [loadingStats, setLoadingStats] = useState(true);
   const [loadingActivities, setLoadingActivities] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const quickActions = [
     {
@@ -145,81 +138,66 @@ const Dashboard = () => {
   ];
 
   const navigate = useNavigate();
-  const { loading, withLoading } = useLoading();
-  const { getAllApplications, getRecentActivities } = useTenantOperations();
+  const { getAllApplications, getRecentActivities, getLikedProperties } = useTenantOperations();
   const user = useOutletContext<UserTypes>();
 
   const fetchDashboardData = async () => {
-    // Fetch stats
-    setLoadingStats(true);
-    try {
-      const { status_counts } = await withLoading(getAllApplications());
-      const stats: DashboardStats = {
-        activeApplications:
-          (status_counts["received"] || 0) +
-          (status_counts["in-progress"] || 0),
-        viewedProperties: status_counts["viewed"] || 0,
-        savedProperties: 12, // Mock data for now
-      };
-      setDashboardStats(stats);
-    } catch (error) {
-      console.error("Error fetching stats:", error);
-    } finally {
-      setLoadingStats(false);
-    }
+    const loadStatsAndLikes = async () => {
+      setLoadingStats(true);
+      try {
+        // Run these in parallel to save time
+        const [appResponse, likedResponse] = await Promise.all([
+          getAllApplications(),
+          getLikedProperties()
+        ]);
 
-    // Fetch recent activities
-    setLoadingActivities(true);
-    try {
-      const activitiesResponse = await withLoading(
-        getRecentActivities({
-          limit: 10,
-          days: 30,
-        })
-      );
+        const status_counts = appResponse.status_counts || {};
+        const likedCount = likedResponse?.data?.length || likedResponse?.length || 0;
 
-      let activitiesArray = [];
-      if (activitiesResponse?.success) {
-        activitiesArray =
-          activitiesResponse.data?.activities ||
-          activitiesResponse.activities ||
-          [];
+        setDashboardStats({
+          activeApplications: (status_counts["received"] || 0) + (status_counts["in-progress"] || 0),
+          viewedProperties: status_counts["viewed"] || 0,
+          savedProperties: likedCount,
+        });
+      } catch (error) {
+        console.error("Error fetching stats or likes:", error);
+      } finally {
+        setLoadingStats(false);
       }
+    };
 
-      if (activitiesArray.length > 0) {
-        const transformedActivities = activitiesArray.map((activity: any) => ({
+    // 2. Fetch Recent Activities
+    const loadActivities = async () => {
+      setLoadingActivities(true);
+      try {
+        const res = await getRecentActivities({ limit: 10, days: 30 });
+        const activitiesArray = res?.success ? (res.data?.activities || res.activities || []) : [];
+
+        const transformed = activitiesArray.map((activity: any) => ({
+          id: activity.id,
           action: formatActivityType(activity.activity_type),
-          property:
-            activity.description || activity.activity_description || "Activity",
+          property: activity.description || activity.activity_description || "Activity",
           time: activity.time_ago || "Unknown time",
           status: getActivityStatus(activity.activity_type),
-          id: activity.id,
           icon: getActivityIcon(activity.activity_type),
         }));
-        setRecentActivity(transformedActivities);
-      } else {
+
+        setRecentActivity(transformed);
+      } catch (error) {
+        console.error("Failed to fetch activities:", error);
         setRecentActivity([]);
+      } finally {
+        setLoadingActivities(false);
       }
-    } catch (error) {
-      console.error("Failed to fetch recent activities:", error);
-      setRecentActivity([]);
-    } finally {
-      setLoadingActivities(false);
-    }
+    };
+
+    await Promise.all([loadStatsAndLikes(), loadActivities()]);
   };
 
   useEffect(() => {
     fetchDashboardData();
   }, []);
 
-  if (error)
-    return (
-      <ErrorState
-        message={error}
-        loading={loading}
-        onRetry={fetchDashboardData}
-      />
-    );
 
   return (
     <Box p="lg" style={{ backgroundColor: "#F8F9FA", minHeight: "100vh" }}>
