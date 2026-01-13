@@ -17,13 +17,14 @@ import {
   IconBellRinging,
 } from "@tabler/icons-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuthOperations } from "../../../apis/authApi";
-import { useUser } from "../../../context/UserContext";
+import { useAuthOperations } from "@/apis/authApi.tsx";
+import { useUser } from "@/context/UserContext.tsx";
 import { BiPlusCircle } from "react-icons/bi";
 import { IoMdClose } from "react-icons/io";
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import { FaBars } from "react-icons/fa6";
+import toast from 'react-hot-toast'
 
 type HeaderProps = {
   role: string;
@@ -31,7 +32,7 @@ type HeaderProps = {
   toggle: () => void;
 };
 
-const Header = ({ role, opened, toggle }: HeaderProps) => {
+const Header = ({ role, toggle }: HeaderProps) => {
   const { logout, user } = useUser();
   const navigate = useNavigate();
   const [showVerificationToast, setShowVerificationToast] = useState(false);
@@ -89,9 +90,10 @@ const Header = ({ role, opened, toggle }: HeaderProps) => {
     try {
       logout();
       await apiLogout();
-      navigate("/auth/login");
+      toast.success("You have been logged out successfully")
+      navigate("/auth/login", { replace: true });
     } catch (err) {
-      console.error("Error logging out", err);
+      toast.success("Error logging out")
     }
   };
 

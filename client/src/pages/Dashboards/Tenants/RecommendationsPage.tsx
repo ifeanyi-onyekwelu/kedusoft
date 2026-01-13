@@ -74,7 +74,7 @@ export default function RecommendationsPage() {
     fetchRecommendations(1);
   };
 
-  if (loading) return <BrandedLoader />;
+  if (loading) return <BrandedLoader inDashboard={true} />;
 
   if (error) {
     return (

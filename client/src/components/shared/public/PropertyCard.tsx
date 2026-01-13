@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import formatAmount from "../../../utils/helpers";
 import { motion } from "framer-motion";
 import { IconHeart, IconShare } from "@tabler/icons-react";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { toast } from "react-hot-toast";
 import useAuth from "@/hooks/useAuth";
 import { modals } from "@mantine/modals";
@@ -12,11 +12,11 @@ import { useTenantOperations } from "@/apis/tenantApi";
 import { FaDroplet, FaHouse, FaMapLocationDot, FaRuler } from "react-icons/fa6";
 
 const PropertyCard = ({ propertyData }: { propertyData: Property }) => {
-  const [isFavorite] = useState(false);
   const { isAuthenticated } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
   const { loading, withLoading } = useLoading();
   const navigate = useNavigate();
+  const {unlikeProperty, likeProperty, checkIfLiked} = useTenantOperations()
 
   const handleShare = async () => {
     const shareData = {
@@ -27,14 +27,9 @@ const PropertyCard = ({ propertyData }: { propertyData: Property }) => {
 
     // Try native share first (mobile-friendly)
     if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-        toast.success("Property link copied to clipboard");
-      } catch (err) {
-        // User cancelled, do nothing
-      }
+      await navigator.share(shareData);
+      toast.success("Property link copied to clipboard");
     } else {
-      // Fallback: Copy link to clipboard
       await navigator.clipboard.writeText(shareData.url);
     }
   };
@@ -78,27 +73,36 @@ const PropertyCard = ({ propertyData }: { propertyData: Property }) => {
       return;
     }
 
-    // Optimistic update
     setIsLiked(!isLiked);
+
+    console.log("Property Data", propertyData)
 
     try {
       if (isLiked) {
-        // Unlike/Remove from favorites
-        await withLoading(
-          useTenantOperations().unlikeProperty(propertyData.id)
+        // Remove from favorites
+        await withLoading(unlikeProperty(propertyData.id)
         );
         toast.success("Property removed from your saved list");
       } else {
-        // Like/Add to favorites
-        await withLoading(useTenantOperations().likeProperty(propertyData.id));
+        // Add to favorites
+        await withLoading(likeProperty(propertyData.id));
         toast.success("Property saved to your favorites");
       }
     } catch (error) {
-      // Revert on error
+      console.log("Error", error)
       setIsLiked(!isLiked);
       toast.error("Could not save property. Please try again.");
     }
   };
+
+  const checkLike = async () => {
+    const response = await withLoading(checkIfLiked(propertyData.id));
+    if (response.isLiked) setIsLiked(true);
+  }
+
+  useEffect(() => {
+    checkLike();
+  }, []);
 
   return (
     <motion.div
@@ -149,7 +153,7 @@ const PropertyCard = ({ propertyData }: { propertyData: Property }) => {
           </Tooltip>
 
           <Tooltip
-            label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            label={isLiked ? "Remove from favorites" : "Add to favorites"}
           >
             <ActionIcon
               size="lg"
@@ -159,13 +163,13 @@ const PropertyCard = ({ propertyData }: { propertyData: Property }) => {
                 handleLike();
               }}
               loading={loading}
-              color={isFavorite ? "#ef4444" : "#0ea5e9"}
+              color={isLiked ? "#ef4444" : "#0ea5e9"}
               radius="xl"
             >
               <IconHeart
                 size={18}
-                className={isFavorite ? "text-white" : "text-gray-200"}
-                fill={isFavorite ? "currentColor" : "none"}
+                className={isLiked ? "text-white" : "text-gray-200"}
+                fill={isLiked ? "currentColor" : "none"}
               />
             </ActionIcon>
           </Tooltip>

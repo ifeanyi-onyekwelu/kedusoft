@@ -9,8 +9,8 @@ import ApplicationsDetails from "../pages/Dashboards/Tenants/Applications/Applic
 import TenantMessages from "../pages/Dashboards/Tenants/Messages/Messages";
 import LikedPropertiesPage from "../pages/Dashboards/Tenants/LikedProperties";
 import RecommendationsPage from "../pages/Dashboards/Tenants/RecommendationsPage";
-import { TenantScreenings } from "../pages/Dashboards/Tenants/Screenings";
-import { TenantLeases } from "../pages/Dashboards/Tenants/Leases";
+import TenantScreenings from "../pages/Dashboards/Tenants/Screenings/Screenings";
+import TenantLeases from "../pages/Dashboards/Tenants/Leases/Leases";
 
 function TenantsRoutes() {
   return (

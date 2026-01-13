@@ -1,4 +1,3 @@
-// layouts/DashboardLayout.tsx
 import React, { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../components/shared/Dashboard/Sidebar";
@@ -62,9 +61,9 @@ const DashboardLayout: React.FC<LayoutProps> = ({ role }) => {
     }
   }, [location.state, user, role]);
 
-  if (!user) {
-    return <BrandedLoader fullScreen label={welcomeMessage} />;
-  }
+  // if (!user) {
+  //   return <BrandedLoader fullScreen label={welcomeMessage} />;
+  // }
 
   return (
       <div className="min-h-screen flex flex-col">

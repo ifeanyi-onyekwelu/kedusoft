@@ -881,23 +881,23 @@ def like_property(property_id):
     return response("Property liked successfully", {"like_id": new_like.id}, 201)
 
 
-@tenant.route("/properties/<string:like_id>/unlike", methods=["DELETE"])
+@tenant.route("/properties/<string:property_id>/unlike", methods=["DELETE"])
 @catch_exception
 @jwt_required()
 @role_required("tenant")
-def unlike_property(like_id):
+def unlike_property(property_id):
     """Remove property from liked list"""
     user_id, _, _ = get_logged_in_user()
 
     # Verify like belongs to user
     like = get_item_by_filter(
-        g.session, LikedProperty, {"id": like_id, "tenant_id": user_id}
+        g.session, LikedProperty, {"property_id": property_id, "tenant_id": user_id}
     )
 
     if not like:
         raise CustomRequestError("Like not found", 404)
 
-    delete_item(g.session, LikedProperty, like_id)
+    delete_item(g.session, LikedProperty, like.id)
 
     return response("Property unliked successfully")
 
