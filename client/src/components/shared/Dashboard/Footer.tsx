@@ -10,8 +10,7 @@ const DashboardFooter = () => {
           {/* Left section - Brand and copyright */}
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <div className="flex items-center gap-1">
-              <IconHome className="text-blue-600" size={16} />
-              <span className="font-semibold text-gray-900">Homies</span>
+              <span className="font-semibold text-gray-900">Letsten</span>
             </div>
             <span>© {currentYear} All rights reserved.</span>
           </div>
@@ -19,19 +18,19 @@ const DashboardFooter = () => {
           {/* Center section - Quick links */}
           <div className="flex items-center gap-6 text-sm">
             <a
-              href="#"
+              href="/resources"
               className="text-gray-600 hover:text-blue-600 transition-colors"
             >
-              Help Center
+              Resources
             </a>
             <a
-              href="#"
+              href="/privacy-policy"
               className="text-gray-600 hover:text-blue-600 transition-colors"
             >
               Privacy Policy
             </a>
             <a
-              href="#"
+              href="/terms-of-service"
               className="text-gray-600 hover:text-blue-600 transition-colors"
             >
               Terms of Service
