@@ -1,4 +1,4 @@
-import { IconHeart, IconCode, IconHome } from "@tabler/icons-react";
+import { IconCode } from "@tabler/icons-react";
 
 const DashboardFooter = () => {
   const currentYear = new Date().getFullYear();
