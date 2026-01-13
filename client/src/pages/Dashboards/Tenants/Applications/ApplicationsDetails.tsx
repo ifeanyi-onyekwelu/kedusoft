@@ -39,7 +39,6 @@ import {
   Tabs,
   Paper,
   ActionIcon,
-  Tooltip,
   Button,
   Image,
   Divider,
@@ -49,16 +48,15 @@ import {
   Modal,
   Box,
   Container,
-  rem,
   Progress,
 } from "@mantine/core";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import { getApplication, deleteApplication } from "../../../../apis/tenantApi";
-import { formatDate } from "../../../../utils/helpers";
-import { useLoading } from "../../../../hooks/useLoading";
-import { ErrorState } from "../../../../components/ErrorState";
-import { BrandedLoader } from "../../../../components/LoadingSpinner";
+import { getApplication, deleteApplication } from "@/apis/tenantApi";
+import { formatDate } from "@/utils/helpers";
+import { useLoading } from "@/hooks/useLoading";
+import { ErrorState } from "@/components/ErrorState";
+import { BrandedLoader } from "@/components/LoadingSpinner";
 
 // Withdrawal Confirmation Modal Component
 interface WithdrawModalProps {
@@ -404,13 +402,10 @@ const PropertyDetailsCard = ({ application }: { application: any }) => (
             <Group justify="space-between" align="center">
               <div>
                 <Text size="sm" c="#dc2626" fw={600} mb={4}>
-                  Monthly Rent
+                  Rent
                 </Text>
                 <Text size="28px" fw={800} c="#dc2626">
                   ${application.property.rent_amount.toLocaleString()}
-                  <Text span size="sm" c="#dc2626" ml={2}>
-                    /month
-                  </Text>
                 </Text>
               </div>
               {application.property?.payment_structure && (
@@ -624,7 +619,7 @@ function ApplicationsDetails() {
   }, [applicationId]);
 
   if (loading) {
-    return <BrandedLoader />;
+    return <BrandedLoader inDashboard={true} label="Fetching application details..." />;
   }
 
   if (error) {
@@ -677,9 +672,6 @@ function ApplicationsDetails() {
                 Back to Applications
               </Button>
               <div>
-                <Text size="28px" fw={800}>
-                  Application Details
-                </Text>
                 <Group gap="xs">
                   <IconFileDescription size={16} color="#6b7280" />
                   <Text size="sm" c="dimmed">

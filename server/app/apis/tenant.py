@@ -571,13 +571,13 @@ def get_all_applications_tenant():
             "application_id": app.id,
             "property": serialize(app.property),
             "status": app.status,
-            "screening_status": "screened" if app.viewed_at else "unscreened",
+            "viewed": "viewed" if app.viewed_at else "not yet",
             "date_applied": app.created_at.isoformat(),
-            "date_screened": app.viewed_at.isoformat() if app.viewed_at else None,
+            "date_viewed": app.viewed_at.isoformat() if app.viewed_at else None,
             "result": (
                 "approved"
                 if app.status == "accepted"
-                else ("rejected" if app.status == "rejected" else "pending")
+                else ("rejected" if app.status == "rejected" else "received")
             ),
             "category": (
                 serialize(app.property.category) if app.property.category else None
@@ -587,9 +587,7 @@ def get_all_applications_tenant():
     ]
 
     status_counts = {
-        "unscreened": sum(1 for app in applications if app.viewed_at is None),
-        "screened": sum(1 for app in applications if app.viewed_at is not None),
-        "pending": sum(1 for app in applications if app.status == "pending"),
+        "screening": sum(1 for app in applications if app.viewed_at is not None),
         "under-review": sum(1 for app in applications if app.status == "under-review"),
         "accepted": sum(1 for app in applications if app.status == "accepted"),
         "rejected": sum(1 for app in applications if app.status == "rejected"),
@@ -623,24 +621,18 @@ def get_application_tenant(application_id):
     if not property:
         raise CustomRequestError("Property not found", 404)
 
-    response_data = {
-        "application_id": application.id,
-        "status": application.status,
-        "screening_status": "screened" if application.viewed_at else "unscreened",
-        "date_applied": application.created_at.isoformat(),
-        "date_screened": (
+    response_data = {"application_id": application.id, "status": application.status,
+                     "viewed": "viewed" if application.viewed_at else "received",
+                     "date_applied": application.created_at.isoformat(), "date_viewed": (
             application.viewed_at.isoformat() if application.viewed_at else None
-        ),
-        "result": (
+        ), "result": (
             "approved"
             if application.status == "accepted"
-            else "rejected" if application.status == "rejected" else "pending"
-        ),
-    }
-    response_data["property"] = serialize(property)
-    response_data["category"] = (
-        serialize(property.category) if property.category else None
-    )
+            else "rejected" if application.status == "rejected" else "received"
+        ), "property": serialize(property), "category": (
+            serialize(property.category) if property.category else None
+        )}
+
     return response(
         "Application retrieved successfully", {"application": response_data}
     )

@@ -22,7 +22,6 @@ import {
   IconHome,
   IconEye,
   IconDownload,
-  IconMail,
   IconPhone,
   IconDotsVertical,
   IconTrendingUp,
@@ -32,7 +31,7 @@ import {
   IconTrash,
   IconMessage,
   IconUser,
-  IconAlertCircle, IconClipboardText, IconPlus,
+  IconAlertCircle, IconClipboardText, IconPlus, IconIdBadge, IconIdBadge2,
 } from "@tabler/icons-react";
 import {
   getAllApplications,
@@ -87,7 +86,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => (
           {title}
         </Text>
         <Text size="xl" fw={800} c="dark">
-          {value.toLocaleString()}
+          {value}
         </Text>
       </div>
 
@@ -118,15 +117,15 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color }) => (
 // Enhanced Status Badge Component
 const StatusBadge = ({ status }: { status: string }) => {
   const statusConfig = {
-    pending: {
-      color: "orange",
-      icon: <IconClock size={14} />,
-      label: "Pending Review",
-    },
     "under-review": {
       color: "blue",
-      icon: <IconTrendingUp size={14} />,
+      icon: <IconClock size={14} />,
       label: "Under Review",
+    },
+    screening: {
+      color: "blue",
+      icon: <IconIdBadge size={14} />,
+      label: "screening",
     },
     accepted: {
       color: "green",
@@ -137,16 +136,6 @@ const StatusBadge = ({ status }: { status: string }) => {
       color: "red",
       icon: <IconX size={14} />,
       label: "Rejected",
-    },
-    viewed: {
-      color: "gray",
-      icon: <IconEye size={14} />,
-      label: "Viewed",
-    },
-    sent: {
-      color: "indigo",
-      icon: <IconMail size={14} />,
-      label: "Sent",
     },
   };
 
@@ -344,12 +333,10 @@ const ApplicationCard = ({
 function Applications() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [statusCounts, setStatusCounts] = useState({
-    viewed: 0,
     rejected: 0,
-    pending: 0,
     "under-review": 0,
+    screening: 0,
     accepted: 0,
-    sent: 0,
   });
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -486,14 +473,14 @@ function Applications() {
       color: "#10b981",
     },
     {
-      title: "Under Review",
-      value: statusCounts["under-review"],
-      icon: <IconClock size={20} className="text-orange-600" />,
+      title: "Screening",
+      value: statusCounts.screening,
+      icon: <IconIdBadge2 size={20} className="text-orange-600" />,
       color: "#f59e0b",
     },
     {
-      title: "Pending Review",
-      value: statusCounts.pending,
+      title: "Under Review",
+      value: statusCounts["under-review"],
       icon: <IconEye size={20} className="text-gray-600" />,
       color: "#6b7280",
     },
@@ -629,8 +616,8 @@ function Applications() {
               placeholder="Filter by status"
               data={[
                 { value: "all", label: "All Statuses" },
-                { value: "pending", label: "Pending Review" },
-                { value: "under-review", label: "Under Review" },
+                { value: "under-review", label: "Received" },
+                { value: "screening", label: "Screening" },
                 { value: "accepted", label: "Accepted" },
                 { value: "rejected", label: "Rejected" },
               ]}
