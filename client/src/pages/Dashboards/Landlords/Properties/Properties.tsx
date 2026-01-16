@@ -12,7 +12,6 @@ import {
   IconDots,
   IconEdit,
   IconTrash,
-  IconFilter,
   IconChevronRight,
 } from "@tabler/icons-react";
 import {
@@ -20,7 +19,6 @@ import {
   Badge,
   ActionIcon,
   TextInput,
-  Select,
   Button,
   Group,
   Stack,
@@ -36,18 +34,17 @@ import {
   Box,
 } from "@mantine/core";
 import { Link, useNavigate } from "react-router-dom";
-import { useLandlordOperations } from "../../../../apis/landlordApi";
-import { useLoading } from "../../../../hooks/useLoading";
-import { BrandedLoader } from "../../../../components/LoadingSpinner";
-import { ErrorState } from "../../../../components/ErrorState";
-import formatAmount from "../../../../utils/helpers";
+import { useLandlordOperations } from "@/apis/landlordApi";
+import { useLoading } from "@/hooks/useLoading";
+import { BrandedLoader } from "@/components/LoadingSpinner";
+import { ErrorState } from "@/components/ErrorState";
+import formatAmount from "@/utils/helpers";
 import { motion } from "framer-motion";
 
 const ITEMS_PER_PAGE = 8;
 
 const LandlordProperties = () => {
-  const navigate = useNavigate();
-  const [properties, setProperties] = useState<any[]>([]);
+  const [properties, setProperties] = useState<Property[]>([]);
   const [activeTab, setActiveTab] = useState<string | null>("overview");
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [searchQuery, setSearchQuery] = useState("");
@@ -113,14 +110,15 @@ const LandlordProperties = () => {
     },
   ];
 
-  if (loading) return <BrandedLoader fullScreen />;
+  if (loading) return <BrandedLoader inDashboard={true} label={"Loading properties..."} />;
+
   if (error)
     return (
       <ErrorState loading={loading} message={error} onRetry={fetchProperties} />
     );
 
   return (
-    <Box p="sm" className="bg-[#FAFBFC] min-h-screen">
+    <Box p="xl" className="bg-[#FAFBFC] min-h-screen">
       <Stack gap="xl">
         {/* Header */}
         <Group justify="space-between" align="flex-end">
@@ -136,8 +134,9 @@ const LandlordProperties = () => {
             leftSection={<IconPlus size={18} />}
             component={Link}
             to="/property-owner/properties/add"
-            size="md"
-            radius="md"
+            size="sm"
+            radius="sm"
+            color='#fb7185'
           >
             List New Property
           </Button>
@@ -174,41 +173,27 @@ const LandlordProperties = () => {
           ))}
         </Grid>
 
-        {/* Content Section */}
-        <Tabs
-          value={activeTab}
-          onChange={setActiveTab}
-          variant="outline"
-          radius="md"
-        >
-          <Card withBorder radius="md" p={0} shadow="xs">
-            <Box p="md" className="border-b border-gray-100">
-              <Group justify="space-between">
-                <Tabs.List className="border-none">
-                  <Tabs.Tab
-                    value="overview"
-                    leftSection={<IconLayoutGrid size={16} />}
-                  >
-                    Portfolio
-                  </Tabs.Tab>
-                  <Tabs.Tab
-                    value="analytics"
-                    leftSection={<IconChartBar size={16} />}
-                  >
-                    Performance
-                  </Tabs.Tab>
-                </Tabs.List>
+        {/* Portfolio Section */}
+        <Card withBorder radius="md" p={0} shadow="xs">
+          <Box p="md" style={{ borderBottom: '1px solid #f1f3f5' }}>
+            <Group justify="space-between">
+              <Group gap="xs">
+                <Title order={4} fw={700}>My Properties</Title>
+                <Badge variant="filled" color="blue" radius="sm">
+                  {filteredProperties.length}
+                </Badge>
+              </Group>
 
-                <Group gap="sm">
-                  <TextInput
+              <Group gap="sm">
+                <TextInput
                     placeholder="Search by name or location..."
                     leftSection={<IconSearch size={16} />}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.currentTarget.value)}
                     size="sm"
                     w={250}
-                  />
-                  <SegmentedControl
+                />
+                <SegmentedControl
                     value={viewMode}
                     onChange={(v: any) => setViewMode(v)}
                     data={[
@@ -216,20 +201,20 @@ const LandlordProperties = () => {
                       { label: "List", value: "table" },
                     ]}
                     size="sm"
-                  />
-                  <ActionIcon
+                />
+                <ActionIcon
                     variant="default"
                     size="lg"
                     onClick={fetchProperties}
-                  >
-                    <IconRefresh size={18} />
-                  </ActionIcon>
-                </Group>
+                >
+                  <IconRefresh size={18} />
+                </ActionIcon>
               </Group>
-            </Box>
+            </Group>
+          </Box>
 
-            <Tabs.Panel value="overview" p="md">
-              {filteredProperties.length === 0 ? (
+          <Box p="md">
+            {filteredProperties.length === 0 ? (
                 <Stack align="center" py={60} gap="sm">
                   <ThemeIcon size={60} radius={60} variant="light" color="gray">
                     <IconSearch size={30} />
@@ -239,42 +224,41 @@ const LandlordProperties = () => {
                     Try adjusting your search or filters.
                   </Text>
                 </Stack>
-              ) : viewMode === "grid" ? (
+            ) : viewMode === "grid" ? (
                 <Grid gutter="lg">
                   {paginatedItems.map((p, i) => (
-                    <Grid.Col
-                      key={p.id}
-                      span={{ base: 12, md: 6, lg: 4, xl: 3 }}
-                    >
-                      <PropertyGridCard property={p} index={i} />
-                    </Grid.Col>
+                      <Grid.Col
+                          key={p.id}
+                          span={{ base: 12, md: 6, lg: 4, xl: 3 }}
+                      >
+                        <PropertyGridCard property={p} index={i} />
+                      </Grid.Col>
                   ))}
                 </Grid>
-              ) : (
+            ) : (
                 <PropertyTable properties={paginatedItems} />
-              )}
+            )}
 
-              {/* Pagination UI */}
-              {totalPages > 1 && (
+            {/* Pagination UI */}
+            {totalPages > 1 && (
                 <Group justify="center" mt="xl" py="md">
                   <Pagination
-                    total={totalPages}
-                    value={currentPage}
-                    onChange={setCurrentPage}
-                    withEdges
-                    radius="md"
+                      total={totalPages}
+                      value={currentPage}
+                      onChange={setCurrentPage}
+                      withEdges
+                      radius="md"
                   />
                 </Group>
-              )}
-            </Tabs.Panel>
-          </Card>
-        </Tabs>
+            )}
+          </Box>
+        </Card>
       </Stack>
     </Box>
   );
 };
 
-// Sub-component: Table View
+
 const PropertyTable = ({ properties }: { properties: any[] }) => {
   const navigate = useNavigate();
   return (
@@ -374,7 +358,6 @@ const PropertyTable = ({ properties }: { properties: any[] }) => {
   );
 };
 
-// Sub-component: Simplified Grid Card
 const PropertyGridCard = ({ property, index }: any) => {
   const navigate = useNavigate();
   return (

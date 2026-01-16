@@ -118,7 +118,7 @@ def seed_properties(session):
         # --- LAGOS ---
         {
             "name": "Eko Atlantic Sky-Villa",
-            "cat_name": "Penthouse",
+            "cat_name": "Apartment",  # Changed from Penthouse
             "area": "Victoria Island",
             "city": "Lagos",
             "state": "Lagos",
@@ -179,7 +179,7 @@ def seed_properties(session):
         # --- ABUJA ---
         {
             "name": "Maitama Heights Mansion",
-            "cat_name": "Mansion",
+            "cat_name": "Detached / Semi-Detached", # Changed from Mansion
             "area": "Maitama",
             "city": "Abuja",
             "state": "FCT",
@@ -271,7 +271,7 @@ def seed_properties(session):
         # --- ANAMBRA ---
         {
             "name": "Awka Millennium City Villa",
-            "cat_name": "Villa",
+            "cat_name": "Detached / Semi-Detached", # Changed from Villa
             "area": "Awka",
             "city": "Awka",
             "state": "Anambra",
@@ -332,7 +332,7 @@ def seed_properties(session):
         },
         {
             "name": "Trans-Ekulu Modern Villa",
-            "cat_name": "Villa",
+            "cat_name": "Detached / Semi-Detached", # Changed from Villa
             "area": "Trans-Ekulu",
             "city": "Enugu",
             "state": "Enugu",
@@ -420,6 +420,87 @@ def seed_properties(session):
             "lng": 3.3421,
             "img": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
         },
+        {
+            "name": "The Banana Island Sanctuary",
+            "cat_name": "Detached / Semi-Detached", # Changed from Mansion
+            "area": "Banana Island",
+            "city": "Lagos",
+            "state": "Lagos",
+            "address": "Zone 4, Banana Island Estate",
+            "price": 45000000,
+            "type": "rent",
+            "beds": 7,
+            "landmark": "Lagos Lagoon",
+            "lat": 6.4667,
+            "lng": 3.4500,
+            "img": "https://images.unsplash.com/photo-1613490493576-7fde63acd811",
+            "gallery": [
+                "https://images.unsplash.com/photo-1613490493576-7fde63acd811",
+                "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+                "https://images.unsplash.com/photo-1600607687940-c52af04657b3",
+                "https://images.unsplash.com/photo-1600566753190-17f0bb2a6c3e",
+                "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0",
+                "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68",
+                "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde",
+                "https://images.unsplash.com/photo-1600585154542-6379b17440fd",
+                "https://images.unsplash.com/photo-1512914890251-2f96a9b0bbe2",
+                "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd"
+            ]
+        },
+        {
+            "name": "Centenary City Smart Villa",
+            "cat_name": "Detached / Semi-Detached", # Changed from Villa
+            "area": "Kuje",
+            "city": "Abuja",
+            "state": "FCT",
+            "address": "Plot 44, Centenary City",
+            "price": 18000000,
+            "type": "rent",
+            "beds": 5,
+            "landmark": "Nnamdi Azikiwe Int'l Airport",
+            "lat": 8.9950,
+            "lng": 7.2210,
+            "img": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
+            "gallery": [
+                "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
+                "https://images.unsplash.com/photo-1518780664697-55e3ad937233",
+                "https://images.unsplash.com/photo-1480074568708-e7b720bb3f09",
+                "https://images.unsplash.com/photo-1449844908441-8829872d2607",
+                "https://images.unsplash.com/photo-1416331108676-a22ccb276e35",
+                "https://images.unsplash.com/photo-1505843513577-22bb7d21ef45",
+                "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6",
+                "https://images.unsplash.com/photo-1434082033009-b81d41d32e1c",
+                "https://images.unsplash.com/photo-1494526585095-c41746248156",
+                "https://images.unsplash.com/photo-1464146072230-91cabc968266"
+            ]
+        },
+        {
+            "name": "The Heritage Penthouse",
+            "cat_name": "Apartment", # Changed from Penthouse
+            "area": "Independence Layout",
+            "city": "Enugu",
+            "state": "Enugu",
+            "address": "Block B, Heritage Estates",
+            "price": 12000000,
+            "type": "rent",
+            "beds": 4,
+            "landmark": "Polo Park View",
+            "lat": 6.4350,
+            "lng": 7.5100,
+            "img": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750",
+            "gallery": [
+                "https://images.unsplash.com/photo-1512917774080-9991f1c4c750",
+                "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688",
+                "https://images.unsplash.com/photo-1493246507139-91e8fad9978e",
+                "https://images.unsplash.com/photo-1523217582562-09d0def993a6",
+                "https://images.unsplash.com/photo-1507089947368-19c1da97753e",
+                "https://images.unsplash.com/photo-1560448204-61dc36dc98c8",
+                "https://images.unsplash.com/photo-1560185127-6ed189bf02f4",
+                "https://images.unsplash.com/photo-1560185007-cde436f6a4d0",
+                "https://images.unsplash.com/photo-1560185893-a55caf0a5289",
+                "https://images.unsplash.com/photo-1560184897-67f4a3f9a7fa"
+            ]
+        }
     ]
 
     for index, p in enumerate(property_templates):
@@ -437,6 +518,8 @@ def seed_properties(session):
         category = session.query(Category).filter_by(name=p["cat_name"]).first()
         if not category:
             continue
+
+        property_gallery = p.get("gallery", [p["img"]])
 
         new_prop = Property(
             name=p["name"],
@@ -466,10 +549,10 @@ def seed_properties(session):
             rent_amount=p["price"],
             caution_fee=int(p["price"] * 0.1),
             agreement_fee=int(p["price"] * 0.05),
-            available_from=datetime.date.today(),
+            available_from=datetime.today(),
             minimum_lease_duration="1 year",
             cover_image=p["img"],
-            gallery=[p["img"]],
+            gallery=property_gallery,
             # Use the dynamically assigned landlord ID
             landlord_id=assigned_landlord_id,
             category_id=category.id,

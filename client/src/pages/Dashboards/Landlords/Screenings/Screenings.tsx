@@ -14,12 +14,10 @@ import {
   Modal,
   Textarea,
   Select,
-  Table,
   ActionIcon,
   Tooltip,
   Paper,
   Progress,
-  Divider,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
@@ -32,14 +30,13 @@ import {
   IconUser,
   IconHome,
   IconMail,
-  IconPhone,
   IconCalendar,
   IconCurrencyDollar,
   IconBriefcase,
   IconFileText,
 } from "@tabler/icons-react";
-import { useLandlordOperations } from "../../../../apis/landlordApi";
-import { BrandedLoader } from "../../../../components/LoadingSpinner";
+import { useLandlordOperations } from "@/apis/landlordApi";
+import { BrandedLoader } from "@/components/LoadingSpinner";
 
 interface Screening {
   id: string;
@@ -701,7 +698,7 @@ const LandlordScreenings: React.FC = () => {
   };
 
   if (loading) {
-    return <BrandedLoader />;
+    return <BrandedLoader inDashboard={true} />;
   }
 
   const tabCounts = getTabCounts();
@@ -711,7 +708,7 @@ const LandlordScreenings: React.FC = () => {
   const stats = getOverviewStats();
 
   return (
-    <Container fluid>
+    <Container p={"xl"} fluid>
       <Stack gap="xl">
         <div>
           <Title order={2}>Screening Management</Title>

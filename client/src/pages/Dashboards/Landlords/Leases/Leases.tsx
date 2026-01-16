@@ -21,8 +21,6 @@ import {
   Textarea,
   Select,
   Timeline,
-  List,
-  ThemeIcon,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
@@ -40,12 +38,9 @@ import {
   IconPlus,
   IconEye,
   IconEdit,
-  IconTrash,
   IconAlertCircle,
   IconCircleCheck,
   IconPencil,
-  IconDownload,
-  IconSend,
 } from "@tabler/icons-react";
 import { useLandlordOperations } from "../../../../apis/landlordApi";
 import { BrandedLoader } from "../../../../components/LoadingSpinner";
@@ -801,7 +796,7 @@ const LandlordLeases: React.FC = () => {
   };
 
   if (loading) {
-    return <BrandedLoader />;
+    return <BrandedLoader inDashboard={true} />;
   }
 
   const tabCounts = getTabCounts();
@@ -810,7 +805,7 @@ const LandlordLeases: React.FC = () => {
   );
 
   return (
-    <Container fluid>
+    <Container fluid p={"xl"}>
       <Stack gap="xl">
         <Group justify="space-between">
           <div>
@@ -819,7 +814,7 @@ const LandlordLeases: React.FC = () => {
               Create and manage lease agreements for your properties
             </Text>
           </div>
-          <Button leftSection={<IconPlus size={16} />} onClick={openCreate}>
+          <Button leftSection={<IconFileText size={16} />} onClick={openCreate} color={"#fb7185"} >
             Create Lease Agreement
           </Button>
         </Group>
