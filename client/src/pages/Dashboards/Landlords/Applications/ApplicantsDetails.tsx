@@ -1,19 +1,15 @@
 import { useEffect, useState, useRef } from "react"; // Added useRef
-import { useParams, useNavigate, Link } from "react-router-dom";
-import jsPDF from "jspdf"; // Added
-import html2canvas from "html2canvas"; // Added
+import { useParams, useNavigate } from "react-router-dom";
 import {
   IconDownload,
   IconMail,
   IconPhone,
-  IconIdBadge,
   IconHome,
   IconCircleCheck,
   IconCircleX,
   IconBriefcase,
   IconMapPin,
   IconArrowLeft,
-  IconExternalLink,
   IconCash,
   IconCalendarEvent,
   IconUserCheck,
@@ -27,16 +23,17 @@ import {
   Badge,
   Divider,
   Grid,
-  ActionIcon,
   Box,
   Paper,
   ThemeIcon,
   Container,
 } from "@mantine/core";
-import { formatDate } from "../../../../utils/helpers";
-import { BrandedLoader } from "../../../../components/LoadingSpinner";
-import { useLoading } from "../../../../hooks/useLoading";
-import { useLandlordOperations } from "../../../../apis/landlordApi";
+import { formatDate } from "@/utils/helpers";
+import { BrandedLoader } from "@/components/LoadingSpinner";
+import { useLoading } from "@/hooks/useLoading";
+import { useLandlordOperations } from "@/apis/landlordApi";
+import axiosInstance from "@/apis/axiosInstance.tsx";
+import {toast} from "react-hot-toast"
 
 function ApplicantDetails() {
   const { id } = useParams();
@@ -61,37 +58,35 @@ function ApplicantDetails() {
     fetchApplicantDetails();
   }, [id]);
 
-  // PDF Generation Logic
-  const handleExportPDF = async () => {
-    if (!reportRef.current) return;
+  const handleDownload = async () => {
     setExporting(true);
-
     try {
-      const element = reportRef.current;
-      const canvas = await html2canvas(element, {
-        scale: 2, // Better quality
-        useCORS: true, // Allows loading profile photos from other domains
-        logging: false,
-        backgroundColor: "#f4f6f8", // Matches your UI bg
-      });
+      const response = await axiosInstance.get(`/property-owner/applications/applicants/${id}/download`, { responseType: "blob"});
 
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
+      const url = window.URL.createObjectURL(new Blob([response.data]));
 
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      const link = document.createElement("a");
+      link.href = url;
 
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`Applicant_${applicant.firstName}_${applicant.lastName}.pdf`);
+      link.setAttribute("download", `Applicant_Profile_${id}.pdf`);
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // 5. Clean up the URL object to save memory
+      window.URL.revokeObjectURL(url);
+
+      toast.success("Download started");
     } catch (error) {
-      console.error("PDF Export failed:", error);
+      console.log("Error exporting data", error)
+      toast.error("Failed to export applicant data")
     } finally {
-      setExporting(false);
+      setExporting(false)
     }
-  };
+  }
 
-  if (loading || !applicantData) return <BrandedLoader fullScreen />;
+  if (loading || !applicantData) return <BrandedLoader inDashboard={true} label="Looking for applicant..." />;
 
   const { applicant, applications } = applicantData;
 
@@ -110,10 +105,10 @@ function ApplicantDetails() {
   );
 
   return (
-    <Box bg="#f4f6f8" py={40}>
-      <Container size="lg">
+    <Box bg="#f4f6f8" p={20}>
+      <Container size="xl">
         {/* TOP NAV BAR - Hidden during export if needed, but here we just trigger the function */}
-        <Group justify="space-between" mb="xl">
+        <Group justify="space-between" px={10}>
           <Button
             variant="subtle"
             color="gray"
@@ -126,7 +121,7 @@ function ApplicantDetails() {
             <Button
               variant="white"
               color="gray"
-              onClick={handleExportPDF}
+              onClick={handleDownload}
               loading={exporting}
               leftSection={<IconDownload size={16} />}
             >

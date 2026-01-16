@@ -1,17 +1,18 @@
-from flask import g
+from flask import g, make_response
 from flask_jwt_extended import (
     get_jwt_identity,
     create_refresh_token,
     create_access_token,
     get_jwt,
 )
-from datetime import timedelta
+from datetime import timedelta, datetime
 from ..models.db_utils import get_item_by_id, create_item
 from ..models import User, Category, Property
-import datetime
 import random
 import uuid
 import bcrypt
+from flask import render_template
+from weasyprint import HTML
 
 
 def response(msg: str, data=None, success=True):
@@ -595,3 +596,16 @@ def seed_users(session):
     except Exception as e:
         session.rollback()
         print(f"❌ Error seeding users: {e}")
+
+
+def generate_pdf(template_path, filename, **kwargs):
+    # kwargs allows you to pass any data (applicant, property, etc.)
+    html_content = render_template(template_path, now=datetime.now(), **kwargs)
+
+    # Generate PDF in memory
+    pdf_file = HTML(string=html_content).write_pdf()
+
+    response = make_response(pdf_file)
+    response.headers["Content-Type"] = "application/pdf"
+    response.headers["Content-Disposition"] = f'attachment; filename="{filename}.pdf"'
+    return response

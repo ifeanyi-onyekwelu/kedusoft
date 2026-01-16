@@ -1,0 +1,122 @@
+{% extends "pdf/base.html" %}
+{% block title %}Applicant Report{% endblock %}
+
+{% block content %}
+<style>
+    .section-header {
+        font-size: 12px;
+        font-weight: 700;
+        color: #290665;
+        text-transform: uppercase;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 8px;
+        margin-bottom: 15px;
+        margin-top: 25px;
+    }
+    .data-grid { width: 100%; margin-bottom: 20px; }
+    .data-label { color: #64748b; font-size: 11px; font-weight: 500; padding: 6px 0; width: 30%; }
+    .data-value { color: #0f172a; font-size: 12px; font-weight: 600; padding: 6px 0; }
+
+    .history-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    .history-table th { font-size: 10px; color: #64748b; text-transform: uppercase; padding: 12px 8px; border-bottom: 2px solid #f1f5f9; background: #f8fafc; }
+    .history-table td { font-size: 11px; padding: 12px 8px; border-bottom: 1px solid #f1f5f9; }
+
+    .verification-card {
+        background: #f1f5f9;
+        border-radius: 8px;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+    }
+    .note-box {
+        background: #faf5ff;
+        border-left: 4px solid #6366f1;
+        padding: 15px;
+        margin-top: 10px;
+        font-style: italic;
+        font-size: 11px;
+    }
+</style>
+
+<div class="section-header">Core Bio-Data</div>
+<table class="data-grid">
+    <tr>
+        <td class="data-label">Full Name</td>
+        <td class="data-value">{{ applicant.firstName }} {{ applicant.lastName }}</td>
+        <td class="data-label">Marital Status</td>
+        <td class="data-value">{{ applicant.marital_status or 'Not specified' }}</td>
+    </tr>
+    <tr>
+        <td class="data-label">Email</td>
+        <td class="data-value">{{ applicant.email }}</td>
+        <td class="data-label">Employment</td>
+        <td class="data-value">{{ applications[0].employment_status | capitalize }}</td>
+    </tr>
+    <tr>
+        <td class="data-label">Phone</td>
+        <td class="data-value">{{ applicant.phone_number or 'N/A' }}</td>
+        <td class="data-label">Occupants</td>
+        <td class="data-value">{{ applications[0].number_of_occupants or '1' }} Person(s)</td>
+    </tr>
+</table>
+
+<div class="section-header">Verification & Trust</div>
+<table class="data-grid" style="background: #f8fafc; border-radius: 8px; padding: 10px;">
+    <tr>
+        <td class="data-value" style="text-align: center;">
+            <span style="color: {{ '#16a34a' if applicant.is_email_verified else '#dc2626' }}">
+                {{ '●' if applicant.is_email_verified else '○' }} Email Verified
+            </span>
+        </td>
+        <td class="data-value" style="text-align: center;">
+            <span style="color: {{ '#16a34a' if applicant.is_verified else '#dc2626' }}">
+                {{ '●' if applicant.is_verified else '○' }} Identity Verified
+            </span>
+        </td>
+        <td class="data-value" style="text-align: center; color: #64748b;">
+            Joined {{ applicant.joined_at.strftime('%b %Y') }}
+        </td>
+    </tr>
+</table>
+
+{% if applications[0].message %}
+<div class="section-header">Personal Statement</div>
+<div class="note-box">
+    "{{ applications[0].message }}"
+</div>
+{% endif %}
+
+<div class="section-header">Property Interest History</div>
+<table class="history-table">
+    <thead>
+    <tr>
+        <th>Property Name</th>
+        <th>City/State</th>
+        <th>Applied On</th>
+        <th>Tour Status</th>
+        <th>Final Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for app in applications %}
+    <tr>
+        <td><strong>{{ app.property.name }}</strong></td>
+        <td>{{ app.property.city }}, {{ app.property.state }}</td>
+        <td>{{ app.created_at.strftime('%d %b %Y') }}</td>
+        <td style="color: #64748b;">
+            {% if app.tour_date %}
+            Confirmed: {{ app.tour_date.strftime('%d/%m/%y') }}
+            {% else %}
+            No tour
+            {% endif %}
+        </td>
+        <td>
+                <span class="status-badge {{ app.status }}">
+                    {{ app.status | replace('_', ' ') }}
+                </span>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

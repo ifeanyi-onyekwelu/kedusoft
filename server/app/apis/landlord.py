@@ -1,8 +1,7 @@
 from flask import Blueprint, request, g
 from flask_jwt_extended import jwt_required
-import logging
 from ..utils.decorators import role_required
-from ..utils.helpers import response, serialize, get_logged_in_user
+from ..utils.helpers import response, serialize, get_logged_in_user, generate_pdf
 from ..utils.errors import CustomRequestError, catch_exception
 from ..utils.mailer import send_email
 from ..utils.activity_logger import ActivityLogger
@@ -32,7 +31,7 @@ from ..models.transaction import PaymentPurpose
 import logging
 from datetime import datetime, timedelta
 from sqlalchemy.orm import joinedload
-from sqlalchemy import func, and_, or_, desc, asc
+from sqlalchemy import func, or_, desc
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -921,6 +920,42 @@ def get_applicant_details(applicant_id):
             "applicant": serialize(applicant),
             "applications": serialized_applications,
         },
+    )
+
+
+@landlord.route("/applications/applicants/<string:applicant_id>/download", methods=["GET"])
+@catch_exception
+@jwt_required()
+@role_required("landlord")
+def download_applicant_profile_pdf(applicant_id):
+    """Generates a PDF Profile of an applicant for the Landlord"""
+    user_id, _, _ = get_logged_in_user()
+
+    # 1. Verify access: Get landlord's properties
+    properties = get_items_by_filter(g.session, Property, {"landlord_id": user_id})
+    property_ids = [prop.id for prop in properties]
+
+    # 2. Get applications and applicant data
+    applications = (
+        g.session.query(Application)
+        .options(joinedload(Application.property))
+        .filter(
+            Application.tenant_id == applicant_id,
+            Application.property_id.in_(property_ids),
+            )
+        .all()
+    )
+
+    if not applications:
+        raise CustomRequestError("Applicant profile not accessible", 404)
+
+    applicant = get_item_by_filter(g.session, User, {"id": applicant_id})
+
+    return generate_pdf(
+        template_path="pdf/applicant.html",
+        filename=f"Applicant_{id}",
+        applicant=applicant,
+        applications=applications
     )
 
 
