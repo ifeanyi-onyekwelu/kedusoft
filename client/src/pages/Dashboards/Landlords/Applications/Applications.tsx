@@ -35,15 +35,17 @@ import {
   IconCalendar,
   IconShieldCheck,
 } from "@tabler/icons-react";
-import EmptyState from "../../../../components/EmptyState";
-import { BrandedLoader } from "../../../../components/LoadingSpinner";
-import ConfirmationModal from "../../../../components/modals/ConfirmationModal";
-import { useLandlordOperations } from "../../../../apis/landlordApi";
-import { formatDate } from "../../../../utils/helpers";
-import { useLoading } from "../../../../hooks/useLoading";
+import EmptyState from "@/components/EmptyState";
+import { BrandedLoader } from "@/components/LoadingSpinner";
+import ConfirmationModal from "@/components/modals/ConfirmationModal";
+import { useLandlordOperations } from "@/apis/landlordApi";
+import { formatDate } from "@/utils/helpers";
+import { useLoading } from "@/hooks/useLoading";
 import { notifications } from "@mantine/notifications";
 
-// --- Sub-components ---
+type ApplicationWithExtra = Application & {
+  [key: string]: any;
+}
 
 const StatCard = ({ icon, label, value, change, changeType, color }: any) => (
   <Paper withBorder p="lg" radius="md" bg="white">
@@ -85,7 +87,7 @@ const StatusBadge = ({ status }: { status: string }) => {
     screening_invited: "orange",
     screening: "orange",
     screening_completed: "grape",
-    approved: "green",
+    accepted: "green",
     rejected: "red",
     lease_created: "teal",
   };
@@ -95,6 +97,8 @@ const StatusBadge = ({ status }: { status: string }) => {
     screening_invited: "Screening Invited",
     screening: "Screening Invited",
     screening_completed: "Screening Done",
+    accepted: "Accepted",
+    rejected: "Rejected",
     lease_created: "Lease Active",
   };
 
@@ -257,12 +261,10 @@ const ApplicationTableRow = ({ application, onAction }: any) => (
   </Box>
 );
 
-// --- Main Component ---
-
 function Applications() {
   const navigate = useNavigate();
-  const [applications, setApplications] = useState<any[]>([]);
-  const [filteredApplications, setFilteredApplications] = useState<any[]>([]);
+  const [applications, setApplications] = useState<ApplicationWithExtra[]>([]);
+  const [filteredApplications, setFilteredApplications] = useState<ApplicationWithExtra[]>([]);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -271,11 +273,12 @@ function Applications() {
   });
   const [stats, setStats] = useState({
     total: 0,
-    pending: 0,
-    approved: 0,
+    received: 0,
+    under_review: 0,
+    tour_scheduled: 0,
+    accepted: 0,
     rejected: 0,
     screening: 0,
-    received: 0,
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
@@ -325,7 +328,7 @@ function Applications() {
 
   const fetchStats = async () => {
     const response = await getApplicationStats();
-    if (response) setStats(response);
+    setStats(response);
   };
 
   const fetchAll = async () => {
@@ -427,6 +430,8 @@ function Applications() {
     }
   };
 
+  // if (loading || !applications || !applications.length) return <BrandedLoader inDashboard={true} label="Fetching applications..." />
+
   return (
     <div className="space-y-6 p-4 sm:p-8 bg-gray-50 min-h-screen">
       {/* Header */}
@@ -463,7 +468,7 @@ function Applications() {
           <StatCard
             icon={<IconClock size={20} />}
             label="New / Pending"
-            value={stats.received + stats.pending}
+            value={stats.received}
             color="yellow"
           />
         </Grid.Col>
@@ -479,7 +484,7 @@ function Applications() {
           <StatCard
             icon={<IconChecks size={20} />}
             label="Approved"
-            value={stats.approved}
+            value={stats.accepted}
             color="green"
           />
         </Grid.Col>
@@ -526,11 +531,7 @@ function Applications() {
 
           {/* Content */}
           <Box p={isMobile ? "md" : 0}>
-            {loading ? (
-              <Box py={50}>
-                <BrandedLoader />
-              </Box>
-            ) : filteredApplications.length > 0 ? (
+            { filteredApplications.length > 0 ? (
               <>
                 {isMobile ? (
                   <Stack gap="sm">

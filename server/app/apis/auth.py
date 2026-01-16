@@ -284,10 +284,10 @@ def create_info_based_on_role(session, user_id: str, role: str) -> None:
     if role == "landlord":
         from ..models.landlord_info import LandlordInfo
 
+        logging.info(f"Landlord id: {user_id}")
         existing_info = get_item_by_filter(session, LandlordInfo, {"user_id": user_id})
         if not existing_info:
             create_item(session, LandlordInfo, {"user_id": user_id})
-            logger.info(f"Created LandlordInfo for user_id: {user_id}")
     if role == "tenant":
         from ..models.tenant_info import TenantInfo
 

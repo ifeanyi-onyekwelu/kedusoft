@@ -63,8 +63,8 @@ function PropertyDetailsComponent() {
     if (!isAuthenticated) return toast.error("Please login to save properties");
     try {
       if (likedData.isLiked) await unlikeProperty(likedData.likeId!);
-      else await likeProperty(property?.id!);
-      const recheck = await checkIfLiked(property?.id!);
+      else await likeProperty(property?.id);
+      const recheck = await checkIfLiked(property?.id);
       setLikedData(recheck);
     } catch (e) {
       toast.error("Action failed");

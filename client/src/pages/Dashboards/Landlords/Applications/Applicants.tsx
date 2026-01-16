@@ -2,12 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Group,
-  Pagination,
   TextInput,
   Select,
   Badge,
   ActionIcon,
-  Card,
   Grid,
   Text,
   Title,
@@ -34,11 +32,11 @@ import {
   IconCircleCheckFilled,
   IconAlertCircle,
 } from "@tabler/icons-react";
-import EmptyState from "../../../../components/EmptyState";
-import { BrandedLoader } from "../../../../components/LoadingSpinner";
-import { useLandlordOperations } from "../../../../apis/landlordApi";
-import { formatDate } from "../../../../utils/helpers";
-import { useLoading } from "../../../../hooks/useLoading";
+import { BrandedLoader } from "@/components/LoadingSpinner";
+import { useLandlordOperations } from "@/apis/landlordApi";
+import { formatDate } from "@/utils/helpers";
+import { useLoading } from "@/hooks/useLoading";
+import { toast } from "react-hot-toast"
 
 const ApplicantCard = ({
   applicant,
@@ -258,7 +256,8 @@ function Applicants() {
       const response = await withLoading(getApplicants());
       setApplicants(response.applicants || []);
       setFilteredApplicants(response.applicants || []);
-    } catch (error) {
+    } catch {
+      toast.error("Failed to fetch applicants")
       setApplicants([]);
     }
   };
@@ -297,10 +296,9 @@ function Applicants() {
   return (
     <Box p={isMobile ? "md" : "xl"} bg="#fcfcfd" style={{ minHeight: "100vh" }}>
       {loading ? (
-        <BrandedLoader />
+        <BrandedLoader inDashboard={true} label="Fetching applicants" />
       ) : (
         <Stack gap="xl">
-          {/* Header Section */}
           <Group justify="space-between" align="flex-end">
             <Box>
               <Title order={2} fw={800} style={{ letterSpacing: "-0.5px" }}>

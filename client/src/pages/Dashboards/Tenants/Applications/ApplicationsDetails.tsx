@@ -1,69 +1,68 @@
 import {
+  IconAlertCircle,
   IconArrowLeft,
-  IconMapPin,
-  IconHome,
-  IconUser,
+  IconBath,
+  IconBed,
+  IconBuildingStore,
   IconCalendar,
   IconCheck,
-  IconX,
-  IconProgress,
-  IconEye,
-  IconDownload,
-  IconUpload,
-  IconMessage,
-  IconPhone,
-  IconMail,
-  IconFileText,
-  IconAlertCircle,
+  IconChevronRight,
   IconClipboardCheck,
-  IconBuildingStore,
-  IconBed,
-  IconBath,
+  IconClock,
+  IconDownload,
+  IconEye,
+  IconFileDescription,
+  IconFileText,
+  IconHome,
+  IconHomeHeart,
+  IconInfoCircle,
+  IconMail,
+  IconMapPin,
+  IconMessage,
+  IconNotes,
+  IconPhone,
+  IconProgress,
   IconRuler,
   IconTrash,
-  IconClock,
-  IconInfoCircle,
-  IconChevronRight,
-  IconHomeHeart,
-  IconFileDescription,
-  IconNotes,
+  IconUpload,
+  IconUser,
+  IconX,
 } from "@tabler/icons-react";
 import {
-  Badge,
-  Card,
-  Group,
-  Text,
-  Stack,
-  Grid,
   Alert,
-  Tabs,
-  Paper,
-  ActionIcon,
-  Button,
-  Image,
-  Divider,
-  SimpleGrid,
-  RingProgress,
-  Center,
-  Modal,
+  Badge,
   Box,
+  Button,
+  Card,
+  Center,
   Container,
+  Divider,
+  Grid,
+  Group,
+  Image,
+  Modal,
+  Paper,
   Progress,
+  RingProgress,
+  SimpleGrid,
+  Stack,
+  Text,
 } from "@mantine/core";
-import { Link, useParams, useNavigate } from "react-router-dom";
-import React, { useEffect, useState } from "react";
-import { getApplication, deleteApplication } from "@/apis/tenantApi";
-import { formatDate } from "@/utils/helpers";
-import { useLoading } from "@/hooks/useLoading";
-import { ErrorState } from "@/components/ErrorState";
-import { BrandedLoader } from "@/components/LoadingSpinner";
+import {Link, useNavigate, useParams} from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {useTenantOperations} from "@/apis/tenantApi.tsx";
+import {formatDate} from "@/utils/helpers";
+import {useLoading} from "@/hooks/useLoading";
+import {ErrorState} from "@/components/ErrorState";
+import {BrandedLoader} from "@/components/LoadingSpinner";
+import {toast} from "react-hot-toast";
 
 // Withdrawal Confirmation Modal Component
 interface WithdrawModalProps {
   opened: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  application: any;
+  application: Application;
   loading?: boolean;
 }
 
@@ -108,7 +107,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
             <IconCalendar size={14} color="gray" />
             <Text size="xs" c="dimmed">
               Applied:{" "}
-              {formatDate(application.date_applied || application.created_at)}
+              {formatDate(application.date_applied || application.date_applied)}
             </Text>
           </Group>
         </Paper>
@@ -138,13 +137,13 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
 );
 
 // Status Timeline Component
-const StatusTimeline = ({ application }: { application: any }) => {
+const StatusTimeline = ({ application }: { application: Application }) => {
   const getTimelineData = () => {
-    const baseTimeline = [
+    return [
       {
         title: "Application Submitted",
         description: `Applied on ${formatDate(
-          application.date_applied || application.created_at
+            application.date_applied || application.date_applied
         )}`,
         icon: IconClipboardCheck,
         color: "#fb7185",
@@ -152,25 +151,25 @@ const StatusTimeline = ({ application }: { application: any }) => {
       },
       {
         title: "Application Viewed",
-        description: application.viewed_at
-          ? `Viewed on ${formatDate(application.viewed_at)}`
-          : "Awaiting landlord review",
+        description: application.date_viewed
+            ? `Viewed on ${formatDate(application.date_viewed)}`
+            : "Awaiting landlord review",
         icon: IconEye,
-        color: application.viewed_at ? "#10b981" : "gray",
-        completed: !!application.viewed_at,
+        color: application.date_viewed ? "#10b981" : "gray",
+        completed: !!application.date_viewed,
       },
       {
         title: "Under Review",
         description: "Landlord is reviewing your application",
         icon: IconProgress,
         color: ["under-review", "in-progress", "accepted", "rejected"].includes(
-          application.status
+            application.status
         )
-          ? "#f59e0b"
-          : "gray",
+            ? "#f59e0b"
+            : "gray",
         completed: [
           "under-review",
-          "in-progress",
+          "tour-scheduled",
           "accepted",
           "rejected",
         ].includes(application.status),
@@ -178,30 +177,28 @@ const StatusTimeline = ({ application }: { application: any }) => {
       {
         title: "Final Decision",
         description:
-          application.status === "accepted" || application.status === "approved"
-            ? "Congratulations! Application approved"
-            : application.status === "rejected"
-            ? "Application was not approved"
-            : "Awaiting final decision",
+            application.status === "accepted"
+                ? "Congratulations! Application approved"
+                : application.status === "rejected"
+                    ? "Application was not approved"
+                    : "Awaiting final decision",
         icon:
-          application.status === "accepted" || application.status === "approved"
-            ? IconCheck
-            : application.status === "rejected"
-            ? IconX
-            : IconProgress,
+            application.status === "accepted"
+                ? IconCheck
+                : application.status === "rejected"
+                    ? IconX
+                    : IconProgress,
         color:
-          application.status === "accepted" || application.status === "approved"
-            ? "#10b981"
-            : application.status === "rejected"
-            ? "#ef4444"
-            : "gray",
+            application.status === "accepted"
+                ? "#10b981"
+                : application.status === "rejected"
+                    ? "#ef4444"
+                    : "gray",
         completed: ["accepted", "approved", "rejected"].includes(
-          application.status
+            application.status
         ),
       },
     ];
-
-    return baseTimeline;
   };
 
   const timelineData = getTimelineData();
@@ -283,29 +280,29 @@ const StatusTimeline = ({ application }: { application: any }) => {
 };
 
 // Property Details Component
-const PropertyDetailsCard = ({ application }: { application: any }) => (
+const PropertyDetailsCard = ({ application }: { application: Application }) => (
   <Card withBorder padding="xl" radius="md">
     <Stack gap="lg">
-      <Group justify="space-between">
-        <div>
-          <Text size="lg" fw={700} mb={4}>
-            Property Details
-          </Text>
-          <Text size="sm" c="dimmed">
-            Your selected rental property
-          </Text>
-        </div>
-        <ActionIcon
-          component={Link}
-          to={`/listings/${application.property?.id}`}
-          variant="subtle"
-          size="lg"
-          color="blue"
-          radius="md"
-        >
-          <IconEye size={22} />
-        </ActionIcon>
-      </Group>
+      {/*<Group justify="space-between">*/}
+      {/*  <div>*/}
+      {/*    <Text size="lg" fw={700} mb={4}>*/}
+      {/*      Property Details*/}
+      {/*    </Text>*/}
+      {/*    <Text size="sm" c="dimmed">*/}
+      {/*      Your selected rental property*/}
+      {/*    </Text>*/}
+      {/*  </div>*/}
+      {/*  <ActionIcon*/}
+      {/*    component={Link}*/}
+      {/*    to={`/listings/${application.property?.id}`}*/}
+      {/*    variant="subtle"*/}
+      {/*    size="lg"*/}
+      {/*    color="blue"*/}
+      {/*    radius="md"*/}
+      {/*  >*/}
+      {/*    <IconEye size={22} />*/}
+      {/*  </ActionIcon>*/}
+      {/*</Group>*/}
 
       <Card.Section>
         {application?.property?.cover_image ? (
@@ -377,10 +374,10 @@ const PropertyDetailsCard = ({ application }: { application: any }) => (
                 <IconRuler size={20} color="#f59e0b" />
                 <Text size="xl" fw={700}>
                   {application.property?.size_sqft ||
-                  application.property?.square_feet
+                  application.property?.size_sqft
                     ? `${
                         application.property.size_sqft ||
-                        application.property.square_feet
+                        application.property.size_sqft
                       }`
                     : "-"}
                 </Text>
@@ -428,17 +425,15 @@ const PropertyDetailsCard = ({ application }: { application: any }) => (
 );
 
 // Application Info Card
-const ApplicationInfoCard = ({ application }: { application: any }) => {
+const ApplicationInfoCard = ({ application }: { application: Application }) => {
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { color: string; text: string }> = {
-      pending: { color: "orange", text: "Pending Review" },
-      "in-progress": { color: "blue", text: "Under Review" },
+      received: { color: "orange", text: "received" },
+      "tour-scheduled": { color: "blue", text: "Tour Scheduled" },
       "under-review": { color: "blue", text: "Under Review" },
-      accepted: { color: "green", text: "Approved" },
-      approved: { color: "green", text: "Approved" },
+      accepted: { color: "green", text: "Accepted" },
       rejected: { color: "red", text: "Rejected" },
-      screened: { color: "indigo", text: "Screened" },
-      unscreened: { color: "violet", text: "Screening Required" },
+      screening: { color: "indigo", text: "Screening" },
       viewed: { color: "gray", text: "Viewed" },
     };
 
@@ -491,7 +486,7 @@ const ApplicationInfoCard = ({ application }: { application: any }) => {
                 </Text>
               </Group>
               <Text size="sm" c="dimmed">
-                {formatDate(application.date_applied || application.created_at)}
+                {formatDate(application.date_applied || application.date_applied)}
               </Text>
             </div>
 
@@ -509,7 +504,7 @@ const ApplicationInfoCard = ({ application }: { application: any }) => {
           </Stack>
 
           <Stack gap="md">
-            {application.viewed_at && (
+            {application.date_viewed && (
               <div>
                 <Group gap="xs" mb={4}>
                   <IconEye size={18} color="#6b7280" />
@@ -518,7 +513,7 @@ const ApplicationInfoCard = ({ application }: { application: any }) => {
                   </Text>
                 </Group>
                 <Text size="sm" c="dimmed">
-                  {formatDate(application.viewed_at)}
+                  {formatDate(application.date_viewed)}
                 </Text>
               </div>
             )}
@@ -531,7 +526,7 @@ const ApplicationInfoCard = ({ application }: { application: any }) => {
                 </Text>
               </Group>
               <Text size="sm" c="dimmed">
-                {application?.category?.name || "Not specified"}
+                {application?.property.category?.name || "Not specified"}
               </Text>
             </div>
 
@@ -579,9 +574,10 @@ function ApplicationsDetails() {
   const params = useParams();
   const navigate = useNavigate();
   const { id: applicationId } = params;
-  const [application, setApplication] = useState<any>(null);
+  const [application, setApplication] = useState<Application>(null);
   const [error, setError] = useState<string | null>(null);
   const { loading, withLoading } = useLoading();
+  const { deleteApplication, getApplication, downloadApplication} = useTenantOperations()
 
   // Withdraw modal states
   const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
@@ -590,8 +586,10 @@ function ApplicationsDetails() {
   const fetchApplicationDetails = async () => {
     try {
       const response = await withLoading(getApplication(applicationId!));
+
+      console.log("application response", response);
       setApplication(response.application || response);
-    } catch (error: any) {
+    } catch (error) {
       setError(error.message || "Failed to fetch application details");
     }
   };
@@ -603,7 +601,7 @@ function ApplicationsDetails() {
     try {
       await withLoading(deleteApplication(applicationId));
       navigate("/tenants/applications");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Failed to withdraw application:", error);
       setError(error.message || "Failed to withdraw application");
     } finally {
@@ -611,6 +609,31 @@ function ApplicationsDetails() {
       setWithdrawModalOpen(false);
     }
   };
+
+  const handleDownloadApplication = async () => {
+    try {
+      const response = await withLoading(downloadApplication(applicationId))
+      console.log(response);
+
+      const blob = await response
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `application_${application?.application_id || applicationId}.pdf`;
+
+      // Append to DOM, click, and cleanup
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+    } catch (error) {
+      console.error("Failed to download application:", error);
+      toast.error("Failed to download application");
+    }
+  }
 
   useEffect(() => {
     if (applicationId) {
@@ -690,7 +713,7 @@ function ApplicationsDetails() {
                     color: [
                       "viewed",
                       "under-review",
-                      "in-progress",
+                      "tour-scheduled",
                       "accepted",
                       "approved",
                       "rejected",
@@ -710,7 +733,7 @@ function ApplicationsDetails() {
                       {[
                         "viewed",
                         "under-review",
-                        "in-progress",
+                        "tour-scheduled",
                         "accepted",
                         "approved",
                         "rejected",
@@ -771,9 +794,9 @@ function ApplicationsDetails() {
 
                   <Divider />
 
-                  {application.documents && application.documents.length > 0 ? (
+                  {(application as any).documents && (application as any).documents.length > 0 ? (
                     <Stack gap="md">
-                      {application.documents.map((doc: any, index: number) => (
+                      {(application as any).documents.map((doc: any, index: number) => (
                         <Paper
                           key={doc.id || index}
                           withBorder
@@ -867,12 +890,10 @@ function ApplicationsDetails() {
                         <Stack gap="md">
                           <div>
                             <Text fw={700} mb={8}>
-                              Property Owner
+                              Listed By
                             </Text>
                             <Text size="sm" mb={12}>
-                              {application.landlord?.name ||
-                                application.property?.landlord?.name ||
-                                "Landlord"}
+                              {`${application.landlord?.firstName} ${application.landlord?.lastName}`}
                             </Text>
                           </div>
 
@@ -902,8 +923,7 @@ function ApplicationsDetails() {
                               </Group>
                             )}
 
-                            {(application.landlord?.phone ||
-                              application.property?.landlord?.phone) && (
+                            {(application.landlord?.phone_number) && (
                               <Group gap="md">
                                 <Center
                                   style={{
@@ -920,8 +940,7 @@ function ApplicationsDetails() {
                                     Phone
                                   </Text>
                                   <Text size="sm" fw={500}>
-                                    {application.landlord?.phone ||
-                                      application.property?.landlord?.phone}
+                                    {application.landlord?.phone_number}
                                   </Text>
                                 </div>
                               </Group>
@@ -931,16 +950,14 @@ function ApplicationsDetails() {
                       </Paper>
 
                       <Group grow>
-                        {(application.landlord?.phone ||
-                          application.property?.landlord?.phone) && (
+                        {application.landlord?.phone_number && (
                           <Button
                             variant="light"
                             color="green"
                             leftSection={<IconPhone size={18} />}
                             component="a"
                             href={`tel:${
-                              application.landlord?.phone ||
-                              application.property?.landlord?.phone
+                              application.landlord?.phone_number
                             }`}
                             radius="sm"
                           >
@@ -981,15 +998,13 @@ function ApplicationsDetails() {
                   <Stack gap="sm">
                     <Button
                       component={Link}
-                      to={`/properties/${application.property?.id}`}
+                      to={`/listings/${application.property?.id}`}
                       variant="light"
                       color="blue"
                       leftSection={<IconEye size={18} />}
                       rightSection={<IconChevronRight size={16} />}
-                      fullWidth
-                      justify="space-between"
                       radius="sm"
-                      style={{ padding: "12px 16px" }}
+                      style={{ padding: "0 16px" }}
                     >
                       View Property Details
                     </Button>
@@ -1001,10 +1016,8 @@ function ApplicationsDetails() {
                       color="gray"
                       leftSection={<IconBuildingStore size={18} />}
                       rightSection={<IconChevronRight size={16} />}
-                      fullWidth
-                      justify="space-between"
                       radius="sm"
-                      style={{ padding: "12px 16px" }}
+                      style={{ padding: "0 16px" }}
                     >
                       Browse Properties
                     </Button>
@@ -1015,7 +1028,8 @@ function ApplicationsDetails() {
                       leftSection={<IconDownload size={18} />}
                       fullWidth
                       radius="sm"
-                      style={{ padding: "12px 16px" }}
+                      style={{ padding: "0 16px" }}
+                      onClick={handleDownloadApplication}
                     >
                       Download Application PDF
                     </Button>
@@ -1028,7 +1042,7 @@ function ApplicationsDetails() {
                       leftSection={<IconTrash size={18} />}
                       fullWidth
                       radius="sm"
-                      style={{ padding: "12px 16px" }}
+                      style={{ padding: "0 16px" }}
                       onClick={() => setWithdrawModalOpen(true)}
                     >
                       Withdraw Application

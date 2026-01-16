@@ -11,7 +11,7 @@ import { useLoading } from "@/hooks/useLoading";
 import { useTenantOperations } from "@/apis/tenantApi";
 import { FaDroplet, FaHouse, FaMapLocationDot, FaRuler } from "react-icons/fa6";
 
-const PropertyCard = ({ propertyData }: { propertyData: Property }) => {
+const PropertyCard = ({ propertyData, onUnlike  }: { propertyData: Property; onUnlike?: (propertyId: string) => void; }) => {
   const { isAuthenticated } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
   const { loading, withLoading } = useLoading();
@@ -83,6 +83,8 @@ const PropertyCard = ({ propertyData }: { propertyData: Property }) => {
         await withLoading(unlikeProperty(propertyData.id)
         );
         toast.success("Property removed from your saved list");
+
+        onUnlike?.(propertyData.id);
       } else {
         // Add to favorites
         await withLoading(likeProperty(propertyData.id));

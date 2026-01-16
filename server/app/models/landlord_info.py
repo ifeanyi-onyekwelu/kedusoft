@@ -71,6 +71,10 @@ class LandlordInfo(BaseModel):
     verification_notes = Column(Text)
     verification_attempts = Column(Integer, default=0)
 
+    # Onboarding
+    onboarding_step = Column(Integer, default=1)
+    is_onboarded = Column(Boolean, default=False)
+
     # Relationships
     user = relationship("User", back_populates="landlord_info")
 

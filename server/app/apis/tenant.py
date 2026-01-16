@@ -1,5 +1,16 @@
-from flask import Blueprint, request, g
+from flask import Blueprint, request, g, make_response
 from flask_jwt_extended import jwt_required
+import io
+from datetime import datetime, timedelta
+from reportlab.lib.units import cm
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, PageBreak
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+from sqlalchemy.orm import joinedload
+import logging
+import requests
+
 from ..utils.helpers import response, get_logged_in_user, serialize
 from ..utils.errors import CustomRequestError, catch_exception
 from ..models.db_utils import (
@@ -10,7 +21,6 @@ from ..models.db_utils import (
     delete_item,
     update_item,
 )
-from sqlalchemy.orm import joinedload
 from ..utils.decorators import role_required
 from ..models import (
     Application,
@@ -26,8 +36,6 @@ from ..models import (
     RecentActivity,
     TenantInfo,
 )
-import logging
-from datetime import datetime, timedelta
 from ..utils.activity_logger import ActivityLogger
 from ..utils.mailer import send_email
 from ..utils.variables import SITE_URL
@@ -234,13 +242,6 @@ def get_all_tenant_leases():
 @catch_exception
 @jwt_required()
 def submit_screening(screening_id):
-    """
-    Allows tenant to submit their screening data
-    - Updates screening with tenant's bio data
-    - Sets screening_date to current time
-    - Updates status to 'completed' for landlord review
-    - Notifies landlord that screening is ready for review
-    """
     user_id, _, _ = get_logged_in_user()
     data = request.get_json()
 
@@ -570,6 +571,13 @@ def get_all_applications_tenant():
         {
             "application_id": app.id,
             "property": serialize(app.property),
+            "landlord": {
+                "id": app.property.landlord.id,
+                "firstName": app.property.landlord.firstName,
+                "lastName": app.property.landlord.lastName,
+                "email": app.property.landlord.email,
+                "phone_number": getattr(app.property.landlord, 'phone_number', None), # Safe access
+            },
             "status": app.status,
             "viewed": "viewed" if app.viewed_at else "not yet",
             "date_applied": app.created_at.isoformat(),
@@ -582,6 +590,8 @@ def get_all_applications_tenant():
             "category": (
                 serialize(app.property.category) if app.property.category else None
             ),
+            "move_in_date": app.move_in_date.isoformat() if app.move_in_date else None,
+            "employment_status": app.employment_status,
         }
         for app in applications
     ]
@@ -617,25 +627,256 @@ def get_application_tenant(application_id):
     if not application:
         raise CustomRequestError("Application not found", 404)
 
-    property = get_item_by_id(g.session, Property, application.property_id)
-    if not property:
-        raise CustomRequestError("Property not found", 404)
+    property_obj = application.property
+    if not property_obj:
+        raise CustomRequestError("Associated property not found", 404)
 
-    response_data = {"application_id": application.id, "status": application.status,
-                     "viewed": "viewed" if application.viewed_at else "received",
-                     "date_applied": application.created_at.isoformat(), "date_viewed": (
-            application.viewed_at.isoformat() if application.viewed_at else None
-        ), "result": (
-            "approved"
-            if application.status == "accepted"
-            else "rejected" if application.status == "rejected" else "received"
-        ), "property": serialize(property), "category": (
-            serialize(property.category) if property.category else None
-        )}
+    landlord_obj = property_obj.landlord
+    response_data = {
+        "application_id": application.id,
+        "status": application.status,
+        "viewed": "viewed" if application.viewed_at else "received",
+        "date_applied": application.created_at.isoformat(),
+        "date_viewed": application.viewed_at.isoformat() if application.viewed_at else None,
+        "result": (
+            "approved" if application.status == "accepted"
+            else "rejected" if application.status == "rejected"
+            else "received"
+        ),
+        # New Application Detail Fields
+        "employment_status": application.employment_status,
+        "number_of_occupants": application.number_of_occupants,
+        "move_in_date": application.move_in_date.isoformat() if application.move_in_date else None,
+        "message": application.message,
+
+        # Property Data
+        "property": serialize(property_obj),
+        "category": serialize(property_obj.category) if property_obj.category else None,
+
+        # Landlord Data
+        "landlord": {
+            "id": landlord_obj.id,
+            "firstName": landlord_obj.firstName,
+            "lastName": landlord_obj.lastName,
+            "email": landlord_obj.email,
+            "phone_number": landlord_obj.phone_number,
+            "avatar": getattr(landlord_obj, 'profile_picture', None) # If you have this field
+        }
+    }
 
     return response(
         "Application retrieved successfully", {"application": response_data}
     )
+
+@tenant.route("/applications/<string:application_id>/download", methods=["GET"])
+@catch_exception
+@jwt_required()
+@role_required("tenant")
+def download_application_pdf(application_id):
+    user_id, _, _ = get_logged_in_user()
+
+    application = (
+        g.session.query(Application)
+        .join(Property)
+        .filter(Application.id == application_id, Application.tenant_id == user_id)
+        .first()
+    )
+
+    if not application:
+        raise CustomRequestError("Application not found", 404)
+
+    buffer = io.BytesIO()
+
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        rightMargin=1 * cm,
+        leftMargin=1 * cm,
+        topMargin=2 * cm,
+        bottomMargin=1.5 * cm,
+    )
+    doc.title = f"Letsten Application - {application.id}"
+    doc.author = "Letsten"
+    doc.subject = "Letsten Application PDF"
+
+
+    styles = getSampleStyleSheet()
+
+    main_title_style = ParagraphStyle(
+        "MainTitle",
+        parent=styles["Title"],
+        fontSize=20,
+        alignment=1,
+        textColor=colors.HexColor("#1e293b"),
+        spaceAfter=6,
+    )
+
+    section_title_style = ParagraphStyle(
+        "SectionTitle",
+        parent=styles["Heading2"],
+        fontSize=14,
+        textColor=colors.HexColor("#334155"),
+        spaceBefore=12,
+        spaceAfter=6,
+    )
+
+    label_style = ParagraphStyle(
+        "Label",
+        parent=styles["Normal"],
+        fontSize=10,
+        fontName="Helvetica-Bold",
+        textColor=colors.HexColor("#475569"),
+    )
+
+    value_style = ParagraphStyle(
+        "Value",
+        parent=styles["Normal"],
+        fontSize=10,
+        textColor=colors.HexColor("#0f172a"),
+    )
+
+    footer_style = ParagraphStyle(
+        "Footer",
+        parent=styles["Normal"],
+        fontSize=8,
+        alignment=1,
+        textColor=colors.grey,
+    )
+
+    def cell(text, style=value_style):
+        return Paragraph(str(text or "Not specified"), style)
+
+    story = []
+
+    # ================= HEADER (LOGO + TITLE) =================
+    LOGO_URL = "https://res.cloudinary.com/dhzujlkls/image/upload/v1766829730/logo_frx51w.png"
+
+    try:
+        logo_response = requests.get(LOGO_URL, timeout=5)
+        logo_response.raise_for_status()
+
+        logo = Image(
+            io.BytesIO(logo_response.content),
+            width=3.5 * cm,
+            height=1.2 * cm,
+        )
+
+        header = Table(
+            [[logo, Paragraph("RENTAL APPLICATION", main_title_style)]],
+            colWidths=[5 * cm, 12 * cm],
+        )
+
+        header.setStyle(TableStyle([
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ("ALIGN", (1, 0), (1, 0), "RIGHT"),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+        ]))
+
+        story.append(header)
+
+    except Exception:
+        story.append(Paragraph("RENTAL APPLICATION", main_title_style))
+
+    story.append(
+        Paragraph(
+            f"<b>Application ID:</b> {application.id} &nbsp;&nbsp; "
+            f"<b>Generated:</b> {datetime.now().strftime('%B %d, %Y %I:%M %p')}",
+            styles["Normal"],
+        )
+    )
+
+    story.append(Spacer(1, 12))
+
+    # ================= STATUS =================
+    story.append(Paragraph("APPLICATION STATUS", section_title_style))
+
+    status_color = {
+        "received": "#f59e0b",
+        "under-review": "#3b82f6",
+        "tour-scheduled": "#8b5cf6",
+        "accepted": "#10b981",
+        "rejected": "#ef4444",
+    }.get(application.status.lower(), "#6b7280")
+
+    status_table = Table(
+        [
+            [cell("Current Status:", label_style),
+             Paragraph(f"<font color='{status_color}'><b>{application.status.upper()}</b></font>", value_style)],
+            [cell("Date Applied:", label_style),
+             cell(application.created_at.strftime("%B %d, %Y"))],
+            [cell("Date Viewed:", label_style),
+             cell(application.viewed_at.strftime("%B %d, %Y") if application.viewed_at else "Not yet viewed")],
+        ],
+        colWidths=[4 * cm, 13 * cm],
+    )
+
+    status_table.setStyle(TableStyle([
+        ("LINEBELOW", (0, 0), (-1, -1), 0.5, colors.HexColor("#e2e8f0")),
+        ("TOPPADDING", (0, 0), (-1, -1), 4),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+    ]))
+
+    story.append(status_table)
+
+    # ================= APPLICANT =================
+    story.append(Spacer(1, 12))
+    story.append(Paragraph("APPLICANT INFORMATION", section_title_style))
+
+    applicant = application.applicant or application.tenant
+
+    applicant_table = Table(
+        [
+            [cell("Full Name:", label_style), cell(f"{applicant.firstName} {applicant.lastName}")],
+            [cell("Email:", label_style), cell(applicant.email)],
+            [cell("Phone:", label_style), cell(applicant.phone_number)],
+            [cell("Employment Status:", label_style), cell(application.employment_status)],
+            [cell("Occupants:", label_style), cell(application.number_of_occupants or 1)],
+            [cell("Move-in Date:", label_style),
+             cell(application.move_in_date.strftime("%B %d, %Y") if application.move_in_date else "Flexible")],
+        ],
+        colWidths=[4.5 * cm, 12.5 * cm],
+    )
+
+    story.append(applicant_table)
+
+    # ================= PROPERTY =================
+    story.append(Spacer(1, 14))
+    story.append(Paragraph("PROPERTY DETAILS", section_title_style))
+
+    prop = application.property
+
+    property_table = Table(
+        [
+            [cell("Property Name:", label_style), cell(prop.name)],
+            [cell("Address:", label_style), cell(prop.address)],
+            [cell("Type:", label_style), cell(prop.category.name if prop.category else None)],
+            [cell("Rent:", label_style), cell(f"${prop.rent_amount:,.2f}")],
+            [cell("Payment Cycle:", label_style), cell(prop.payment_structure)],
+        ],
+        colWidths=[4 * cm, 13 * cm],
+    )
+
+    story.append(property_table)
+
+    # ================= FOOTER =================
+    story.append(Spacer(1, 20))
+    story.append(
+        Paragraph(
+            "This document was automatically generated by Letsten Ltd.",
+            footer_style,
+        )
+    )
+
+    doc.build(story)
+
+    pdf = buffer.getvalue()
+    buffer.close()
+
+    response = make_response(pdf)
+    response.headers["Content-Type"] = "application/pdf"
+    response.headers["Content-Disposition"] = f'attachment; filename="Letsten_Application_{application.id}.pdf"'
+
+    return response
 
 
 @tenant.route("/applications/<string:application_id>", methods=["DELETE"])
@@ -835,7 +1076,7 @@ def get_liked_properties():
     )
 
     properties_data = [
-        {"like_id": like.id, "property": like.property} for like in liked_properties
+        {"like_id": like.id, "property": serialize(like.property)} for like in liked_properties
     ]
 
     return response("Liked properties retrieved", {"properties": properties_data})

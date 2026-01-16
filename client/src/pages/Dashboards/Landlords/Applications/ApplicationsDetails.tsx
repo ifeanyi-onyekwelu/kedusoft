@@ -12,8 +12,7 @@ import {
   Container,
   ThemeIcon,
   Avatar,
-  Divider,
-  rem,
+  Divider
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
@@ -39,21 +38,25 @@ import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { useLandlordOperations } from "../../../../apis/landlordApi";
-import { useLoading } from "../../../../hooks/useLoading";
-import { BrandedLoader } from "../../../../components/LoadingSpinner";
-import formatAmount from "../../../../utils/helpers";
-import { showNotification } from "../../../../utils/helpers";
-import { TextBounds } from "html2canvas/dist/types/css/layout/text";
+import { useLandlordOperations } from "@/apis/landlordApi";
+import { useLoading } from "@/hooks/useLoading";
+import { BrandedLoader } from "@/components/LoadingSpinner";
+import formatAmount from "@/utils/helpers";
+import { showNotification } from "@/utils/helpers";
+import {toast} from "react-hot-toast"
 
 // Brand Colors
 const PRIMARY_COLOR = "#290665";
-const ACCENT_BG = "#F3F0FF"; // Light Lavender
+const ACCENT_BG = "#F3F0FF";
+
+type ApplicationWithExtra = Application & {
+  [key: string]: any;
+}
 
 export default function ApplicationsDetails() {
   const { applicationId, propertyId } = useParams();
   const navigate = useNavigate();
-  const [application, setApplication] = useState<any>(null);
+  const [application, setApplication] = useState<ApplicationWithExtra>(null);
   const { loading, withLoading } = useLoading();
   const [actionLoading, setActionLoading] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -68,15 +71,12 @@ export default function ApplicationsDetails() {
 
   const fetchApplicationDetails = async () => {
     try {
-      const { application } = await withLoading(
+      const response = await withLoading(
         getApplication(propertyId!, applicationId!)
       );
-      setApplication(application);
+      setApplication(response['application']);
     } catch (error) {
-      showNotification(
-        "error",
-        "Error!",
-        "Failed to fetch application details"
+      toast.error("Failed to fetch application details"
       );
     }
   };
@@ -110,7 +110,8 @@ export default function ApplicationsDetails() {
       await withLoading(rejectApplication(application.id));
       fetchApplicationDetails();
     } catch (error) {
-      showNotification("error", "Error", "Failed to reject application");
+      console.log("Error fetching application details", error);
+      toast.error("Failed to reject application");
     } finally {
       setActionLoading(false);
     }
@@ -120,32 +121,27 @@ export default function ApplicationsDetails() {
     setActionLoading(true);
     try {
       await withLoading(createScreening(applicationId!, { bio_data: {} }));
-      notifications.show({
-        title: "Success",
-        message: "Tenant invited",
-        color: "green",
-      });
+      toast.success("Applicant invited for screening")
       fetchApplicationDetails();
     } catch (error) {
-      notifications.show({
-        title: "Error",
-        message: "Invite failed",
-        color: "red",
-      });
+      console.log("Error fetching application details", error);
+      toast.error("Failed to invite applicant for screening");
     } finally {
       setActionLoading(false);
     }
   };
 
-  if (loading) return <BrandedLoader fullScreen />;
+  if (loading) return <BrandedLoader inDashboard={true} />;
+
   if (!application) return null;
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       received: "blue",
-      "screening-invited": "yellow",
-      completed: "green",
-      approved: "teal",
+      screening: "yellow",
+      under_review: "green",
+      tour_scheduled: "green",
+      accepted: "teal",
       rejected: "red",
     };
     return colors[status] || "gray";
@@ -399,132 +395,78 @@ export default function ApplicationsDetails() {
 
           {/* RIGHT SIDEBAR (DECISION & FINANCIALS) */}
           <Grid.Col span={{ base: 12, md: 4 }}>
-            <Stack gap={20} style={{ position: "sticky", top: "20px" }}>
-              {/* DECISION CENTER */}
-              <Paper
-                radius="lg"
-                shadow="md"
-                withBorder
-                style={{ overflow: "hidden" }}
-              >
-                <Box bg={PRIMARY_COLOR} p="md">
-                  <Text
-                    c="white"
-                    fw={700}
-                    tt="uppercase"
-                    size="xs"
-                    lts={1.5}
-                    opacity={0.9}
-                  >
-                    Actions
-                  </Text>
-                </Box>
-                <Stack p="lg" gap="md">
-                  {application.status === "received" && (
-                    <>
-                      <Button
+            <Stack p="lg" gap="md">
+              {/* RECEIVED STATUS: Actionable buttons */}
+              {application.status === "received" && (
+                  <>
+                    <Button
                         fullWidth
                         size="md"
                         color={PRIMARY_COLOR}
                         leftSection={<IconCheck size={18} />}
                         loading={actionLoading}
                         onClick={handleInviteForScreening}
-                      >
-                        Accept & Screen
-                      </Button>
-                      <Button
+                    >
+                      Accept & Screen
+                    </Button>
+                    <Button
                         fullWidth
                         variant="light"
                         color="red"
                         leftSection={<IconX size={18} />}
                         loading={actionLoading}
                         onClick={handleRejectApplication}
-                      >
-                        Decline
-                      </Button>
-                    </>
-                  )}
-                  {["completed", "approved"].includes(application.status) && (
+                    >
+                      Decline
+                    </Button>
+                  </>
+              )}
+
+              {/* REJECTED STATUS: Static info block */}
+              {application.status === "rejected" && (
+                  <Box py="sm">
+                    <Group gap="xs" mb={10} c="red.7">
+                      <IconX size={20} stroke={3} />
+                      <Text fw={700} size="sm">Application Rejected</Text>
+                    </Group>
+                    <Text size="xs" c="dimmed" style={{ lineHeight: 1.5 }}>
+                      This application was declined. The applicant has been notified that the property is no longer available for them. No further actions can be taken.
+                    </Text>
                     <Button
-                      fullWidth
-                      size="md"
-                      color="teal"
-                      onClick={() =>
-                        navigate(
-                          `/property-owner/leases/create/${applicationId}`
-                        )
-                      }
+                        variant="subtle"
+                        color="gray"
+                        fullWidth
+                        mt="md"
+                        size="xs"
+                        onClick={() => navigate('/property-owner/applications')}
+                    >
+                      Return to Applications
+                    </Button>
+                  </Box>
+              )}
+
+
+              {["screened", "accepted", "completed", "approved"].includes(application.status) && (
+                  <Box>
+                    <Group gap="xs" mb="md" c="teal.7">
+                      <IconShieldCheck size={20} />
+                      <Text fw={700} size="sm">Application Verified</Text>
+                    </Group>
+                    <Button
+                        fullWidth
+                        size="md"
+                        color="teal"
+                        leftSection={<IconFileDescription size={18} />}
+                        onClick={() =>
+                            navigate(`/property-owner/leases/create/${applicationId}`)
+                        }
                     >
                       Generate Lease
                     </Button>
-                  )}
-                  {!["received", "completed", "approved"].includes(
-                    application.status
-                  ) && (
-                    <Group gap="xs" justify="center" py="sm">
-                      <BrandedLoader />
-                      <Text size="sm" c="dimmed">
-                        Processing screening...
-                      </Text>
-                    </Group>
-                  )}
-                </Stack>
-              </Paper>
-
-              {/* FINANCIAL CARD */}
-              <Paper radius="lg" p="lg" shadow="sm" withBorder>
-                <Group gap="xs" mb={20}>
-                  <ThemeIcon color="green" variant="light" size="md">
-                    <IconCurrencyNaira size={16} />
-                  </ThemeIcon>
-                  <Text fw={700} size="sm" c="dark.4">
-                    Financials
-                  </Text>
-                </Group>
-
-                <Stack gap="md">
-                  <Box>
-                    <Text size="xs" c="dimmed" fw={700} mb={4} tt="uppercase">
-                      Rent Value
-                    </Text>
-                    <Group gap={4} align="flex-end">
-                      <Text>
-                        ₦{application.property?.rent_amount?.toLocaleString()}
-                      </Text>
-                      <Text size="xs" c="dimmed" fw={600} mb={3}>
-                        / {application.property?.payment_structure || "year"}
-                      </Text>
-                    </Group>
                   </Box>
-
-                  <Divider />
-
-                  <Grid>
-                    <Grid.Col span={6}>
-                      <Text size="xs" c="dimmed" fw={700}>
-                        CAUTION
-                      </Text>
-                      <Text size="sm" fw={600}>
-                        ₦
-                        {application.property?.caution_fee?.toLocaleString() ||
-                          "0"}
-                      </Text>
-                    </Grid.Col>
-                    <Grid.Col span={6}>
-                      <Text size="xs" c="dimmed" fw={700}>
-                        LEGAL
-                      </Text>
-                      <Text size="sm" fw={600}>
-                        ₦
-                        {application.property?.agreement_fee?.toLocaleString() ||
-                          "0"}
-                      </Text>
-                    </Grid.Col>
-                  </Grid>
-                </Stack>
-              </Paper>
+              )}
             </Stack>
-          </Grid.Col>
+            </Grid.Col>
         </Grid>
       </Container>
     </Box>

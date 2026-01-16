@@ -97,7 +97,7 @@ const Header = ({ role, toggle }: HeaderProps) => {
         },
         replace: true
       });
-    } catch (err) {
+    } catch {
       toast.success("Error logging out")
     }
   };
@@ -335,7 +335,7 @@ const Header = ({ role, toggle }: HeaderProps) => {
                         {role === "tenant" && (
                           <>
                             <Link
-                              to="/tenants/liked"
+                              to="/tenants/favorites"
                               className="flex items-center gap-3 px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
                               onClick={() => setUserMenuOpened(false)}
                             >

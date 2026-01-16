@@ -929,20 +929,6 @@ def get_applicant_details(applicant_id):
 @jwt_required()
 @role_required("landlord")
 def get_application_stats():
-    """
-    Get comprehensive application statistics with date filtering support
-
-    Query Parameters:
-    - date_range: 'today', 'week', 'month', 'year', 'custom'
-    - start_date: ISO date string (for custom range)
-    - end_date: ISO date string (for custom range)
-    - compare: boolean - whether to include comparison with previous period
-
-    Returns:
-    - Current period application statistics
-    - Previous period statistics (if compare=true)
-    - Percentage changes and trends by status
-    """
     user_id, _, _ = get_logged_in_user()
 
     # Get query parameters
@@ -963,7 +949,7 @@ def get_application_stats():
     if not property_ids:
         return response(
             "No properties found",
-            {"total": 0, "pending": 0, "approved": 0, "rejected": 0, "screening": 0},
+            {"total": 0, "received": 0, "accepted": 0, "rejected": 0, "screening": 0, "under_review": 0, "tour_scheduled": 0},
         )
 
     # Current period statistics
@@ -2843,11 +2829,12 @@ def get_application_stats_for_period(property_ids, start_date, end_date):
     # Calculate statistics by status
     status_counts = {
         "total": len(applications),
-        "pending": 0,
-        "approved": 0,
+        "received": 0,
+        "accepted": 0,
         "rejected": 0,
         "screening": 0,
-        "received": 0,
+        "under_review": 0,
+        "tour_scheduled": 0,
     }
 
     # Count applications by status

@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
 import { getLikedProperties } from "@/apis/tenantApi";
-import PropertyCard from "@/components/shared/Dashboard/PropertyCard";
+import PropertyCard from "@/components/shared/public/PropertyCard";
 import { useLoading } from "@/hooks/useLoading";
-import { ErrorState } from "@/components/ErrorState";
 import { BrandedLoader } from "@/components/LoadingSpinner";
 import EmptyState from "@/components/EmptyState";
 import { useNavigate } from "react-router-dom";
 import {IconHeart, IconSearch, IconStar} from "@tabler/icons-react";
 import { Button, Text, Title, Stack } from "@mantine/core";
 import {ThemeIcon, Box} from "@mantine/core"
+import {toast} from "react-hot-toast"
 
 export default function LikedPropertiesPage() {
-  const [likedProperties, setLikedProperties] = useState<Property[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [likedProperties, setLikedProperties] = useState<{ liked_id: string, property: Property }[]>([]);
   const { loading, withLoading } = useLoading();
   const navigate = useNavigate();
 
@@ -21,9 +20,16 @@ export default function LikedPropertiesPage() {
       const response = await withLoading(getLikedProperties());
       setLikedProperties(response.properties);
     } catch {
-      setError("Failed to load liked properties");
+      toast.error("Failed to load liked properties");
     }
   };
+
+  const handleUnlike = (propertyId: string) => {
+    setLikedProperties((prev) =>
+        prev.filter((item) => item.property.id !== propertyId)
+    );
+  };
+
 
   useEffect(() => {
     fetchLikedProperties();
@@ -31,17 +37,8 @@ export default function LikedPropertiesPage() {
 
   if (loading) return <BrandedLoader inDashboard={true} label={"Have you liked any property? Let's see"} />;
 
-  if (error) {
-    return (
-      <ErrorState
-        message={error}
-        onRetry={fetchLikedProperties}
-        loading={loading}
-      />
-    );
-  }
 
-  if (!likedProperties || likedProperties.length === 0) {
+  if (!likedProperties || !likedProperties.length) {
     return (
         <div className="px-4 py-6">
           <EmptyState>
@@ -108,7 +105,8 @@ export default function LikedPropertiesPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {likedProperties &&
             likedProperties?.map((item) => (
-                <PropertyCard key={item.id} propertyData={item} />
+                <PropertyCard key={item.liked_id} propertyData={item.property} onUnlike={handleUnlike}
+                />
             ))}
       </div>
     </div>

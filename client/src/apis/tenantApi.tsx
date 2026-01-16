@@ -2,11 +2,6 @@ import { useCallback } from "react";
 import axiosInstance from "./axiosInstance";
 import { useApiOperation, useFormSubmission } from "../hooks/useApiOperation";
 
-/**
- * Tenant API Service
- * Contains all API endpoints related to tenant operations with enhanced error handling
- */
-
 // ==============================================
 // API FUNCTIONS
 // ==============================================
@@ -21,6 +16,13 @@ export const tenantApi = {
   async getApplication(applicationId: string) {
     const response = await axiosInstance.get(
       `tenant/applications/${applicationId}`
+    );
+    return response.data;
+  },
+
+  async downloadApplication(applicationId: string) {
+    const response = await axiosInstance.get(
+      `tenant/applications/${applicationId}/download`, { responseType: "blob" }
     );
     return response.data;
   },
@@ -278,6 +280,15 @@ export const useTenantOperations = () => {
     [executeOperation]
   );
 
+  const downloadApplication = useCallback(
+      async (applicationId: string) => {
+        return executeOperation(() => tenantApi.downloadApplication(applicationId), {
+          customErrorMessage: "Failed to download application",
+        })
+      },
+      [executeOperation]
+  )
+
   const getLikedProperties = useCallback(async () => {
     return executeOperation(() => tenantApi.getLikedProperties(), {
       customErrorMessage: "Failed to load liked properties",
@@ -474,6 +485,7 @@ export const useTenantOperations = () => {
     getApplication,
     applyForProperty,
     deleteApplication,
+    downloadApplication,
 
     // Property operations
     getLikedProperties,

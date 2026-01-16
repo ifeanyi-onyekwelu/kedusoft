@@ -8,10 +8,6 @@ import { Stack, Text, Title, Button, ThemeIcon, Box } from "@mantine/core";
 import {
   IconBrain,
   IconAdjustments,
-  IconStar,
-  IconMapPin,
-  IconCurrencyNaira,
-  IconBed,
   IconRefresh,
   IconSparkles,
   IconArrowRight,
