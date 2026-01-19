@@ -1,8 +1,3 @@
-"""
-Main application factory for the Letsten Rental API.
-Initializes Flask app, database connections, and all extensions.
-"""
-
 from flask import Flask, request, g
 from flask_docs_api.api import Api
 from flask_cors import CORS
@@ -10,7 +5,6 @@ from flask_jwt_extended import JWTManager
 from flask_socketio import SocketIO
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
-from datetime import datetime
 import click
 from .utils.helpers import response
 from .utils.variables import (
@@ -31,13 +25,6 @@ socketio = SocketIO(cors_allowed_origins="*", async_mode="threading")
 
 
 def create_app():
-    """
-    Application factory that creates and configures the Flask app.
-    Sets up database connections, authentication, and API routes.
-
-    Returns:
-        Flask: Configured Flask application instance
-    """
     global Session, socketio  # Access the global Session and SocketIO variables
 
     sentry_sdk.init(

@@ -597,6 +597,7 @@ def get_all_applications_tenant():
     ]
 
     status_counts = {
+        "received": sum(1 for app in applications if app.status == "received" is not None),
         "screening": sum(1 for app in applications if app.viewed_at is not None),
         "under-review": sum(1 for app in applications if app.status == "under-review"),
         "accepted": sum(1 for app in applications if app.status == "accepted"),

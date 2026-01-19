@@ -616,7 +616,8 @@ function Applications() {
               placeholder="Filter by status"
               data={[
                 { value: "all", label: "All Statuses" },
-                { value: "under-review", label: "Received" },
+                { value: "received", label: "Received" },
+                { value: "under-review", label: "Under Received" },
                 { value: "screening", label: "Screening" },
                 { value: "accepted", label: "Accepted" },
                 { value: "rejected", label: "Rejected" },

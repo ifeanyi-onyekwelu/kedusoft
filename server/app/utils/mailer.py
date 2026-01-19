@@ -1,7 +1,6 @@
 from flask import Flask, render_template, current_app
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail, Email, To, Content
-from .variables import SENDGRID_API_KEY
+import resend
+from .variables import RESEND_API_KEY
 import logging
 
 # Configure logging
@@ -10,10 +9,9 @@ logger = logging.getLogger(__name__)
 
 
 def init_mail(app: Flask):
-    """Initialize mail extension with Flask app"""
-    # Store SendGrid API key in app config
-    app.config["SENDGRID_API_KEY"] = SENDGRID_API_KEY
-    logger.info("SendGrid mailer initialized with Flask app")
+    app.config["RESEND_API_KEY"] = RESEND_API_KEY
+    resend.api_key = RESEND_API_KEY
+    logger.info("Resend mailer initialized with Flask app")
 
 
 def send_email(
@@ -25,27 +23,14 @@ def send_email(
     sender: str = None,
     template_folder: str = None,
 ) -> bool:
-    """
-    Send email using SendGrid
-
-    Args:
-        subject: Email subject
-        recipients: List of recipient emails
-        template_name: Name of template file (without .html extension)
-        template_vars: Variables to pass to the template
-        body: Raw email body (alternative to template)
-        sender: Optional sender override (default: noreply@kedusoft.com)
-        template_folder: Optional folder path inside emails/ directory (e.g., 'landlord' or 'tenant')
-
-    Returns:
-        bool: True if email sent successfully, False otherwise
-    """
     try:
         # Get SendGrid API key from app config
-        sg_api_key = current_app.config.get("SENDGRID_API_KEY")
-        if not sg_api_key:
-            logger.error("SendGrid API key not configured")
+        api_key = current_app.config.get("RESEND_API_KEY")
+        if not api_key:
+            logger.error("Resend API key not configured")
             return False
+
+        resend.api_key = api_key
 
         # Prepare content
         if template_name:
@@ -64,28 +49,19 @@ def send_email(
             html_content = body or ""
 
         # Set sender email
-        from_email = sender or "ifeanyi.onyekwelu@kedusoft.com"
+        from_email = sender or "Letsten <no-reply@mail.letsten.com>"
 
         # Create Mail object
-        mail = Mail(
-            from_email=from_email,
-            to_emails=recipients if isinstance(recipients, list) else [recipients],
-            subject=subject,
-            html_content=html_content,
-        )
+        resend.Emails.send({
+            "from": from_email,
+            "to": recipients if isinstance(recipients, list) else [recipients],
+            "subject": subject,
+            "html": html_content,
+        })
 
-        # Send email via SendGrid
-        sg = SendGridAPIClient(sg_api_key)
-        response = sg.send(mail)
-
-        # Check response status
-        if response.status_code in [200, 201, 202]:
-            logger.info(f"Email sent successfully to {recipients}: {subject}")
-            return True
-        else:
-            logger.error(f"SendGrid returned status code {response.status_code}")
-            return False
+        logger.info(f"Email sent successfully to {recipients}: {subject}")
+        return True
 
     except Exception as e:
-        logger.error(f"Error sending email via SendGrid: {e}")
+        logger.error(f"Error sending email via Resend: {e}")
         return False

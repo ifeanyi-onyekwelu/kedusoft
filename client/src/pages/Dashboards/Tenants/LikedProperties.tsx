@@ -5,7 +5,7 @@ import { useLoading } from "@/hooks/useLoading";
 import { BrandedLoader } from "@/components/LoadingSpinner";
 import EmptyState from "@/components/EmptyState";
 import { useNavigate } from "react-router-dom";
-import {IconHeart, IconSearch, IconStar} from "@tabler/icons-react";
+import {IconHeart, IconRefresh, IconSearch, IconStar} from "@tabler/icons-react";
 import { Button, Text, Title, Stack } from "@mantine/core";
 import {ThemeIcon, Box} from "@mantine/core"
 import {toast} from "react-hot-toast"
@@ -102,6 +102,15 @@ export default function LikedPropertiesPage() {
 
   return (
     <div className="px-6 space-y-10 py-5">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">My Likes</h1>
+          <p className="text-gray-600">
+            View and manage your likes here
+          </p>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {likedProperties &&
             likedProperties?.map((item) => (

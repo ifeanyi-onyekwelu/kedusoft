@@ -34,7 +34,8 @@ import {
   StatCardSkeleton,
 } from "@/components/skeletons/DashboardSkeletons";
 import Header from "@/components/shared/Dashboard/Header";
-import EnhancedRecommendations from "@/components/dashboard/EnhancedRecommendation";
+import { toast } from "react-hot-toast"
+// import EnhancedRecommendations from "@/components/dashboard/EnhancedRecommendation";
 
 interface UserTypes {
   firstName: string;
@@ -152,15 +153,15 @@ const Dashboard = () => {
         ]);
 
         const status_counts = appResponse.status_counts || {};
-        const likedCount = likedResponse?.data?.length || likedResponse?.length || 0;
+        const likedCount = likedResponse['properties']?.length;
 
         setDashboardStats({
-          activeApplications: (status_counts["received"] || 0) + (status_counts["in-progress"] || 0),
+          activeApplications: (status_counts["received"] || 0) + (status_counts["screening"] || 0),
           viewedProperties: status_counts["viewed"] || 0,
           savedProperties: likedCount,
         });
       } catch (error) {
-        console.error("Error fetching stats or likes:", error);
+        toast.error("Error fetching stat from server")
       } finally {
         setLoadingStats(false);
       }
@@ -679,11 +680,11 @@ const Dashboard = () => {
       </SimpleGrid>
 
       {/* Enhanced Smart Recommendations */}
-      <EnhancedRecommendations
-        user={user}
-        applicationsCount={dashboardStats.activeApplications}
-        viewedProperties={dashboardStats.viewedProperties}
-      />
+      {/*<EnhancedRecommendations*/}
+      {/*  user={user}*/}
+      {/*  applicationsCount={dashboardStats.activeApplications}*/}
+      {/*  viewedProperties={dashboardStats.viewedProperties}*/}
+      {/*/>*/}
     </Box>
   );
 };

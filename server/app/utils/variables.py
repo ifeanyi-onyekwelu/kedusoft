@@ -23,6 +23,6 @@ DATABASE_URL = os.environ["DATABASE_URL"]
 
 GOOGLE_CLIENT_ID = os.environ["GOOGLE_CLIENT_ID"]
 
-SENDGRID_API_KEY = os.environ["SENDGRID_API_KEY"]
+RESEND_API_KEY = os.environ["RESEND_API_KEY"]
 
 SITE_URL = os.environ["SITE_URL"]
