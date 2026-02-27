@@ -1,0 +1,6 @@
+in the register how do we fix the role so when the user goes to register navigate to the role selection page so they can select if they want to signup as property owner {landlord} or tenants see how it is in the website
+
+
+and in the splash screen show the buttons to list property which when the user selects the role is already {property ownr} landlord and if find a home it should be a tenant role
+
+do you understand cos this is the best way and also the role should work that is what we need to to fix so lets do that now

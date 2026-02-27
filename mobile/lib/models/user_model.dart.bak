@@ -1,0 +1,44 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'user_model.g.dart';
+
+@JsonSerializable()
+class User {
+  final String id;
+  final String firstName;
+  final String lastName;
+  final String email;
+  final String? phone;
+  final String? profilePicture;
+  final String role; // 'tenant' | 'landlord' | 'admin'
+  @JsonKey(name: 'is_verified')
+  final bool isVerified;
+  @JsonKey(name: 'is_active')
+  final bool isActive;
+  @JsonKey(name: 'is_suspended')
+  final bool isSuspended;
+  @JsonKey(name: 'created_at')
+  final DateTime createdAt;
+  @JsonKey(name: 'updated_at')
+  final DateTime updatedAt;
+
+  User({
+    required this.id,
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+    this.phone,
+    this.profilePicture,
+    required this.role,
+    required this.isVerified,
+    required this.isActive,
+    required this.isSuspended,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+  Map<String, dynamic> toJson() => _$UserToJson(this);
+
+  String get fullName => '$firstName $lastName';
+}

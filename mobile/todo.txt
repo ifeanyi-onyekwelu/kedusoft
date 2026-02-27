@@ -1,0 +1,1 @@
+Fix the redirect after login to go the expected page both landlords and tenants go to the tenant dashboard after authenticating
