@@ -149,10 +149,18 @@ class HttpClient {
       );
     }
 
-    if (fromJson != null) {
-      return fromJson(response.data);
+    // Extract data from wrapper if it exists
+    dynamic responseData = response.data;
+
+    if (responseData is Map<String, dynamic> &&
+        responseData.containsKey('data')) {
+      responseData = responseData['data'];
     }
-    return response.data as T;
+
+    if (fromJson != null) {
+      return fromJson(responseData);
+    }
+    return responseData as T;
   }
 
   Future<T> uploadFile<T>(

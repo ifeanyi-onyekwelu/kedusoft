@@ -10,6 +10,8 @@ Application _$ApplicationFromJson(Map<String, dynamic> json) => Application(
       id: json['id'] as String,
       tenantId: json['tenant_id'] as String,
       propertyId: json['property_id'] as String,
+      propertyTitle: json['property_title'] as String?,
+      propertyImage: json['property_image'] as String?,
       landlordId: json['landlord_id'] as String,
       status: json['status'] as String,
       documents: (json['documents'] as List<dynamic>?)
@@ -24,6 +26,8 @@ Map<String, dynamic> _$ApplicationToJson(Application instance) =>
       'id': instance.id,
       'tenant_id': instance.tenantId,
       'property_id': instance.propertyId,
+      'property_title': instance.propertyTitle,
+      'property_image': instance.propertyImage,
       'landlord_id': instance.landlordId,
       'status': instance.status,
       'documents': instance.documents,

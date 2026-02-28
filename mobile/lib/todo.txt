@@ -1,0 +1,13 @@
+so now this is what we need to implement now
+
+-) The tenant dashboard fix the data fetching so the stats data is showing the active applications and property viewed and saved properties
+-) The recent activities in the tenant dashboard still needs the data to be fetched and shown not all just like the recent ones
+-) The price amount in the property card in the recomomendation doesn't have the comma formatting for the price
+-) then the size sqft is showing a string like uwani not the size sqft figure
+-) build the screen for the property details screen
+-) Implement the update preferences option in the recommendation page
+-) The browse property page in the drawer doesn't go the browse property screen it shows coming soon but the one in the home in the bottom navigation works but not the one in the drawer
+-) Also the applications is returnng a data but it is not reaching the screen there is an issue with the response data format object
+-) The browse properties in the empty component doesn't take the user to the browse propeties screen that too needs fixing
+-) the same issue with the saved properties
+-) the settings screen needs to be built also so how do we build that

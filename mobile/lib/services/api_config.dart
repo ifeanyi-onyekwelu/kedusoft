@@ -1,8 +1,7 @@
 class ApiConfig {
   // Change this to your API base URL
   // static const String baseUrl = 'https://api.letsten.com/api';
-  static const String baseUrl =
-      'http://10.0.2.2:5000/api/v1'; // For development (Android emulator)
+  static const String baseUrl = 'http://10.0.2.2:5000/api/v1';
 
   static const Duration connectionTimeout = Duration(milliseconds: 30000);
   static const Duration receiveTimeout = Duration(milliseconds: 30000);

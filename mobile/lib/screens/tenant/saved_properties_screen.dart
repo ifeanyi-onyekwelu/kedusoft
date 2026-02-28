@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:letsten/constants/app_colors.dart';
+import 'package:letsten/constants/app_routes.dart';
 import 'package:letsten/providers/tenant_provider.dart';
+import 'package:letsten/utils/formatting_utils.dart';
 import 'package:letsten/widgets/empty_state_widget.dart';
 import 'package:letsten/widgets/shared_widgets.dart' hide EmptyStateWidget;
 
@@ -13,11 +15,13 @@ class SavedPropertiesScreen extends StatefulWidget {
 }
 
 class _SavedPropertiesScreenState extends State<SavedPropertiesScreen> {
+  int _currentPage = 1;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<TenantProvider>().fetchLikedProperties();
+      context.read<TenantProvider>().fetchLikedProperties(page: 1, perPage: 10);
     });
   }
 
@@ -81,21 +85,60 @@ class _SavedPropertiesScreenState extends State<SavedPropertiesScreen> {
 
           return ListView.builder(
             padding: const EdgeInsets.all(12),
-            itemCount: tenantProvider.likedProperties.length,
+            itemCount:
+                tenantProvider.likedProperties.length +
+                (tenantProvider.likedPropertiesPagination?.page !=
+                        tenantProvider.likedPropertiesPagination?.pages
+                    ? 1
+                    : 0),
             itemBuilder: (context, index) {
+              // Load more button at the end
+              if (index == tenantProvider.likedProperties.length) {
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: ElevatedButton.icon(
+                    onPressed: tenantProvider.likedPropertiesLoading
+                        ? null
+                        : () => tenantProvider.loadMoreLikedProperties(),
+                    icon: tenantProvider.likedPropertiesLoading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                AppColors.white,
+                              ),
+                            ),
+                          )
+                        : const Icon(Icons.download),
+                    label: Text(
+                      tenantProvider.likedPropertiesLoading
+                          ? 'Loading...'
+                          : 'Load More',
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: AppColors.white,
+                      minimumSize: const Size(double.infinity, 50),
+                    ),
+                  ),
+                );
+              }
+
               final property = tenantProvider.likedProperties[index];
 
               return PropertyCardWidget(
                 propertyId: property.id,
-                title: property.name,
+                title: property.displayName,
                 location: property.fullAddress,
-                price: '₦${property.rentAmount.toStringAsFixed(0)}',
-                bedrooms: property.bedrooms,
-                bathrooms: property.bathrooms,
-                squareFeet: property.area,
-                imageUrl: property.gallery.isNotEmpty
-                    ? property.gallery.first
-                    : '',
+                price: FormattingUtils.formatPrice(property.displayPrice),
+                bedrooms: property.bedrooms ?? 0,
+                bathrooms: property.bathrooms ?? 0,
+                squareFeet: FormattingUtils.formatSqft(property.sizeSqft),
+                imageUrl: (property.gallery?.isNotEmpty ?? false)
+                    ? property.gallery!.first
+                    : property.coverImage ?? '',
                 matchPercentage: null,
                 isLiked: true,
                 isLoading: false,
@@ -116,12 +159,18 @@ class _SavedPropertiesScreenState extends State<SavedPropertiesScreen> {
                 onSharePressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Sharing ${property.name} is in progress'),
+                      content: Text(
+                        'Sharing ${property.displayName} is in progress',
+                      ),
                     ),
                   );
                 },
                 onViewPressed: () {
-                  // Navigate to property details if needed
+                  Navigator.pushNamed(
+                    context,
+                    AppRoutes.tenantPropertyDetails,
+                    arguments: property.id,
+                  );
                 },
               );
             },

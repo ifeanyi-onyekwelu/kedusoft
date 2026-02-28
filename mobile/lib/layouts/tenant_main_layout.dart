@@ -36,6 +36,7 @@ class _TenantMainLayoutState extends State<TenantMainLayout> {
     }
   }
 
+  @pragma('vm:entry-point')
   String _getUserDisplayName(User? user) {
     if (user == null) return 'Guest User';
 
@@ -56,6 +57,7 @@ class _TenantMainLayoutState extends State<TenantMainLayout> {
     return 'User';
   }
 
+  @pragma('vm:entry-point')
   String _getUserInitials(User? user) {
     if (user == null) return 'GU';
 
@@ -141,7 +143,7 @@ class _TenantMainLayoutState extends State<TenantMainLayout> {
             title: 'Browse Properties',
             onTap: () {
               Navigator.pop(context);
-              Navigator.pushNamed(context, AppRoutes.browseProperties);
+              Navigator.pushNamed(context, AppRoutes.tenantBrowseProperties);
             },
           ),
           _buildDrawerItem(
@@ -252,7 +254,10 @@ class _TenantMainLayoutState extends State<TenantMainLayout> {
             Navigator.pushReplacementNamed(context, AppRoutes.tenantDashboard);
             break;
           case 1:
-            Navigator.pushReplacementNamed(context, AppRoutes.tenantBrowseProperties);
+            Navigator.pushReplacementNamed(
+              context,
+              AppRoutes.tenantBrowseProperties,
+            );
             break;
           case 2:
             Navigator.pushReplacementNamed(

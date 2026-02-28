@@ -19,6 +19,7 @@ class _BrowsePropertiesScreenState extends State<BrowsePropertiesScreen> {
   String _selectedCategory = 'All';
   String _selectedBeds = 'Any';
   RangeValues _priceRange = const RangeValues(0, 10000000);
+  int _currentPage = 1;
 
   final TextEditingController _searchController = TextEditingController();
 
@@ -36,6 +37,10 @@ class _BrowsePropertiesScreenState extends State<BrowsePropertiesScreen> {
   @override
   void initState() {
     super.initState();
+    // Fetch initial properties with default filters
+    Future.microtask(() {
+      _fetchFilteredProperties();
+    });
   }
 
   // Mock data
@@ -161,6 +166,48 @@ class _BrowsePropertiesScreenState extends State<BrowsePropertiesScreen> {
     }
   }
 
+  void _fetchFilteredProperties() {
+    final propertyProvider =
+        Provider.of<PropertyProvider>(context, listen: false);
+
+    // Convert selected beds to int
+    final bedroomCount =
+        _selectedBeds == 'Any' ? null : int.tryParse(_selectedBeds);
+
+    // Convert price range values
+    final minPrice =
+        _priceRange.start > 0 ? _priceRange.start : null;
+    final maxPrice =
+        _priceRange.end < 10000000 ? _priceRange.end : null;
+
+    // Map listing type: 'Rent' -> 'rent', 'Buy' -> 'sale', 'Shortlet' -> 'shortlet'
+    final listingTypeMap = {
+      'Rent': 'rent',
+      'Buy': 'sale',
+      'Shortlet': 'shortlet',
+    };
+    final listingType = listingTypeMap[_selectedType];
+
+    // Map category: 'All' -> null, others as-is but lowercase
+    final category = _selectedCategory == 'All'
+        ? null
+        : _selectedCategory.toLowerCase();
+
+    // Fetch properties with filters (resets to page 1)
+    propertyProvider.fetchBrowsePropertiesWithFilters(
+      page: 1,
+      perPage: 10,
+      city: _searchController.text.isNotEmpty
+          ? _searchController.text
+          : null,
+      listingType: listingType,
+      category: category,
+      bedrooms: bedroomCount,
+      minPrice: minPrice,
+      maxPrice: maxPrice,
+    );
+  }
+
   void _showFilterSheet() {
     showModalBottomSheet(
       context: context,
@@ -182,8 +229,10 @@ class _BrowsePropertiesScreenState extends State<BrowsePropertiesScreen> {
             _selectedCategory = category;
             _selectedBeds = beds;
             _priceRange = price;
+            _currentPage = 1; // Reset to first page on filter change
           });
           Navigator.pop(context);
+          _fetchFilteredProperties(); // Call API with new filters
         },
       ),
     );
@@ -340,7 +389,13 @@ class _BrowsePropertiesScreenState extends State<BrowsePropertiesScreen> {
                 child: _buildFilterChip(
                   label: type,
                   isSelected: _selectedType == type,
-                  onTap: () => setState(() => _selectedType = type),
+                  onTap: () {
+                    setState(() {
+                      _selectedType = type;
+                      _currentPage = 1;
+                    });
+                    _fetchFilteredProperties();
+                  },
                 ),
               ),
             ),
@@ -447,27 +502,9 @@ class _BrowsePropertiesScreenState extends State<BrowsePropertiesScreen> {
   Widget _buildPropertyList() {
     return Consumer2<PropertyProvider, TenantProvider>(
       builder: (context, propertyProvider, tenantProvider, _) {
-        // Use properties from provider if available, otherwise fall back to mock data
-        final properties = propertyProvider.properties.isNotEmpty
-            ? propertyProvider.properties
-                  .map(
-                    (p) => {
-                      'id': p.id,
-                      'title': p.name,
-                      'location': p.fullAddress,
-                      'price': p.rentAmount.toInt(),
-                      'bedrooms': p.bedrooms,
-                      'bathrooms': p.bathrooms,
-                      'sqft': p.area,
-                      'image': p.gallery.isNotEmpty ? p.gallery.first : '',
-                      'status': 'Available',
-                      'tags': [],
-                      'available': 'Dec 27',
-                      'isLiked': tenantProvider.isPropertyLiked(p.id),
-                    },
-                  )
-                  .toList()
-            : _properties;
+        // Use browse properties from provider (paginated)
+        final properties = propertyProvider.browseProperties;
+        final pagination = propertyProvider.browsePropertiesPagination;
 
         if (properties.isEmpty && propertyProvider.isLoading) {
           return const Center(child: CircularProgressIndicator());
@@ -499,18 +536,88 @@ class _BrowsePropertiesScreenState extends State<BrowsePropertiesScreen> {
 
         return ListView.builder(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          itemCount: properties.length,
+          itemCount: properties.length +
+              (pagination?.page != pagination?.pages ? 1 : 0),
           itemBuilder: (context, index) {
+            // Load more button at the end
+            if (index == properties.length) {
+              return Padding(
+                padding: const EdgeInsets.all(16),
+                child: ElevatedButton.icon(
+                  onPressed: propertyProvider.isLoading
+                      ? null
+                      : () {
+                          propertyProvider.loadMoreBrowseProperties(
+                            city: _searchController.text.isNotEmpty
+                                ? _searchController.text
+                                : null,
+                            listingType: {
+                              'Rent': 'rent',
+                              'Buy': 'sale',
+                              'Shortlet': 'shortlet',
+                            }[_selectedType],
+                            category: _selectedCategory == 'All'
+                                ? null
+                                : _selectedCategory.toLowerCase(),
+                            bedrooms: _selectedBeds == 'Any'
+                                ? null
+                                : int.tryParse(_selectedBeds),
+                            minPrice: _priceRange.start > 0
+                                ? _priceRange.start
+                                : null,
+                            maxPrice: _priceRange.end < 10000000
+                                ? _priceRange.end
+                                : null,
+                          );
+                        },
+                  icon: propertyProvider.isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              AppColors.white,
+                            ),
+                          ),
+                        )
+                      : const Icon(Icons.download),
+                  label: Text(propertyProvider.isLoading
+                      ? 'Loading...'
+                      : 'Load More'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.white,
+                    minimumSize: const Size(double.infinity, 50),
+                  ),
+                );
+              }
+            }
+
             final property = properties[index];
-            final propertyId = property['id'] as String;
 
             return _PropertyCard(
-              property: property,
+              property: {
+                'id': property.id,
+                'title': property.displayName,
+                'location': property.fullAddress,
+                'price': (property.displayPrice).toInt(),
+                'bedrooms': property.bedrooms ?? 0,
+                'bathrooms': property.bathrooms ?? 0,
+                'sqft': property.area,
+                'image': (property.gallery?.isNotEmpty ?? false)
+                    ? property.gallery!.first
+                    : (property.coverImage ?? ''),
+                'status': 'Available',
+                'tags': [],
+                'available': 'Dec 27',
+                'isLiked': tenantProvider.isPropertyLiked(property.id),
+              },
               formatPrice: _formatPrice,
               onLikeTap: () async {
                 // Toggle like status with provider
                 final result = await tenantProvider.toggleLikeProperty(
-                  propertyId,
+                  property.id,
                 );
 
                 // Show feedback
@@ -532,7 +639,7 @@ class _BrowsePropertiesScreenState extends State<BrowsePropertiesScreen> {
                 Navigator.pushNamed(
                   context,
                   AppRoutes.tenantPropertyDetails,
-                  arguments: propertyId,
+                  arguments: property.id,
                 );
               },
             );

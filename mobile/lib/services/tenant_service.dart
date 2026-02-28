@@ -5,6 +5,8 @@ import '../models/screening_model.dart';
 import '../models/lease_model.dart';
 import '../models/transaction_model.dart';
 import '../models/property_model.dart';
+import '../models/paginated_properties_response.dart';
+import '../models/pagination_model.dart';
 
 class TenantService {
   final HttpClient httpClient;
@@ -28,6 +30,7 @@ class TenantService {
       return await httpClient.get<List<Application>>(
         ApiConfig.tenantApplicationsEndpoint,
         fromJson: (json) {
+          print('Received applications JSON: $json');
           if (json is List) {
             return json.map((item) => Application.fromJson(item)).toList();
           }
@@ -233,20 +236,60 @@ class TenantService {
   }
 
   // Recommendations
-  Future<List<Property>> getRecommendedProperties({
+  Future<PaginatedPropertiesResponse> getRecommendedProperties({
     int page = 1,
     int perPage = 10,
   }) async {
     try {
-      return await httpClient.get<List<Property>>(
+      return await httpClient.get<PaginatedPropertiesResponse>(
         '${ApiConfig.tenantRecommendationsEndpoint}/properties?page=$page&per_page=$perPage',
         fromJson: (json) {
-          if (json is List) {
-            return json.map((item) => Property.fromJson(item)).toList();
-          }
-          return [];
+          return PaginatedPropertiesResponse.fromJson(json);
         },
       );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<PaginatedPropertiesResponse> getLikedPropertiesPaginated({
+    int page = 1,
+    int perPage = 10,
+  }) async {
+    try {
+      final response = await httpClient.get<dynamic>(
+        '${ApiConfig.tenantLikedPropertiesEndpoint}?page=$page&per_page=$perPage',
+        fromJson: (json) => json,
+      );
+
+      // Handle if response is already paginated
+      if (response is Map<String, dynamic> &&
+          response.containsKey('pagination') &&
+          response.containsKey('properties')) {
+        return PaginatedPropertiesResponse.fromJson(response);
+      }
+
+      // Handle if response is just a list - wrap it
+      if (response is List) {
+        final properties = response
+            .map(
+              (item) => item is Map<String, dynamic>
+                  ? Property.fromJson(item)
+                  : item as Property,
+            )
+            .toList();
+        return PaginatedPropertiesResponse(
+          pagination: Pagination(
+            page: page,
+            pages: 1,
+            perPage: perPage,
+            total: properties.length,
+          ),
+          properties: properties,
+        );
+      }
+
+      throw Exception('Unexpected response format');
     } catch (e) {
       rethrow;
     }

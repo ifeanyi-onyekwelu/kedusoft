@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:letsten/models/property_model.dart';
+import 'package:letsten/models/pagination_model.dart';
+import 'package:letsten/models/paginated_properties_response.dart';
 import '../services/service_locator.dart';
 
 class PropertyProvider extends ChangeNotifier {
@@ -9,17 +11,21 @@ class PropertyProvider extends ChangeNotifier {
   // State
   List<Property> _properties = [];
   List<Property> _likedProperties = [];
+  List<Property> _browseProperties = [];
   Map<String, bool> _likedStatusMap = {};
   bool _isLoading = false;
   String? _error;
   bool _isLikingProperty = false;
+  Pagination? _browsePropertiesPagination;
 
   // Getters
   List<Property> get properties => _properties;
   List<Property> get likedProperties => _likedProperties;
+  List<Property> get browseProperties => _browseProperties;
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get isLikingProperty => _isLikingProperty;
+  Pagination? get browsePropertiesPagination => _browsePropertiesPagination;
 
   // Check if property is liked
   bool isPropertyLiked(String propertyId) {
@@ -191,5 +197,110 @@ class PropertyProvider extends ChangeNotifier {
   void clearError() {
     _error = null;
     notifyListeners();
+  }
+
+  // Fetch browse properties with filters and pagination
+  Future<void> fetchBrowsePropertiesWithFilters({
+    int page = 1,
+    int perPage = 10,
+    String? city,
+    String? state,
+    String? area,
+    double? minPrice,
+    double? maxPrice,
+    int? bedrooms,
+    String? listingType,
+    String? category,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    try {
+      final response = await propertyService.getPropertiesWithFilters(
+        page: page,
+        perPage: perPage,
+        city: city,
+        state: state,
+        area: area,
+        minPrice: minPrice,
+        maxPrice: maxPrice,
+        bedrooms: bedrooms,
+        listingType: listingType,
+        category: category,
+      );
+
+      _browseProperties = response.properties;
+      _browsePropertiesPagination = response.pagination;
+
+      // Fetch like status for all properties
+      for (var property in _browseProperties) {
+        try {
+          final isLiked = await propertyService.isPropertyLiked(property.id);
+          _likedStatusMap[property.id] = isLiked;
+        } catch (e) {
+          _likedStatusMap[property.id] = false;
+        }
+      }
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  // Load more browse properties
+  Future<void> loadMoreBrowseProperties({
+    String? city,
+    String? state,
+    String? area,
+    double? minPrice,
+    double? maxPrice,
+    int? bedrooms,
+    String? listingType,
+    String? category,
+  }) async {
+    if (_browsePropertiesPagination == null ||
+        _browsePropertiesPagination!.page >=
+            _browsePropertiesPagination!.pages) {
+      return;
+    }
+
+    _isLoading = true;
+    _error = null;
+    try {
+      final nextPage = (_browsePropertiesPagination!.page ?? 1) + 1;
+      final response = await propertyService.getPropertiesWithFilters(
+        page: nextPage,
+        perPage: _browsePropertiesPagination!.perPage,
+        city: city,
+        state: state,
+        area: area,
+        minPrice: minPrice,
+        maxPrice: maxPrice,
+        bedrooms: bedrooms,
+        listingType: listingType,
+        category: category,
+      );
+
+      _browseProperties.addAll(response.properties);
+      _browsePropertiesPagination = response.pagination;
+
+      // Fetch like status for new properties
+      for (var property in response.properties) {
+        try {
+          final isLiked = await propertyService.isPropertyLiked(property.id);
+          _likedStatusMap[property.id] = isLiked;
+        } catch (e) {
+          _likedStatusMap[property.id] = false;
+        }
+      }
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    } finally {
+      _isLoading = false;
+    }
   }
 }

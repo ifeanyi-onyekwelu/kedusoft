@@ -13,6 +13,7 @@ import 'package:letsten/screens/tenant/tenant_profile_screen.dart';
 import 'package:letsten/screens/tenant/tenant_notifications_screen.dart';
 import 'package:letsten/screens/tenant/tenant_payment_center_screen.dart';
 import 'package:letsten/screens/tenant/saved_properties_screen.dart';
+import 'package:letsten/screens/tenant/property_details_screen.dart';
 import 'package:letsten/screens/empty_placeholder_screen.dart';
 
 class TenantRoutes {
@@ -50,14 +51,7 @@ class TenantRoutes {
       case AppRoutes.tenantPropertyDetails:
         final propertyId = settings.arguments as String?;
         return MaterialPageRoute(
-          builder: (_) => TenantMainLayout(
-            initialIndex: 1,
-            child: EmptyPlaceholderScreen(
-              title:
-                  'Property Details${propertyId != null ? ' - $propertyId' : ''}',
-              icon: Icons.apartment,
-            ),
-          ),
+          builder: (_) => PropertyDetailsScreen(propertyId: propertyId ?? ''),
         );
 
       case AppRoutes.tenantFavorites:

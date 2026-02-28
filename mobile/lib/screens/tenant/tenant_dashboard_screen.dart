@@ -90,6 +90,7 @@ class _TenantDashboardScreenState extends State<TenantDashboardScreen> {
     return Consumer<TenantProvider>(
       builder: (context, tenantProvider, _) {
         final applicationCount = tenantProvider.applications.length;
+        final viewedCount = tenantProvider.viewedPropertiesCount;
         final savedCount = tenantProvider.likedProperties.length;
 
         return Row(
@@ -103,7 +104,11 @@ class _TenantDashboardScreenState extends State<TenantDashboardScreen> {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: _buildStatCard('0', 'Properties Viewed', Icons.visibility),
+              child: _buildStatCard(
+                viewedCount.toString(),
+                'Properties Viewed',
+                Icons.visibility,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(

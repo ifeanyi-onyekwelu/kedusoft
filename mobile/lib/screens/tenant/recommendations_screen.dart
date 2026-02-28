@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:letsten/constants/app_colors.dart';
+import 'package:letsten/constants/app_routes.dart';
 import 'package:letsten/providers/tenant_provider.dart';
+import 'package:letsten/utils/formatting_utils.dart';
 import 'package:letsten/widgets/shared_widgets.dart' hide EmptyStateWidget;
 import 'package:letsten/widgets/empty_state_widget.dart';
 
@@ -39,10 +41,15 @@ class _RecommendationsScreenState extends State<RecommendationsScreen> {
           PopupMenuButton(
             itemBuilder: (context) => [
               const PopupMenuItem(
-                child: Text('Update Preferences'),
                 value: 'preferences',
+                child: Text('Update Preferences'),
               ),
             ],
+            onSelected: (value) {
+              if (value == 'preferences') {
+                _showPreferencesDialog(context);
+              }
+            },
           ),
         ],
       ),
@@ -93,15 +100,15 @@ class _RecommendationsScreenState extends State<RecommendationsScreen> {
 
               return PropertyCardWidget(
                 propertyId: property.id,
-                title: property.name,
+                title: property.displayName,
                 location: property.address,
-                price: '₦${property.rentAmount.toStringAsFixed(0)}',
-                bedrooms: property.bedrooms,
-                bathrooms: property.bathrooms,
-                squareFeet: property.area,
-                imageUrl: property.gallery.isNotEmpty
-                    ? property.gallery[0]
-                    : '',
+                price: FormattingUtils.formatPrice(property.displayPrice),
+                bedrooms: property.bedrooms ?? 0,
+                bathrooms: property.bathrooms ?? 0,
+                squareFeet: FormattingUtils.formatSqft(property.sizeSqft),
+                imageUrl: (property.gallery?.isNotEmpty ?? false)
+                    ? property.gallery![0]
+                    : property.coverImage ?? '',
                 matchPercentage: '${(index + 1) * 10}%',
                 isLiked: isLiked,
                 isLoading: false,
@@ -122,18 +129,155 @@ class _RecommendationsScreenState extends State<RecommendationsScreen> {
                 onSharePressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Sharing ${property.name} is in progress'),
+                      content: Text(
+                        'Sharing ${property.displayName} is in progress',
+                      ),
                     ),
                   );
                 },
                 onViewPressed: () {
-                  // Navigate to property details
+                  Navigator.pushNamed(
+                    context,
+                    AppRoutes.tenantPropertyDetails,
+                    arguments: property.id,
+                  );
                 },
               );
             },
           );
         },
       ),
+    );
+  }
+
+  void _showPreferencesDialog(BuildContext context) {
+    showDialog(context: context, builder: (context) => _PreferencesDialog());
+  }
+}
+
+class _PreferencesDialog extends StatefulWidget {
+  @override
+  State<_PreferencesDialog> createState() => _PreferencesDialogState();
+}
+
+class _PreferencesDialogState extends State<_PreferencesDialog> {
+  String _propertyType = 'All';
+  String _bedrooms = 'Any';
+  String _priceRange = 'Any';
+  bool _furnished = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Update Preferences'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 12),
+            const Text(
+              'Property Type',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+            const SizedBox(height: 8),
+            DropdownButton<String>(
+              value: _propertyType,
+              isExpanded: true,
+              items: ['All', 'Rent', 'Sell', 'Shortlet']
+                  .map(
+                    (value) =>
+                        DropdownMenuItem(value: value, child: Text(value)),
+                  )
+                  .toList(),
+              onChanged: (value) {
+                setState(() => _propertyType = value ?? 'All');
+              },
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Number of Bedrooms',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+            const SizedBox(height: 8),
+            DropdownButton<String>(
+              value: _bedrooms,
+              isExpanded: true,
+              items: ['Any', '1', '2', '3', '4', '5+']
+                  .map(
+                    (value) =>
+                        DropdownMenuItem(value: value, child: Text(value)),
+                  )
+                  .toList(),
+              onChanged: (value) {
+                setState(() => _bedrooms = value ?? 'Any');
+              },
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Price Range',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+            const SizedBox(height: 8),
+            DropdownButton<String>(
+              value: _priceRange,
+              isExpanded: true,
+              items:
+                  [
+                        'Any',
+                        '₦0 - ₦500K',
+                        '₦500K - ₦1M',
+                        '₦1M - ₦5M',
+                        '₦5M - ₦10M',
+                        '₦10M+',
+                      ]
+                      .map(
+                        (value) =>
+                            DropdownMenuItem(value: value, child: Text(value)),
+                      )
+                      .toList(),
+              onChanged: (value) {
+                setState(() => _priceRange = value ?? 'Any');
+              },
+            ),
+            const SizedBox(height: 20),
+            CheckboxListTile(
+              title: const Text('Furnished Properties'),
+              value: _furnished,
+              onChanged: (value) {
+                setState(() => _furnished = value ?? false);
+              },
+              contentPadding: EdgeInsets.zero,
+              controlAffinity: ListTileControlAffinity.leading,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            // Save preferences and fetch recommendations
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Preferences updated! Fetching new recommendations...',
+                ),
+              ),
+            );
+            Navigator.pop(context);
+            context.read<TenantProvider>().fetchRecommendedProperties();
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+          ),
+          child: const Text('Save'),
+        ),
+      ],
     );
   }
 }

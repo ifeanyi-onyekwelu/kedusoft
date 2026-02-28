@@ -75,7 +75,7 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
-    final data = json['data'];
+    final data = json['data'] ?? json;
 
     // Handle both camelCase and snake_case field names
     final firstName = data['firstName'] ?? data['first_name'];

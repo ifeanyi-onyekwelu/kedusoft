@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:letsten/constants/app_colors.dart';
+import 'package:letsten/constants/app_routes.dart';
 import 'package:letsten/providers/tenant_provider.dart';
 import 'package:letsten/widgets/empty_state_widget.dart';
 
@@ -95,7 +96,10 @@ class _TenantApplicationsScreenState extends State<TenantApplicationsScreen> {
                   'Start exploring properties and submit your applications to apply for places you love.',
               action: ElevatedButton.icon(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/browse-properties');
+                  Navigator.pushNamed(
+                    context,
+                    AppRoutes.tenantBrowseProperties,
+                  );
                 },
                 icon: const Icon(Icons.search),
                 label: const Text('Browse Properties'),
